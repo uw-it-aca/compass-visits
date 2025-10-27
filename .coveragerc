@@ -1,0 +1,8 @@
+[run]
+source = app_name
+parallel = True
+
+[paths]
+source =
+  app_name/
+  /app/app_name/
