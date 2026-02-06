@@ -6,11 +6,11 @@ services:
       context: .
       target: app-container
     restart: always
-    container_name: app_name_app
+    container_name: compass_visits_app
     environment:
       - GOOGLE_ANALYTICS_KEY=${GOOGLE_ANALYTICS_KEY}
     volumes:
-      - ./app_name:/app/app_name
+      - ./compass_visits:/app/compass_visits
       - statics-volume:/static
     ports:
       - "${RUNSERVER_PORT:-8000}:8000"
@@ -21,7 +21,7 @@ services:
       context: .
       target: node-bundler
     restart: always
-    container_name: app_name_node
+    container_name: compass_visits_node
     ports:
       - "${BUNDLE_ANALYZER_PORT:-8888}:8888" # Required when environment.BUNDLE_ANALYZER is true
     environment:
@@ -30,8 +30,8 @@ services:
       VUE_DEVTOOLS: "True"
       BUNDLE_ANALYZER: "True"
     volumes:
-      - ./app_name:/app/app_name # expose main django app so vite can output bundles here
-      - ./app_name_vue:/app/app_name_vue
+      - ./compass_visits:/app/compass_visits # expose main django app so vite can output bundles here
+      - ./compass_visits_vue:/app/compass_visits_vue
       - statics-volume:/static
     command: npm run watch
     stdin_open: true

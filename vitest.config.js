@@ -15,7 +15,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./app_name_vue", import.meta.url)),
+      "@": fileURLToPath(new URL("./compass_visits_vue", import.meta.url)),
     },
   },
 });
