@@ -7,7 +7,7 @@ export default defineConfig({
   // MARK: start vite build config
 
   // vite creates a manifest and assets during the build process (local and prod)
-  // django collectstatics will put assets in '/static/compass_visits/assets'
+  // django collectstatic will put assets in '/static/compass_visits/assets'
   // django will put the manifest in '/static/.vite/manifest.json'
   // vite manifest prefaces all files with the path 'compass_visits/assets/xxxx'
   build: {
