@@ -34,7 +34,7 @@ RUN npm run build
 
 FROM app-prebundler-container AS app-container
 
-COPY --chown=acait:acait --from=node-bundler /app/app_name/static /app/app_name/static
+COPY --chown=acait:acait --from=node-bundler /app/compass_visits/static /app/compass_visits/static
 
 RUN /app/bin/python manage.py collectstatic --noinput
 

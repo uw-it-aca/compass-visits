@@ -4,7 +4,7 @@
 from django.conf import settings
 from django.urls import re_path
 from django.views.generic import TemplateView
-from app_name.views.pages import DefaultPageView
+from compass_visits.views.pages import DefaultPageView
 
 
 # start with an empty url array

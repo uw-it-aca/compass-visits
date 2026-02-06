@@ -9,4 +9,4 @@ class ViteStaticFilesConfig(StaticFilesConfig):
     ignore_patterns = ['CVS', '*~']
 
 class AppNameConfig(AppConfig):
-    name = "app_name"
+    name = "compass_visits"

@@ -1,27 +1,27 @@
 {
-  "name": "app_name",
+  "name": "compass_visits",
   "type": "module",
   "version": "1.0.0",
-  "description": "app_name some description text",
+  "description": "Compass visits app",
   "scripts": {
     "build": "vite build",
     "watch": "vite build --watch --mode development",
     "test": "vitest --environment jsdom",
     "coverage": "vitest run --coverage",
-    "eslint": "eslint 'app_name_vue/**/*.{js,vue}'",
-    "stylelint": "stylelint 'app_name_vue/**/*.{vue,scss}'",
+    "eslint": "eslint 'compass_visits_vue/**/*.{js,vue}'",
+    "stylelint": "stylelint 'compass_visits_vue/**/*.{vue,scss}'",
     "lighthouse": "lhci collect"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/uw-it-aca/app_name.git"
+    "url": "git+https://github.com/uw-it-aca/compass_visits.git"
   },
   "author": "Your Name Here",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/uw-it-aca/app_name/issues"
+    "url": "https://github.com/uw-it-aca/compass_visits/issues"
   },
-  "homepage": "https://github.com/uw-it-aca/app_name#readme",
+  "homepage": "https://github.com/uw-it-aca/compass_visits#readme",
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "@vueuse/core": "^13.6.0",
