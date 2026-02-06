@@ -33,7 +33,7 @@ name: Build, Test and Deploy
 
 env:
   # Release name must match "repo" value in docker/*-values.yml
-  RELEASE_NAME: compass_visits
+  RELEASE_NAME: compass-visits
   DJANGO_APP: compass_visits
 
 # Be sure that branches defined here have corresponding steps
