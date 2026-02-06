@@ -1,7 +1,7 @@
 from .base_settings import *
 
 INSTALLED_APPS += [
-    'compass_visits.apps.AppNameConfig',
+    'compass_visits.apps.CompassVisitsConfig',
     'compass_visits.apps.ViteStaticFilesConfig',
 ]
 

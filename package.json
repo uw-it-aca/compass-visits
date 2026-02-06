@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/uw-it-aca/compass_visits.git"
+    "url": "git+https://github.com/uw-it-aca/compass-visits.git"
   },
   "author": "Your Name Here",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/uw-it-aca/compass_visits/issues"
+    "url": "https://github.com/uw-it-aca/compass-visits/issues"
   },
-  "homepage": "https://github.com/uw-it-aca/compass_visits#readme",
+  "homepage": "https://github.com/uw-it-aca/compass-visits#readme",
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "@vueuse/core": "^13.6.0",
