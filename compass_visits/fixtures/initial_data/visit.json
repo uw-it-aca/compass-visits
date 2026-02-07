@@ -1,0 +1,143 @@
+[
+    {
+        "model": "compass_visits.visit",
+        "pk": 1,
+        "fields": {
+            "student_netid": "javerage",
+            "program_area": 1,
+            "tutoring_option": 1,
+            "writing_service": 1,
+            "course": null,
+            "check_in_date": "2024-06-01T10:00:00Z",
+            "check_out_date": "2024-06-01T11:00:00Z",
+            "is_verified": true 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 2,
+        "fields": {
+            "student_netid": "asmith",
+            "program_area": 2,
+            "tutoring_option": 2,
+            "writing_service": 2,
+            "course": null,
+            "check_in_date": "2024-06-02T14:00:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 3,
+        "fields": {
+            "student_netid": "bthompson",
+            "program_area": 5,
+            "tutoring_option": 1,
+            "writing_service": null,
+            "course": "ASRO 321",
+            "check_in_date": "2024-06-03T09:30:00Z",
+            "check_out_date": "2024-06-03T10:30:00Z",
+            "is_verified": true 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 4,
+        "fields": {
+            "student_netid": "cwilson",
+            "program_area": 3,
+            "tutoring_option": 3,
+            "writing_service": 3,
+            "course": null,
+            "check_in_date": "2024-06-04T13:00:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        
+        "pk": 5,
+        "fields": {
+            "student_netid": "dlee",
+            "program_area": 2,
+            "tutoring_option": 2,
+            "writing_service": 2,
+            "course": null,
+            "check_in_date": "2024-06-05T15:00:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 6,
+        "fields": {
+            "student_netid": "emartin",
+            "program_area": 6,
+            "tutoring_option": 1,
+            "writing_service": 1,
+            "course": null,
+            "check_in_date": "2024-06-06T11:00:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 7,
+        "fields": {
+            "student_netid": "fgarcia",
+            "program_area": 4,
+            "tutoring_option": 3,
+            "writing_service": 3,
+            "course": null,
+            "check_in_date": "2024-06-07T14:30:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 8,
+        "fields": {
+            "student_netid": "hrodriguez",
+            "program_area": 2,
+            "tutoring_option": 2,
+            "writing_service": null,
+            "course": "CSE 142",
+            "check_in_date": "2024-06-08T10:00:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 9,
+        "fields": {
+            "student_netid": "ijohnson",
+            "program_area": 1,
+            "tutoring_option": 1,
+            "writing_service": 1,
+            "course": null,
+            "check_in_date": "2024-06-09T09:00:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    },
+    {
+        "model": "compass_visits.visit",
+        "pk": 10,
+        "fields": {
+            "student_netid": "kmiller",
+            "program_area": 3,
+            "tutoring_option": 3,
+            "writing_service": null,
+            "course": "BIO 101",
+            "check_in_date": "2024-06-10T13:00:00Z",
+            "check_out_date": null,
+            "is_verified": false 
+        }
+    }
+]

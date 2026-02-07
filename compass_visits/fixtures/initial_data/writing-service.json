@@ -1,0 +1,58 @@
+[
+    {
+        "model": "compass_visits.writingservice",
+        "pk": 1,
+        "fields": {
+            "name": "Application",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.writingservice",
+        "pk": 2,
+        "fields": {
+            "name": "BUS Application",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.writingservice",
+        "pk": 3,
+        "fields": {
+            "name": "Cover Letter",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.writingservice",
+        "pk": 4,
+        "fields": {
+            "name": "Personal Statement",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.writingservice",
+        "pk": 5,
+        "fields": {
+            "name": "Resume",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.writingservice",
+        "pk": 6,
+        "fields": {
+            "name": "Scholarship",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.writingservice",
+        "pk": 7,
+        "fields": {
+            "name": "Other",
+            "allow_usage": false
+        }
+    }
+]

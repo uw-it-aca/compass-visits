@@ -33,7 +33,10 @@ class Visit(models.Model):
     program_area = models.ForeignKey(ProgramArea, on_delete=models.PROTECT)
     tutoring_option = models.ForeignKey(TutoringOption,
                                         on_delete=models.PROTECT)
-    course = models.CharField(max_length=255)
+    writing_service = models.ForeignKey(WritingService,
+                                        on_delete=models.PROTECT,
+                                        null=True, blank=True)
+    course = models.CharField(max_length=255, null=True, blank=True)
     check_in_date = models.DateTimeField(auto_now_add=True)
     check_out_date = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
