@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from compass_visits.views.api import RESTDispatch
+from compass_visits.dao.visit_options import get_visit_options
 
 
 class VisitOptions(RESTDispatch):
     def get(self, request, *args, **kwargs):
-        # TODO: implement this method to return the list of
-        #  program areas, tutoring options, and writing services
-        return self.json_response(status=200, content=[])
+        options = get_visit_options()
+        return self.json_response(status=200, content=options)
