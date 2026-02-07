@@ -8,5 +8,6 @@ from django.contrib.staticfiles.apps import StaticFilesConfig
 class ViteStaticFilesConfig(StaticFilesConfig):
     ignore_patterns = ['CVS', '*~']
 
+
 class CompassVisitsConfig(AppConfig):
     name = "compass_visits"
