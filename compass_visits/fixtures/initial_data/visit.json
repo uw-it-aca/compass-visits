@@ -10,7 +10,7 @@
             "course": null,
             "check_in_date": "2024-06-01T10:00:00Z",
             "check_out_date": "2024-06-01T11:00:00Z",
-            "is_verified": true 
+            "is_verified": true
         }
     },
     {
@@ -24,7 +24,7 @@
             "course": null,
             "check_in_date": "2024-06-02T14:00:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": false
         }
     },
     {
@@ -38,7 +38,7 @@
             "course": "ASRO 321",
             "check_in_date": "2024-06-03T09:30:00Z",
             "check_out_date": "2024-06-03T10:30:00Z",
-            "is_verified": true 
+            "is_verified": true
         }
     },
     {
@@ -52,12 +52,12 @@
             "course": null,
             "check_in_date": "2024-06-04T13:00:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": false
         }
     },
     {
         "model": "compass_visits.visit",
-        
+
         "pk": 5,
         "fields": {
             "student_netid": "dlee",
@@ -67,7 +67,7 @@
             "course": null,
             "check_in_date": "2024-06-05T15:00:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": true
         }
     },
     {
@@ -81,7 +81,7 @@
             "course": null,
             "check_in_date": "2024-06-06T11:00:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": false
         }
     },
     {
@@ -95,7 +95,7 @@
             "course": null,
             "check_in_date": "2024-06-07T14:30:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": false
         }
     },
     {
@@ -109,7 +109,7 @@
             "course": "CSE 142",
             "check_in_date": "2024-06-08T10:00:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": false
         }
     },
     {
@@ -123,7 +123,7 @@
             "course": null,
             "check_in_date": "2024-06-09T09:00:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": false
         }
     },
     {
@@ -137,7 +137,7 @@
             "course": "BIO 101",
             "check_in_date": "2024-06-10T13:00:00Z",
             "check_out_date": null,
-            "is_verified": false 
+            "is_verified": false
         }
     }
 ]

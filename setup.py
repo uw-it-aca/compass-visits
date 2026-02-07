@@ -25,6 +25,10 @@ setup(
     include_package_data=True,
     install_requires=[
         "django~=5.2",
+        "django-userservice~=3.2",
+        'django-supporttools~=3.6',
+        'django-person-client~=1.1',
+        'uw-restclients-sws~=2.4',
     ],
     license="Apache License, Version 2.0",
     description="",

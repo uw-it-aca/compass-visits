@@ -3,6 +3,7 @@ from .base_settings import *
 INSTALLED_APPS += [
     'compass_visits.apps.CompassVisitsConfig',
     'compass_visits.apps.ViteStaticFilesConfig',
+    'userservice'
 ]
 
 INSTALLED_APPS.remove('django.contrib.staticfiles')
@@ -11,6 +12,10 @@ INSTALLED_APPS.remove('django.contrib.staticfiles')
 # DATA_ROOT = os.path.join(BASE_DIR, 'compass_visits/data')
 
 GOOGLE_ANALYTICS_KEY = os.getenv('GOOGLE_ANALYTICS_KEY', default=' ')
+
+MIDDLEWARE += [
+    "userservice.user.UserServiceMiddleware",
+]
 
 TEMPLATES = [
     {
