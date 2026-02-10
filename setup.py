@@ -29,6 +29,7 @@ setup(
         'django-supporttools~=3.6',
         'django-person-client~=1.1',
         'uw-restclients-sws~=2.4',
+        'uw-django-saml2~=1.8',
     ],
     license="Apache License, Version 2.0",
     description="",

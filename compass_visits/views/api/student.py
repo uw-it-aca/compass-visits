@@ -10,7 +10,7 @@ from compass_visits.views.api import RESTDispatch
 
 class StudentProfileView(RESTDispatch):
     def get(self, request, *args, **kwargs):
-        # TODO return student profile information
+        # TODO Get student info from PDS
         netid = "javerage"
         mock_profile = {
             "netid": netid,
@@ -18,7 +18,7 @@ class StudentProfileView(RESTDispatch):
             "photo_url": "https://example.com/photo.jpg",
             "total_hours": get_total_hours_by_netid(netid)
         }
-        return self.json_response(status=200, content={})
+        return self.json_response(status=200, content=mock_profile)
 
 
 class StudentStateView(RESTDispatch):
