@@ -3,6 +3,7 @@
 
 from django.db import models
 from compass_visits.exceptions import ValidationError
+from django.utils import timezone
 
 
 class ProgramArea(models.Model):
@@ -61,13 +62,26 @@ class Visit(models.Model):
             "is_verified": self.is_verified,
         }
 
-    def create_from_request(self, request_data, student_netid):
-        self.student_netid = student_netid
-        self.program_area = ProgramArea.objects.get(
-            name=request_data['program_area'])
-        self.tutoring_option = TutoringOption.objects.get(
-            name=request_data['tutoring_option'])
+    @classmethod
+    def create_from_request(cls, request_data, student_netid):
+        visit = cls()
+        visit.student_netid = student_netid
+        visit.program_area = ProgramArea.objects.get(
+            id=request_data['program_area'])
+        visit.tutoring_option = TutoringOption.objects.get(
+            id=request_data['tutoring_option'])
         if request_data.get('writing_service'):
-            self.writing_service = WritingService.objects.get(
-                name=request_data['writing_service'])
-        self.course = request_data.get('course')
+            visit.writing_service = WritingService.objects.get(
+                id=request_data['writing_service'])
+        visit.course = request_data.get('course')
+        visit.save()
+        return visit
+
+    def update_visit(self, request_data):
+        if request_data.get('verify', False):
+            self.is_verified = True
+        elif request_data.get('checkout', False):
+            if not self.is_verified:
+                raise ValidationError("Visit must be verified before checkout")
+            self.check_out_date = timezone.now()
+        self.save()
