@@ -18,9 +18,7 @@ class StudentStateView(RESTDispatch):
         student_netid = UserService().get_acting_user()
         active_visit = get_active_visit_for_student(student_netid)
         state = "none"
-        visit = None
         if active_visit is not None:
-            visit = active_visit.json_data()
             if not active_visit.is_verified:
                 state = "pending_verification"
             elif active_visit.check_out_date is None:
@@ -29,7 +27,6 @@ class StudentStateView(RESTDispatch):
                 state = "none"
 
         response = {"state": state}
-        if visit is not None:
-            response["visit"] = visit
+        if active_visit is not None:
             response["visit"] = active_visit.json_data()
         return self.json_response(status=200, content=response)

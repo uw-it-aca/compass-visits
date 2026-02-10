@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from compass_visits.views.api import RESTDispatch
-from compass_visits.dao.visit import validate_visit_data
+from compass_visits.dao.visit import (create_visit_from_request,
+                                      update_visit)
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
 from userservice.user import UserService
-
 import json
 
 
@@ -28,8 +28,7 @@ class VisitView(RESTDispatch):
         try:
             student_netid = UserService().get_user()
             request_body = json.loads(request.body)
-            validate_visit_data(request_body)
-            visit = Visit.create_from_request(request_body, student_netid)
+            visit = create_visit_from_request(request_body, student_netid)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:
             return self.error_response(status=400, message=e)
@@ -40,7 +39,7 @@ class VisitDetailView(RESTDispatch):
         request_body = json.loads(request.body)
         try:
             visit = Visit.objects.get(id=visit_id)
-            visit.update_visit(request_body)
+            update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")

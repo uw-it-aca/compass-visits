@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.db.models import Q
+from django.utils import timezone
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import (Visit,
                                    ProgramArea,
@@ -46,3 +47,33 @@ def validate_visit_data(request):
                                               allow_usage=True).exists()
     if writing_service and not ws_exists:
         raise ValidationError("Invalid writing_service")
+
+
+def create_visit_from_request(request_data, student_netid):
+    active_visit = get_active_visit_for_student(student_netid)
+    if active_visit is not None:
+        raise ValidationError("Student already has an active visit")
+    validate_visit_data(request_data)
+    visit = Visit()
+    visit.student_netid = student_netid
+    visit.program_area = ProgramArea.objects.get(
+        id=request_data['program_area'])
+    visit.tutoring_option = TutoringOption.objects.get(
+        id=request_data['tutoring_option'])
+    if request_data.get('writing_service'):
+        visit.writing_service = WritingService.objects.get(
+            id=request_data['writing_service'])
+    visit.course = request_data.get('course')
+    visit.save()
+    return visit
+
+
+def update_visit(visit, request_data):
+    if request_data.get('verify', False):
+        visit.is_verified = True
+    elif request_data.get('checkout', False):
+        if not visit.is_verified:
+            raise ValidationError("Visit must be verified before checkout")
+        visit.check_out_date = timezone.now()
+    visit.save()
+    return visit
