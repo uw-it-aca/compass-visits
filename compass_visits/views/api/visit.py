@@ -1,9 +1,6 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-
 from compass_visits.views.api import RESTDispatch
 from compass_visits.dao.visit import validate_visit_data
 from compass_visits.exceptions import ValidationError
@@ -27,11 +24,6 @@ class VistAdminListView(RESTDispatch):
 
 
 class VisitView(RESTDispatch):
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         try:
             student_netid = UserService().get_user()
@@ -54,8 +46,12 @@ class VisitDetailView(RESTDispatch):
             return self.error_response(status=404, message="Visit not found")
 
     def delete(self, request, visit_id, *args, **kwargs):
-        # TODO: implement this method to delete a visit
-        return self.json_response(status=200, content={})
+        try:
+            visit = Visit.objects.get(id=visit_id)
+            visit.delete()
+            return self.json_response(status=200, content={})
+        except Visit.DoesNotExist:
+            return self.error_response(status=404, message="Visit not found")
 
 
 class CompassStudentVisits(RESTDispatch):
