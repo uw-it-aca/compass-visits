@@ -77,3 +77,15 @@ def update_visit(visit, request_data):
         visit.check_out_date = timezone.now()
     visit.save()
     return visit
+
+
+def get_total_hours_by_netid(netid):
+    visits = Visit.objects.filter(student_netid=netid, is_verified=True)
+    total_seconds = sum([
+        (visit.check_out_date - visit.check_in_date).total_seconds()
+        for visit in visits
+        if visit.check_in_date and visit.check_out_date
+    ])
+    total_hours = total_seconds / 3600
+
+    return total_hours

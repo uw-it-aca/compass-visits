@@ -3,13 +3,21 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from compass_visits.dao.visit import get_active_visit_for_student
+from compass_visits.dao.visit import (get_active_visit_for_student,
+                                      get_total_hours_by_netid)
 from compass_visits.views.api import RESTDispatch
 
 
 class StudentProfileView(RESTDispatch):
     def get(self, request, *args, **kwargs):
         # TODO return student profile information
+        netid = "javerage"
+        mock_profile = {
+            "netid": netid,
+            "student_name": "James Average",
+            "photo_url": "https://example.com/photo.jpg",
+            "total_hours": get_total_hours_by_netid(netid)
+        }
         return self.json_response(status=200, content={})
 
 

@@ -6,7 +6,8 @@ from compass_visits.models import Visit
 from compass_visits.tests import CompassVisitsTestCase
 from compass_visits.dao.visit import (get_active_visit_for_student,
                                       validate_visit_data, update_visit,
-                                      create_visit_from_request)
+                                      create_visit_from_request,
+                                      get_total_hours_by_netid)
 
 
 class VisitDAOTest(CompassVisitsTestCase):
@@ -17,7 +18,7 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         netid = "javerage"
         visit = get_active_visit_for_student(netid)
-        self.assertIsNone(visit)
+        self.assertEqual(visit.id, 12)
 
     def test_validate_visit_data(self):
         valid_request = {
@@ -136,7 +137,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "tutoring_option": 1,
             "writing_service": 1,
         }
-        student_netid = "javerage"
+        student_netid = "jdoe"
         visit = create_visit_from_request(request_data, student_netid)
         self.assertEqual(visit.student_netid, student_netid)
         self.assertEqual(visit.program_area.id, request_data['program_area'])
@@ -176,3 +177,20 @@ class VisitDAOTest(CompassVisitsTestCase):
             create_visit_from_request(request_data, student_netid)
         self.assertEqual(str(context.exception),
                          "Student already has an active visit")
+
+    def test_get_total_hours_by_netid(self):
+        # multi with in progress
+        total_hours = get_total_hours_by_netid("javerage")
+        self.assertEqual(total_hours, 3.75)
+
+        # single visit
+        total_hours = get_total_hours_by_netid("bthompson")
+        self.assertEqual(total_hours, 1)
+
+        # Only in progress
+        total_hours = get_total_hours_by_netid("kmiller")
+        self.assertEqual(total_hours, 0)
+
+        # No visits
+        total_hours = get_total_hours_by_netid("nobody")
+        self.assertEqual(total_hours, 0)
