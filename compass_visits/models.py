@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.db import models
+from compass_visits.exceptions import ValidationError
 
 
 class ProgramArea(models.Model):
@@ -59,3 +60,14 @@ class Visit(models.Model):
             self.check_out_date else None,
             "is_verified": self.is_verified,
         }
+
+    def create_from_request(self, request_data, student_netid):
+        self.student_netid = student_netid
+        self.program_area = ProgramArea.objects.get(
+            name=request_data['program_area'])
+        self.tutoring_option = TutoringOption.objects.get(
+            name=request_data['tutoring_option'])
+        if request_data.get('writing_service'):
+            self.writing_service = WritingService.objects.get(
+                name=request_data['writing_service'])
+        self.course = request_data.get('course')

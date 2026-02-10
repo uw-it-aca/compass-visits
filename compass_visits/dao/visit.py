@@ -2,7 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.db.models import Q
-from compass_visits.models import Visit
+from compass_visits.exceptions import ValidationError
+from compass_visits.models import (Visit,
+                                   ProgramArea,
+                                   TutoringOption,
+                                   WritingService)
 
 
 def get_active_visit_for_student(netid):
@@ -14,3 +18,31 @@ def get_active_visit_for_student(netid):
                                     ).get(student_netid=netid)
     except Visit.DoesNotExist:
         return None
+
+
+def validate_visit_data(request):
+    program_area = request.get('program_area')
+    tutoring_option = request.get('tutoring_option')
+    writing_service = request.get('writing_service')
+    course = request.get('course')
+
+    if not program_area:
+        raise ValidationError("program_area is required")
+    if not tutoring_option:
+        raise ValidationError("tutoring_option is required")
+    if not (writing_service or course):
+        raise ValidationError("Either writing_service or course is required")
+    if writing_service and course:
+        raise ValidationError("Only one of writing_service or"
+                              " course can be provided")
+
+    if not ProgramArea.objects.filter(id=program_area,
+                                      allow_usage=True).exists():
+        raise ValidationError("Invalid program_area")
+    if not TutoringOption.objects.filter(id=tutoring_option,
+                                         allow_usage=True).exists():
+        raise ValidationError("Invalid tutoring_option")
+    ws_exists = WritingService.objects.filter(id=writing_service,
+                                              allow_usage=True).exists()
+    if writing_service and not ws_exists:
+        raise ValidationError("Invalid writing_service")

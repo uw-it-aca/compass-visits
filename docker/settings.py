@@ -38,6 +38,8 @@ TEMPLATES = [
 
 if os.getenv('ENV') == 'localdev':
     DEBUG = True
+    ALLOWED_HOSTS = ['*']
+    CORS_ORIGIN_ALLOW_ALL = True
     VITE_MANIFEST_PATH = os.path.join(
         BASE_DIR, 'compass_visits', 'static', '.vite', 'manifest.json'
     )
