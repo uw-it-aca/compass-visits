@@ -21,6 +21,16 @@ def get_active_visit_for_student(netid):
         return None
 
 
+def get_student_state(active_visit):
+    if not active_visit:
+        return "none"
+    if not active_visit.is_verified:
+        return "pending_verification"
+    if active_visit.check_out_date is None:
+        return "active"
+    return "none"
+
+
 def validate_visit_data(request):
     program_area = request.get('program_area')
     tutoring_option = request.get('tutoring_option')
@@ -96,3 +106,17 @@ def get_total_hours_by_netid(netid):
     total_hours = total_seconds / 3600
 
     return total_hours
+
+
+def get_visits_pending_verification():
+    return Visit.objects.filter(is_verified=False)
+
+
+def get_visits_pending_checkout():
+    return Visit.objects.filter(is_verified=True, check_out_date__isnull=True)
+
+
+def get_completed_visits_by_netid(netid):
+    return (Visit.objects.filter(student_netid=netid, is_verified=True,
+                                 check_out_date__isnull=False)
+            .order_by('-check_in_date'))

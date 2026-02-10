@@ -5,10 +5,15 @@ from django.utils import timezone
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
 from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.visit import (get_active_visit_for_student,
-                                      validate_visit_data, update_visit,
-                                      create_visit_from_request,
-                                      get_total_hours_by_netid)
+from compass_visits.dao.visit_dao import (get_active_visit_for_student,
+                                          get_completed_visits_by_netid,
+                                          get_visits_pending_checkout,
+                                          get_visits_pending_verification,
+                                          validate_visit_data,
+                                          update_visit,
+                                          create_visit_from_request,
+                                          get_total_hours_by_netid,
+                                          get_student_state)
 
 
 class VisitDAOTest(CompassVisitsTestCase):
@@ -224,3 +229,101 @@ class VisitDAOTest(CompassVisitsTestCase):
         # No visits
         total_hours = get_total_hours_by_netid("nobody")
         self.assertEqual(total_hours, 0)
+
+    def test_get_student_state(self):
+        active_visit = Visit.objects.create(
+            student_netid="testuser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True
+        )
+        self.assertEqual(get_student_state(active_visit), "active")
+
+        pending_visit = Visit.objects.create(
+            student_netid="testuser2",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=False
+        )
+        self.assertEqual(get_student_state(pending_visit),
+                         "pending_verification")
+
+        checked_out_visit = Visit.objects.create(
+            student_netid="testuser3",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True,
+            check_out_date=timezone.now()
+        )
+        self.assertEqual(get_student_state(checked_out_visit), "none")
+
+        self.assertEqual(get_student_state(None), "none")
+
+    def test_get_visits_pending_verification(self):
+        Visit.objects.all().delete()
+        Visit.objects.create(
+            student_netid="pendinguser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=False
+        )
+        Visit.objects.create(
+            student_netid="verifieduser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True
+        )
+        pending_visits = get_visits_pending_verification()
+        self.assertEqual(pending_visits.count(), 1)
+        self.assertEqual(pending_visits.first().student_netid, "pendinguser")
+
+    def test_get_visits_pending_checkout(self):
+        Visit.objects.all().delete()
+        Visit.objects.create(
+            student_netid="pendingcheckoutuser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True,
+            check_out_date=None
+        )
+        Visit.objects.create(
+            student_netid="checkedoutuser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True,
+            check_out_date=timezone.now()
+        )
+        pending_checkout_visits = get_visits_pending_checkout()
+        self.assertEqual(pending_checkout_visits.count(), 1)
+        self.assertEqual(pending_checkout_visits.first().student_netid,
+                         "pendingcheckoutuser")
+
+    def test_get_completed_visits_by_netid(self):
+        Visit.objects.all().delete()
+        Visit.objects.create(
+            student_netid="completeduser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True,
+            check_out_date=timezone.now()
+        )
+        Visit.objects.create(
+            student_netid="inprogressuser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True,
+            check_out_date=None
+        )
+        completed_visits = get_completed_visits_by_netid("completeduser")
+        self.assertEqual(completed_visits.count(), 1)
+        self.assertEqual(completed_visits.first().student_netid,
+                         "completeduser")

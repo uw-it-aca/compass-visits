@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from compass_visits.views.api import RESTDispatch
-from compass_visits.dao.visit import (create_visit_from_request,
-                                      update_visit)
+from compass_visits.dao.visit_dao import (create_visit_from_request,
+                                          update_visit)
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
 from userservice.user import UserService
@@ -12,15 +12,11 @@ import json
 
 class StudentVisitList(RESTDispatch):
     def get(self, request, *args, **kwargs):
-        # TODO: implement this method to return the list of visits for the user
-        return self.json_response(status=200, content=[])
-
-
-class VistAdminListView(RESTDispatch):
-    def get(self, request, *args, **kwargs):
-        # TODO: implement this method to return the list of visits for
-        #  compass admin view
-        return self.json_response(status=200, content=[])
+        student_netid = UserService().get_user()
+        visits = Visit.objects.filter(student_netid=student_netid).order_by(
+            '-check_in_date')
+        visit_list = [visit.json_data() for visit in visits]
+        return self.json_response(status=200, content=visit_list)
 
 
 class VisitView(RESTDispatch):

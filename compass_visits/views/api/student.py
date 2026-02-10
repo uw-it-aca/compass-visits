@@ -3,38 +3,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from compass_visits.dao.visit import (get_active_visit_for_student,
-                                      get_total_hours_by_netid)
+from compass_visits.dao.visit_dao import (get_active_visit_for_student,
+                                          get_total_hours_by_netid,
+                                          get_student_state)
 from compass_visits.views.api import RESTDispatch
 
 
 class StudentProfileView(RESTDispatch):
     def get(self, request, *args, **kwargs):
         # TODO Get student info from PDS
-        netid = "javerage"
+        netid = UserService().get_user()
+        active_visit = get_active_visit_for_student(netid)
         mock_profile = {
             "netid": netid,
             "student_name": "James Average",
             "photo_url": "https://example.com/photo.jpg",
-            "total_hours": get_total_hours_by_netid(netid)
+            "total_hours": get_total_hours_by_netid(netid),
+            "current_state": get_student_state(active_visit),
+            "visit": active_visit.json_data() if active_visit else None
         }
         return self.json_response(status=200, content=mock_profile)
-
-
-class StudentStateView(RESTDispatch):
-    def get(self, request, *args, **kwargs):
-        student_netid = UserService().get_acting_user()
-        active_visit = get_active_visit_for_student(student_netid)
-        state = "none"
-        if active_visit is not None:
-            if not active_visit.is_verified:
-                state = "pending_verification"
-            elif active_visit.check_out_date is None:
-                state = "active"
-            else:
-                state = "none"
-
-        response = {"state": state}
-        if active_visit is not None:
-            response["visit"] = active_visit.json_data()
-        return self.json_response(status=200, content=response)
