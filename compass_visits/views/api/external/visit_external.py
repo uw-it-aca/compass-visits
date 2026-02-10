@@ -3,7 +3,8 @@
 
 from compass_visits.views.api import RESTDispatch
 from compass_visits.dao.visit_dao import (get_visits_pending_verification,
-                                          get_visits_pending_checkout)
+                                          get_visits_pending_checkout,
+                                          get_completed_visits_by_netid)
 
 
 class VistAdminListView(RESTDispatch):
@@ -20,4 +21,6 @@ class VistAdminListView(RESTDispatch):
 
 class CompassStudentVisits(RESTDispatch):
     def get(self, request, student_netid, *args, **kwargs):
-        pass
+        visits = get_completed_visits_by_netid(student_netid)
+        visit_list = [visit.json_data() for visit in visits]
+        return self.json_response(status=200, content=visit_list)

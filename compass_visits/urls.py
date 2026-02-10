@@ -10,7 +10,8 @@ from compass_visits.views.api.visit_student import (StudentVisitList,
                                                     VisitDetailView)
 from compass_visits.views.api.options import VisitOptions
 from compass_visits.views.api.student import StudentProfileView
-from compass_visits.views.api.external.visit_external import VistAdminListView
+from compass_visits.views.api.external.visit_external import (
+    VistAdminListView, CompassStudentVisits)
 
 
 # start with an empty url array
@@ -50,8 +51,8 @@ urlpatterns += [
     re_path(r'^api/v1/visitoptions/',
             VisitOptions.as_view(),
             name="visit_options"),
-    re_path(r'^api/v1/studentvisits/',
-            VisitOptions.as_view(),
-            name="visit_options"),
+    re_path(r'^api/v1/studentvisits/(?P<student_netid>\w+)/',
+            CompassStudentVisits.as_view(),
+            name="compass_student_visits"),
     re_path(r"^$", DefaultPageView.as_view()),
 ]

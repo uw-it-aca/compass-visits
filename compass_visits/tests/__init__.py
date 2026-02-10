@@ -23,9 +23,10 @@ class APITestCase(CompassVisitsTestCase):
             self.client.force_login(User.objects.get_or_create(
                 username=netid)[0])
 
-    def get_response(self, url_name, netid=None, method='get', data=None):
+    def get_response(self, url_name, url_args=None, netid=None,
+                     method='get', data=None):
         self._set_user(netid)
-        url = reverse(url_name)
+        url = reverse(url_name, kwargs=url_args)
         return self.client.get(url, data)
 
     def post_response(self, url_name, netid=None, data=None):
