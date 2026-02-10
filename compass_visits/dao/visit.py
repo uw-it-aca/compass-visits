@@ -69,9 +69,16 @@ def create_visit_from_request(request_data, student_netid):
 
 
 def update_visit(visit, request_data):
-    if request_data.get('verify', False):
-        visit.is_verified = True
-    elif request_data.get('checkout', False):
+    """
+    Allow student to check out
+
+    :param visit: visit object to update
+    :param request_data: dict containing the fields to update,
+    e.g. {"checkout": true}
+    """
+    if request_data.get('checkout', False):
+        if visit.check_out_date:
+            raise ValidationError("Visit is already checked out")
         if not visit.is_verified:
             raise ValidationError("Visit must be verified before checkout")
         visit.check_out_date = timezone.now()

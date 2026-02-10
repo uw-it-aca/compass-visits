@@ -1,6 +1,7 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from django.utils import timezone
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
 from compass_visits.tests import CompassVisitsTestCase
@@ -97,23 +98,52 @@ class VisitDAOTest(CompassVisitsTestCase):
 
     def test_update_visit(self):
         visit = Visit.objects.create(
-            student_netid="asmith",
+            student_netid="bwayne",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True
+        )
+        request_data = {
+            "checkout": True,
+        }
+        try:
+            update_visit(visit, request_data)
+        except Exception as e:
+            self.fail(f"update_visit raised an exception unexpectedly: {e}")
+        self.assertIsNotNone(visit.check_out_date)
+
+    def test_update_unverified_visit(self):
+        unverified_visit = Visit.objects.create(
+            student_netid="bwayne",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
         )
-
-        request_data = {
-            "verify": True,
-        }
-        update_visit(visit, request_data)
-        self.assertTrue(visit.is_verified)
-
         request_data = {
             "checkout": True,
         }
-        update_visit(visit, request_data)
-        self.assertIsNotNone(visit.check_out_date)
+        with self.assertRaises(ValidationError) as context:
+            update_visit(unverified_visit, request_data)
+        self.assertEqual(str(context.exception),
+                         "Visit must be verified before checkout")
+
+    def test_update_checked_out_visit(self):
+        visit = Visit.objects.create(
+            student_netid="bwayne",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True,
+            check_out_date=timezone.now()
+        )
+        request_data = {
+            "checkout": True,
+        }
+        with self.assertRaises(ValidationError) as context:
+            update_visit(visit, request_data)
+        self.assertEqual(str(context.exception),
+                         "Visit is already checked out")
 
     def test_bad_update_visit(self):
         unverified_visit = Visit.objects.create(

@@ -33,12 +33,12 @@ class APITestCase(CompassVisitsTestCase):
         url = reverse(url_name)
         return self.client.post(url, data, content_type='application/json')
 
-    def patch_response(self, url_name, netid=None, data=None):
+    def patch_response(self, url_name, url_args=None, netid=None, data=None):
         self._set_user(netid)
-        url = reverse(url_name)
+        url = reverse(url_name, kwargs=url_args)
         return self.client.patch(url, data, content_type='application/json')
 
-    def delete_response(self, url_name, netid=None, data=None):
+    def delete_response(self, url_name, url_args=None, netid=None, data=None):
         self._set_user(netid)
-        url = reverse(url_name)
+        url = reverse(url_name, kwargs=url_args)
         return self.client.delete(url, data, content_type='application/json')

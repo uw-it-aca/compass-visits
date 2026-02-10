@@ -4,7 +4,7 @@
 from compass_visits.tests import APITestCase
 
 
-class StudentViewsAPITestCase(APITestCase):
+class StudentAPITestCase(APITestCase):
     def test_get_active_state(self):
         response = self.get_response('student_state', netid='javerage')
         self.assertEqual(response.status_code, 200)

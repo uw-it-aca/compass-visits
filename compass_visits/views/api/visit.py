@@ -37,15 +37,19 @@ class VisitView(RESTDispatch):
 class VisitDetailView(RESTDispatch):
     def patch(self, request, visit_id, *args, **kwargs):
         request_body = json.loads(request.body)
+        # TODO: Validate visit user == logged in user
         try:
             visit = Visit.objects.get(id=visit_id)
             update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")
+        except ValidationError as e:
+            return self.error_response(status=400, message=e)
 
     def delete(self, request, visit_id, *args, **kwargs):
         try:
+            # TODO: Validate visit user == logged in user
             visit = Visit.objects.get(id=visit_id)
             visit.delete()
             return self.json_response(status=200, content={})
