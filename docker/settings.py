@@ -41,5 +41,22 @@ if os.getenv('ENV') == 'localdev':
     VITE_MANIFEST_PATH = os.path.join(
         BASE_DIR, 'compass_visits', 'static', '.vite', 'manifest.json'
     )
+    MOCK_SAML_ATTRIBUTES = {
+        "uwnetid": ["javerage"],
+        "uwregid": ["9136CCB8F66711D5BE060004AC494FFE"],
+        "uwStudentSystemKey": ["000083856"],
+        "affiliations": ["student", "member"],
+        "eppn": ["javerage@uw.edu"],
+        "scopedAffiliations": [
+            "student@washington.edu",
+            "member@washington.edu",
+        ],
+        "isMemberOf": ["u_test_group"],
+        "displayName": ["James Average"],
+        "preferredFirst": ["James"],
+        "preferredSurname": ["Average"],
+    }
+    ADMIN_GROUP = "u_test_group"
+    SUPPORT_GROUP = "u_test_group"
 else:
     VITE_MANIFEST_PATH = os.path.join(os.sep, 'static', '.vite', 'manifest.json')

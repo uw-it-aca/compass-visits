@@ -33,7 +33,7 @@ if settings.DEBUG:
     ]
 
 urlpatterns += [
-    re_path(r'^api/internal/state//',
+    re_path(r'^api/internal/state/',
             StudentStateView.as_view(),
             name="student_state"),
     re_path(r'^api/internal/visit/(?P<visit_id>\d+)/',

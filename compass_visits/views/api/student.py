@@ -15,7 +15,7 @@ class StudentProfileView(RESTDispatch):
 
 class StudentStateView(RESTDispatch):
     def get(self, request, *args, **kwargs):
-        student_netid = UserService().get_acting_user().username
+        student_netid = UserService().get_acting_user()
         active_visit = get_active_visit_for_student(student_netid)
         state = "none"
         visit = None
