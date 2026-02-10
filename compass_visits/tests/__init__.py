@@ -18,18 +18,27 @@ class APITestCase(CompassVisitsTestCase):
         self.client = Client(HTTP_USER_AGENT='Mozilla/5.0',
                              HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
-    def get_response(self, url_name, method='get', data=None):
+    def _set_user(self, netid):
+        if netid is not None:
+            self.client.force_login(User.objects.get_or_create(
+                username=netid)[0])
+
+    def get_response(self, url_name, netid=None, method='get', data=None):
+        self._set_user(netid)
         url = reverse(url_name)
         return self.client.get(url, data)
 
-    def post_response(self, url_name, data=None):
+    def post_response(self, url_name, netid=None, data=None):
+        self._set_user(netid)
         url = reverse(url_name)
         return self.client.post(url, data, content_type='application/json')
 
-    def patch_response(self, url_name, data=None):
+    def patch_response(self, url_name, netid=None, data=None):
+        self._set_user(netid)
         url = reverse(url_name)
         return self.client.patch(url, data, content_type='application/json')
 
-    def delete_response(self, url_name, data=None):
+    def delete_response(self, url_name, netid=None, data=None):
+        self._set_user(netid)
         url = reverse(url_name)
         return self.client.delete(url, data, content_type='application/json')
