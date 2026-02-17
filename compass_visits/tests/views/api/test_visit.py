@@ -3,6 +3,7 @@
 
 from compass_visits.tests import APITestCase
 from compass_visits.models import Visit
+from unittest.mock import patch
 
 
 class VisitAPITestCase(APITestCase):
@@ -26,19 +27,52 @@ class VisitAPITestCase(APITestCase):
         self.assertEqual(data['error'], "Visit must be verified"
                                         " before checkout")
 
-    def test_patch_visit_checkout_success(self):
+    @patch('userservice.user.UserService.get_user')
+    @patch('userservice.user.UserService.get_override_user')
+    def test_patch_visit_checkout_success(self,
+                                          mock_get_override_user,
+                                          mock_get_user):
+        mock_get_user.return_value = 'asd'
+        mock_get_override_user.return_value = None
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 5},
-                                       netid='dlee',
+                                       data={'checkout': True})
+        self.assertEqual(response.status_code, 403)
+
+        mock_get_user.return_value = 'dlee'
+        mock_get_override_user.return_value = 'javerage'
+        response = self.patch_response('visit_detail',
+                                       url_args={'visit_id': 5},
+                                       data={'checkout': True})
+        self.assertEqual(response.status_code, 403)
+
+        mock_get_user.return_value = 'dlee'
+        mock_get_override_user.return_value = None
+        response = self.patch_response('visit_detail',
+                                       url_args={'visit_id': 5},
                                        data={'checkout': True})
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIsNotNone(data['check_out_date'])
 
-    def test_delete_visit(self):
+    @patch('userservice.user.UserService.get_user')
+    @patch('userservice.user.UserService.get_override_user')
+    def test_delete_visit(self, mock_get_override_user, mock_get_user):
+        mock_get_user.return_value = 'javerage'
         response = self.delete_response('visit_detail',
-                                        url_args={'visit_id': 6},
-                                        netid='dlee')
+                                        url_args={'visit_id': 6})
+        self.assertEqual(response.status_code, 403)
+
+        mock_get_user.return_value = 'emartin'
+        mock_get_override_user.return_value = "javerage"
+        response = self.delete_response('visit_detail',
+                                        url_args={'visit_id': 6})
+        self.assertEqual(response.status_code, 403)
+
+        mock_get_user.return_value = 'emartin'
+        mock_get_override_user.return_value = None
+        response = self.delete_response('visit_detail',
+                                        url_args={'visit_id': 6})
         self.assertEqual(response.status_code, 200)
         # Verify visit is deleted
         with self.assertRaises(Visit.DoesNotExist):
@@ -52,7 +86,9 @@ class VisitAPITestCase(APITestCase):
         data = response.json()
         self.assertEqual(data['error'], "Visit not found")
 
-    def test_post_visit(self):
+    @patch('userservice.user.UserService.get_override_user')
+    def test_post_visit(self, mock_get_override_user):
+        mock_get_override_user.return_value = None
         new_visit_data = {
             "program_area": 1,
             "tutoring_option": 1,
@@ -68,6 +104,12 @@ class VisitAPITestCase(APITestCase):
         self.assertEqual(data['tutoring_option'], 'Drop In')
         self.assertEqual(data['writing_service'], 'Application')
 
+        mock_get_override_user.return_value = 'javerage'
+        response = self.post_response('visit',
+                                      netid='jnew',
+                                      data=new_visit_data)
+        self.assertEqual(response.status_code, 403)
+
     def test_already_active_visit(self):
         new_visit_data = {
             "program_area": 1,
@@ -77,7 +119,6 @@ class VisitAPITestCase(APITestCase):
         response = self.post_response('visit',
                                       netid='javerage',
                                       data=new_visit_data)
-        print(response.status_code, response.json())
         self.assertEqual(response.status_code, 400)
         data = response.json()
         self.assertEqual(data['error'],

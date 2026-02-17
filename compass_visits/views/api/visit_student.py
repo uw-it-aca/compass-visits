@@ -4,8 +4,10 @@
 from compass_visits.views.api import RESTDispatch
 from compass_visits.dao.visit_dao import (create_visit_from_request,
                                           update_visit)
-from compass_visits.exceptions import ValidationError
+from compass_visits.exceptions import ValidationError, OverrideNotPermitted
 from compass_visits.models import Visit
+from compass_visits.dao.auth import valid_user_override, can_write_visit
+from django.core.exceptions import PermissionDenied
 from userservice.user import UserService
 import json
 
@@ -22,39 +24,41 @@ class StudentVisitList(RESTDispatch):
 class VisitView(RESTDispatch):
     def post(self, request, *args, **kwargs):
         try:
+            valid_user_override()
             student_netid = UserService().get_user()
             request_body = json.loads(request.body)
             visit = create_visit_from_request(request_body, student_netid)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:
             return self.error_response(status=400, message=e)
+        except OverrideNotPermitted as e:
+            return self.error_response(status=403, message=str(e))
 
 
 class VisitDetailView(RESTDispatch):
     def patch(self, request, visit_id, *args, **kwargs):
         request_body = json.loads(request.body)
-        # TODO: Validate visit user == logged in user
         try:
             visit = Visit.objects.get(id=visit_id)
+            valid_user_override()
+            can_write_visit(visit.student_netid)
             update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")
         except ValidationError as e:
             return self.error_response(status=400, message=e)
+        except (OverrideNotPermitted, PermissionDenied) as e:
+            return self.error_response(status=403, message=str(e))
 
     def delete(self, request, visit_id, *args, **kwargs):
         try:
-            # TODO: Validate visit user == logged in user
             visit = Visit.objects.get(id=visit_id)
+            valid_user_override()
+            can_write_visit(visit.student_netid)
             visit.delete()
             return self.json_response(status=200, content={})
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")
-
-
-class CompassStudentVisits(RESTDispatch):
-    def get(self, request, student_netid, *args, **kwargs):
-        # TODO: Take a student's netid and return a list of their visits,
-        #  sorted by date
-        return self.json_response(status=200, content=[])
+        except (OverrideNotPermitted, PermissionDenied) as e:
+            return self.error_response(status=403, message=str(e))

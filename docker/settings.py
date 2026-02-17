@@ -1,3 +1,4 @@
+import os
 from .base_settings import *
 
 INSTALLED_APPS += [
@@ -58,5 +59,12 @@ if os.getenv('ENV') == 'localdev':
     }
     ADMIN_GROUP = "u_test_group"
     SUPPORT_GROUP = "u_test_group"
-else:
+
+if os.getenv('ENV') == 'localdev' or os.getenv('ENV') == 'test' :
+    ALLOW_USER_OVERRIDE_FOR_WRITES = True
+
+if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
     VITE_MANIFEST_PATH = os.path.join(os.sep, 'static', '.vite', 'manifest.json')
+
+if os.getenv('ENV') == 'prod':
+    ALLOW_USER_OVERRIDE_FOR_WRITES = False

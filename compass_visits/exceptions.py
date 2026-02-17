@@ -3,3 +3,8 @@
 
 class ValidationError(Exception):
     pass
+
+
+class OverrideNotPermitted(Exception):
+    def __str__(self):
+        return "Action not permitted while using admin override"
