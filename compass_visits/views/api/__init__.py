@@ -4,9 +4,12 @@
 from django.views import View
 from django.http import HttpResponse
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 import json
 
 
+@method_decorator(login_required, name='dispatch')
 class RESTDispatch(View):
     @staticmethod
     def json_response(content={}, status=200):

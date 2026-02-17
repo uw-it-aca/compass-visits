@@ -36,21 +36,24 @@ class VisitAPITestCase(APITestCase):
         mock_get_override_user.return_value = None
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 5},
-                                       data={'checkout': True})
+                                       data={'checkout': True},
+                                       netid='javerage')
         self.assertEqual(response.status_code, 403)
 
         mock_get_user.return_value = 'dlee'
         mock_get_override_user.return_value = 'javerage'
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 5},
-                                       data={'checkout': True})
+                                       data={'checkout': True},
+                                       netid='javerage')
         self.assertEqual(response.status_code, 403)
 
         mock_get_user.return_value = 'dlee'
         mock_get_override_user.return_value = None
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 5},
-                                       data={'checkout': True})
+                                       data={'checkout': True},
+                                       netid='javerage')
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIsNotNone(data['check_out_date'])
@@ -60,19 +63,22 @@ class VisitAPITestCase(APITestCase):
     def test_delete_visit(self, mock_get_override_user, mock_get_user):
         mock_get_user.return_value = 'javerage'
         response = self.delete_response('visit_detail',
-                                        url_args={'visit_id': 6})
+                                        url_args={'visit_id': 6},
+                                        netid='javerage')
         self.assertEqual(response.status_code, 403)
 
         mock_get_user.return_value = 'emartin'
         mock_get_override_user.return_value = "javerage"
         response = self.delete_response('visit_detail',
-                                        url_args={'visit_id': 6})
+                                        url_args={'visit_id': 6},
+                                        netid='javerage')
         self.assertEqual(response.status_code, 403)
 
         mock_get_user.return_value = 'emartin'
         mock_get_override_user.return_value = None
         response = self.delete_response('visit_detail',
-                                        url_args={'visit_id': 6})
+                                        url_args={'visit_id': 6},
+                                        netid='javerage')
         self.assertEqual(response.status_code, 200)
         # Verify visit is deleted
         with self.assertRaises(Visit.DoesNotExist):

@@ -1,7 +1,7 @@
 [run]
 source = compass_visits
 parallel = True
-omit = */tests/*
+omit = compass_visits/tests/*
 
 [paths]
 source =

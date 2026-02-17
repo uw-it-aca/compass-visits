@@ -7,7 +7,7 @@ from compass_visits.tests import APITestCase
 class VisitExternalAPITestCase(APITestCase):
 
     def test_get_visit_admin_list(self):
-        response = self.get_response('visit_admin_list')
+        response = self.get_response('visit_admin_list', netid='javerage')
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn('pending_verification', data)
@@ -19,7 +19,8 @@ class VisitExternalAPITestCase(APITestCase):
 
     def test_get_compass_student_visits(self):
         response = self.get_response('compass_student_visits',
-                                     url_args={'student_netid': 'javerage'})
+                                     url_args={'student_netid': 'javerage'},
+                                     netid='javerage')
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(len(data), 2)

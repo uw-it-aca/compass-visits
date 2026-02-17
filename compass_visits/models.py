@@ -9,7 +9,6 @@ class ProgramArea(models.Model):
     allow_usage = models.BooleanField(default=True)
 
 
-
 class TutoringOption(models.Model):
     name = models.CharField(max_length=255)
     allow_usage = models.BooleanField(default=True)

@@ -6,7 +6,7 @@ from compass_visits.tests import APITestCase
 
 class VisitOptionsAPITestCase(APITestCase):
     def test_get_visit_options(self):
-        response = self.client.get('/api/v1/visitoptions/')
+        response = self.get_response('visit_options', netid='javerage')
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn('program_areas', data)
