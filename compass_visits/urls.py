@@ -60,5 +60,6 @@ urlpatterns += [
     re_path(r'^api/v1/studentvisit/',
             ManageVisitsView.as_view(),
             name="manage_visits"),
-    re_path(r"^$", DefaultPageView.as_view()),
+    re_path(r"^$", DefaultPageView.as_view(),
+            name="default_page"),
 ]

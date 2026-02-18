@@ -31,7 +31,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'compass_visits.context_processors.google_analytics',
                 'compass_visits.context_processors.django_debug',
-                'compass_visits.context_processors.auth_user',
             ],
         },
     }
