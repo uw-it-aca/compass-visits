@@ -406,3 +406,36 @@ class VisitDAOTest(CompassVisitsTestCase):
                          "Visit must be verified before checkout")
         self.assertFalse(visit.is_verified)
         self.assertIsNone(visit.check_out_date)
+
+    def test_manager_update_visit_already_checked_out(self):
+        visit = Visit.objects.create(
+            student_netid="updatetestuser3",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True,
+            check_out_date=timezone.now()
+        )
+        request_data = {
+            "checkout": True
+        }
+        with self.assertRaises(ValidationError) as context:
+            manager_update_visit(visit, request_data)
+        self.assertEqual(str(context.exception),
+                         "Visit is already checked out")
+
+    def test_manager_update_visit_already_verified(self):
+        visit = Visit.objects.create(
+            student_netid="updatetestuser4",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True
+        )
+        request_data = {
+            "verify": True
+        }
+        with self.assertRaises(ValidationError) as context:
+            manager_update_visit(visit, request_data)
+        self.assertEqual(str(context.exception),
+                         "Visit is already verified")

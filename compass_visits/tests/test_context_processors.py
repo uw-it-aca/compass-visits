@@ -4,6 +4,7 @@
 from django.test import TestCase
 from compass_visits.context_processors import google_analytics, django_debug
 
+
 class ContextProcessorsTestCase(TestCase):
     def test_google_analytics(self):
         with self.settings(GOOGLE_ANALYTICS_KEY='UA-12345678-1'):

@@ -4,6 +4,7 @@
 from django.conf import settings
 from django.urls import reverse
 
+
 def google_analytics(request):
     return {"google_analytics": getattr(settings, "GOOGLE_ANALYTICS_KEY", " ")}
 
