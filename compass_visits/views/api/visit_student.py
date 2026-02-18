@@ -3,7 +3,7 @@
 
 from compass_visits.views.api import RESTDispatchLogin
 from compass_visits.dao.visit_dao import (create_visit_from_request,
-                                          sudent_update_visit)
+                                          student_update_visit)
 from compass_visits.exceptions import ValidationError, OverrideNotPermitted
 from compass_visits.models import Visit
 from compass_visits.dao.auth import valid_user_override, can_write_visit
@@ -42,7 +42,7 @@ class VisitDetailView(RESTDispatchLogin):
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_netid)
-            sudent_update_visit(visit, request_body)
+            student_update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")

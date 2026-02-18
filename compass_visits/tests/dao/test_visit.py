@@ -10,7 +10,7 @@ from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           get_visits_pending_checkout,
                                           get_visits_pending_verification,
                                           validate_visit_data,
-                                          sudent_update_visit,
+                                          student_update_visit,
                                           create_visit_from_request,
                                           get_total_hours_by_netid,
                                           get_student_state,
@@ -27,6 +27,27 @@ class VisitDAOTest(CompassVisitsTestCase):
         netid = "javerage"
         visit = get_active_visit_for_student(netid)
         self.assertEqual(visit.id, 12)
+
+    def test_get_active_multuiple_visits_for_student(self):
+        netid = "multivisituser"
+        v1 = Visit.objects.create(
+            student_netid=netid,
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=False
+        )
+        v2 = Visit.objects.create(
+            student_netid=netid,
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=False,
+            check_in_date=timezone.now() + timezone.timedelta(minutes=5)
+        )
+        visit = get_active_visit_for_student(netid)
+        self.assertIsNotNone(visit)
+        self.assertEqual(visit.id, v2.id)
 
     def test_validate_visit_data(self):
         valid_request = {
@@ -115,7 +136,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         try:
-            sudent_update_visit(visit, request_data)
+            student_update_visit(visit, request_data)
         except Exception as e:
             self.fail(f"update_visit raised an exception unexpectedly: {e}")
         self.assertIsNotNone(visit.check_out_date)
@@ -131,7 +152,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         with self.assertRaises(ValidationError) as context:
-            sudent_update_visit(unverified_visit, request_data)
+            student_update_visit(unverified_visit, request_data)
         self.assertEqual(str(context.exception),
                          "Visit must be verified before checkout")
 
@@ -148,7 +169,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         with self.assertRaises(ValidationError) as context:
-            sudent_update_visit(visit, request_data)
+            student_update_visit(visit, request_data)
         self.assertEqual(str(context.exception),
                          "Visit is already checked out")
 
@@ -163,7 +184,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         with self.assertRaises(ValidationError) as context:
-            sudent_update_visit(unverified_visit, request_data)
+            student_update_visit(unverified_visit, request_data)
         self.assertEqual(str(context.exception),
                          "Visit must be verified before checkout")
         self.assertIsNone(unverified_visit.check_out_date)

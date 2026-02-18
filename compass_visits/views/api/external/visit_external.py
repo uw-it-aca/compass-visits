@@ -12,7 +12,7 @@ from compass_visits.dao.visit_dao import (get_visits_pending_verification,
                                           manager_create_visit_from_request)
 
 
-class VistAdminListView(RESTDispatchToken):
+class VisitAdminListView(RESTDispatchToken):
     def get(self, request, *args, **kwargs):
         pend_verif = [visit.json_data() for visit
                       in get_visits_pending_verification()]

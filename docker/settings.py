@@ -61,11 +61,11 @@ if os.getenv('ENV') == 'localdev':
     EXTERNAL_API_TOKEN = "testtoken"
 
 if os.getenv('ENV') == 'localdev' or os.getenv('ENV') == 'test' :
-    ALLOW_USER_OVERRIDE_FOR_WRITES = True
+    ALLOW_USER_OVERRIDE_FOR_WRITE = True
 
 if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
     VITE_MANIFEST_PATH = os.path.join(os.sep, 'static', '.vite', 'manifest.json')
     EXTERNAL_API_TOKEN = os.getenv('EXTERNAL_API_TOKEN')
 
 if os.getenv('ENV') == 'prod':
-    ALLOW_USER_OVERRIDE_FOR_WRITES = False
+    ALLOW_USER_OVERRIDE_FOR_WRITE = False

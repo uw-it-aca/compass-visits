@@ -11,7 +11,7 @@ from compass_visits.views.api.visit_student import (StudentVisitList,
 from compass_visits.views.api.options import VisitOptions
 from compass_visits.views.api.student import StudentProfileView
 from compass_visits.views.api.external.visit_external import (
-    VistAdminListView, CompassStudentVisitsView, ManageVisitsView)
+    VisitAdminListView, CompassStudentVisitsView, ManageVisitsView)
 
 
 # start with an empty url array
@@ -46,7 +46,7 @@ urlpatterns += [
             StudentProfileView.as_view(),
             name="student_profile"),
     re_path(r'^api/v1/visitadminlist/',
-            VistAdminListView.as_view(),
+            VisitAdminListView.as_view(),
             name="visit_admin_list"),
     re_path(r'^api/v1/visitoptions/',
             VisitOptions.as_view(),
@@ -54,7 +54,7 @@ urlpatterns += [
     re_path(r'^api/v1/studentvisits/(?P<student_netid>\w+)/',
             CompassStudentVisitsView.as_view(),
             name="compass_student_visits"),
-    re_path(r'^api/v1/managevisit/(?P<visit_id>\w+)/',
+    re_path(r'^api/v1/managevisit/(?P<visit_id>\d+)/',
             ManageVisitsView.as_view(),
             name="manage_visit"),
     re_path(r'^api/v1/studentvisit/',

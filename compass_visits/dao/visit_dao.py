@@ -19,6 +19,13 @@ def get_active_visit_for_student(netid):
                                     ).get(student_netid=netid)
     except Visit.DoesNotExist:
         return None
+    except Visit.MultipleObjectsReturned:
+        # This should not happen, but if it does, return the most recent
+        # active visit
+        return (Visit.objects.filter(Q(check_out_date__isnull=True) |
+                                     Q(is_verified=False),
+                                     student_netid=netid)
+                .latest('check_in_date'))
 
 
 def get_student_state(active_visit):
@@ -78,7 +85,7 @@ def create_visit_from_request(request_data, student_netid):
     return visit
 
 
-def sudent_update_visit(visit, request_data):
+def student_update_visit(visit, request_data):
     """
     Allow student to check out
 
