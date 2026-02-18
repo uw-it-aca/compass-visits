@@ -45,3 +45,17 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertEqual(data['photo_url'], "https://example.com/photo.jpg")
         self.assertIn('total_hours', data)
         self.assertEqual(data['total_hours'], 3.75)
+
+    def test_get_student_visits(self):
+        response = self.get_response('student_visits', netid='javerage')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 3)
+        self.assertEqual(data[0]['id'], 11)
+        self.assertEqual(data[1]['id'], 12)
+
+    def test_get_student_visits_no_visits(self):
+        response = self.get_response('student_visits', netid='newuser')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 0)
