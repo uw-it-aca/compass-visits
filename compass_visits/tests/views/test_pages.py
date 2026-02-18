@@ -4,6 +4,7 @@
 from compass_visits.tests import APILoginTestCase
 from compass_visits.views.pages import PageView
 
+
 class PageViewTestCase(APILoginTestCase):
 
     def test_get_context_data(self):
