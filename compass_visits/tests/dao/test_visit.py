@@ -28,7 +28,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = get_active_visit_for_student(netid)
         self.assertEqual(visit.id, 12)
 
-    def test_get_active_multuiple_visits_for_student(self):
+    def test_get_active_multiple_visits_for_student(self):
         netid = "multivisituser"
         v1 = Visit.objects.create(
             student_netid=netid,

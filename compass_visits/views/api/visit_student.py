@@ -69,7 +69,7 @@ class VisitView(RESTDispatchLogin):
             return self.error_response(status=400, message=e)
         except OverrideNotPermitted as e:
             return self.error_response(status=403, message=e)
-        except JSONDecodeError:
+        except json.JSONDecodeError:
             return self.error_response(status=400,
                                        message="Invalid JSON format")
 
