@@ -9,6 +9,19 @@ from userservice.user import UserService
 
 @method_decorator(login_required, name='dispatch')
 class PageView(TemplateView):
+    """
+    PageView renders the 'index.html' template and provides user context.
+
+    This view extends Django's TemplateView and injects two user-related
+    context variables:
+    - 'user_netid': The NetID of the actually authenticated user,
+                    retrieved via UserService.get_original_user().
+    - 'user_override': The current user (possibly overridden),
+                        retrieved via UserService.get_user().
+
+    Returns:
+        dict: Context data including user information for template rendering.
+    """
     template_name = "index.html"
 
     def get_context_data(self, **kwargs):

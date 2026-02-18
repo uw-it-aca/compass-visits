@@ -5,21 +5,66 @@ from django.db import models
 
 
 class ProgramArea(models.Model):
+    """
+    Represents a program area within the system.
+
+    Attributes:
+        name (CharField): The name of the program area.
+        allow_usage (BooleanField): Indicates whether the program area is
+        allowed for usage. Defaults to True.
+    """
     name = models.CharField(max_length=255)
     allow_usage = models.BooleanField(default=True)
 
 
 class TutoringOption(models.Model):
+    """
+    Represents an option for tutoring services.
+
+    Attributes:
+        name (CharField): The name of the tutoring option.
+        allow_usage (BooleanField): Indicates whether the program area is
+        allowed for usage. Defaults to True.
+    """
     name = models.CharField(max_length=255)
     allow_usage = models.BooleanField(default=True)
 
 
 class WritingService(models.Model):
+    """
+    Represents a writing service that can be used within the application.
+
+    Attributes:
+        name (CharField): The name of the writing service.
+        allow_usage (BooleanField): Indicates whether the program area is
+        allowed for usage. Defaults to True.
+    """
     name = models.CharField(max_length=255)
     allow_usage = models.BooleanField(default=True)
 
 
 class Visit(models.Model):
+    """
+    Represents a student visit record in the Compass Visits system.
+
+    Fields:
+        student_netid (CharField): The NetID of the student.
+        program_area (ForeignKey): Reference to the ProgramArea.
+        tutoring_option (ForeignKey): Reference to the TutoringOption.
+        writing_service (ForeignKey, optional): Reference to the
+                                                WritingService used, if any.
+        course (CharField, optional): The course associated with the visit,
+                                      if applicable.
+        check_in_date (DateTimeField): Timestamp when the student checked in
+                                       (auto-set on creation).
+        check_out_date (DateTimeField, optional): Timestamp when the student
+                                                  checked out.
+        is_verified (BooleanField): Indicates whether the visit IS verified.
+
+    Methods:
+        json_data(): Returns a dictionary representation of the visit suitable
+                     for JSON serialization.
+    """
     student_netid = models.CharField(max_length=255)
     program_area = models.ForeignKey(ProgramArea, on_delete=models.PROTECT)
     tutoring_option = models.ForeignKey(TutoringOption,

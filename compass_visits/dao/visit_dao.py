@@ -11,8 +11,21 @@ from compass_visits.models import (Visit,
 
 
 def get_active_visit_for_student(netid):
-    # Return the active visit for the given netid,
-    # or None if there is no active visit.
+    """
+    Retrieve the active visit for a given student's netid.
+
+    An active visit is defined as a visit where either the check-out date is
+    null or the visit is not verified. If multiple active visits are found,
+    the most recent one (by check-in date) is returned. If no active visit
+    exists, returns None.
+
+    Args:
+        netid (str): The student's network ID.
+
+    Returns:
+        Visit or None: The active Visit object for the student, or None if
+            not found.
+    """
     try:
         return Visit.objects.filter(Q(check_out_date__isnull=True) |
                                     Q(is_verified=False)
@@ -20,8 +33,6 @@ def get_active_visit_for_student(netid):
     except Visit.DoesNotExist:
         return None
     except Visit.MultipleObjectsReturned:
-        # This should not happen, but if it does, return the most recent
-        # active visit
         return (Visit.objects.filter(Q(check_out_date__isnull=True) |
                                      Q(is_verified=False),
                                      student_netid=netid)
@@ -29,6 +40,22 @@ def get_active_visit_for_student(netid):
 
 
 def get_student_state(active_visit):
+    """
+    Determines the state of a student's visit based on the provided
+    active_visit object.
+
+    Args:
+        active_visit: An object representing the student's current visit.
+        It is expected to have the attributes 'is_verified' (bool) and
+        'check_out_date' (datetime or None).
+
+    Returns:
+        str: The state of the student's visit, which can be:
+            - "none": No active visit or the visit has ended.
+            - "pending_verification": The visit is not yet verified.
+            - "active": The visit is verified and currently active
+    """
+
     if not active_visit:
         return "none"
     if not active_visit.is_verified:
@@ -39,6 +66,21 @@ def get_student_state(active_visit):
 
 
 def validate_visit_data(request):
+    """
+    Validates the visit data provided in the request dictionary.
+
+    This function checks for the presence and validity of required fields:
+    - 'program_area' must be provided and correspond to a ProgramArea
+    - 'tutoring_option' must be provided and correspond to a TutoringOption.
+    - Either 'writing_service' or 'course' must be provided, but not both.
+    - If 'writing_service' is provided it must correspond to a WritingService.
+
+    Raises:
+        ValidationError: If any required field is missing, if both or neither
+                         'writing_service' and 'course' are provided,  or if
+                         any provided ID does not correspond to an allowed
+                         object.
+    """
     program_area = request.get('program_area')
     tutoring_option = request.get('tutoring_option')
     writing_service = request.get('writing_service')
@@ -67,6 +109,35 @@ def validate_visit_data(request):
 
 
 def create_visit_from_request(request_data, student_netid):
+    """
+    Creates a new Visit instance from the provided request data for a given
+    student.
+
+    This function first checks if the student already has an active visit and
+    raises a ValidationError if so. It then validates the request data,
+    creates a new Visit object, and populates its fields based on the request
+    data.
+    Finally, it saves the Visit instance to the database and returns it.
+
+    Args:
+        request_data (dict): Dictionary containing visit details,
+                             including 'program_area', 'tutoring_option',
+                             and optionally 'writing_service' and 'course'.
+        student_netid (str): The NetID of the student for whom the visit
+                             is being created.
+
+    Returns:
+        Visit: The newly created Visit instance.
+
+    Raises:
+        ValidationError: If the student already has an active visit or if
+            the request data is invalid.
+        ProgramArea.DoesNotExist: If the specified ProgramArea does not exist.
+        TutoringOption.DoesNotExist: If the specified TutoringOption does
+            not exist.
+        WritingService.DoesNotExist: If the specified WritingService does
+            not exist (when provided).
+    """
     active_visit = get_active_visit_for_student(student_netid)
     if active_visit is not None:
         raise ValidationError("Student already has an active visit")
@@ -87,12 +158,26 @@ def create_visit_from_request(request_data, student_netid):
 
 def student_update_visit(visit, request_data):
     """
-    Allow student to check out
+    Updates a student's visit record based on the provided request data.
 
-    :param visit: visit object to update
-    :param request_data: dict containing the fields to update,
-    e.g. {"checkout": true}
+    If the 'checkout' key in request_data is True, this function attempts to
+    check out the visit. It raises a ValidationError if the visit is already
+    checked out or if the visit has not been verified. If checkout is
+    successful, the current time is set as the check_out_date.
+
+    Args:
+        visit: The visit instance to update.
+        request_data (dict): Data containing update instructions, expects a
+        'checkout' boolean key.
+
+    Returns:
+        The updated visit instance.
+
+    Raises:
+        ValidationError: If the visit is already checked out or has not been
+        verified before checkout.
     """
+
     if request_data.get('checkout', False):
         if visit.check_out_date:
             raise ValidationError("Visit is already checked out")
@@ -105,11 +190,30 @@ def student_update_visit(visit, request_data):
 
 def manager_update_visit(visit, request_data):
     """
-    Allow manager to verify visit and/or check out
+    Updates a visit instance based on manager actions specified in the\
+    request data.
 
-    :param visit: visit object to update
-    :param request_data: dict containing the fields to update,
-    e.g. {"verify": true, "checkout": true}
+    This function allows a manager to verify a visit and/or perform a
+    checkout operation.
+    - If 'verify' is True in request_data, the visit will be marked as
+        verified unless it is already verified.
+    - If 'checkout' is True in request_data, the visit will be checked out
+        (check_out_date set to now) only if it is already verified and not
+        already checked out.
+
+    Args:
+        visit: The Visit model instance to be updated.
+        request_data (dict): Dictionary containing actions. Supported keys:
+            - 'verify' (bool): Whether to verify the visit.
+            - 'checkout' (bool): Whether to check out the visit.
+
+    Raises:
+        ValidationError: If attempting to verify an already verified visit,
+                         if attempting to check out a visit that is not
+                         verified, or if the visit is already checked out.
+
+    Returns:
+        The updated Visit instance.
     """
     if request_data.get('verify', False):
         if visit.is_verified:
@@ -126,6 +230,34 @@ def manager_update_visit(visit, request_data):
 
 
 def manager_create_visit_from_request(request_data):
+    """
+    Creates and saves a Visit instance from the provided request data.
+
+    Validates the input data, retrieves related objects, sets Visit fields,
+    and handles optional verification and checkout logic.
+
+    Args:
+        request_data (dict): Dictionary containing visit data. Expected keys:
+            - 'student_netid' (str): NetID of the student (required).
+            - 'program_area' (int): ID of the ProgramArea (required).
+            - 'tutoring_option' (int): ID of the TutoringOption (required).
+            - 'writing_service' (int, optional): ID of the WritingService.
+            - 'verify' (bool, optional): If True, marks the visit as verified.
+            - 'checkout' (bool, optional): If True, marks the visit as
+                    verified and sets check_out_date.
+            - 'course' (str, optional): Course information.
+
+    Returns:
+        Visit: The created and saved Visit instance.
+
+    Raises:
+        ValidationError: If required fields are missing or invalid.
+        ProgramArea.DoesNotExist: If the specified ProgramArea does not exist.
+        TutoringOption.DoesNotExist: If the specified TutoringOption does not
+                                     exist.
+        WritingService.DoesNotExist: If the specified WritingService does not
+                                     exist.
+    """
     validate_visit_data(request_data)
     visit = Visit()
     visit.student_netid = request_data.get('student_netid')
@@ -149,6 +281,18 @@ def manager_create_visit_from_request(request_data):
 
 
 def get_total_hours_by_netid(netid):
+    """
+    Calculates the total completed visit hours for a student by NetID.
+
+    Args:
+        netid (str): The NetID of the student to calculate total hours for.
+
+    Returns:
+        float: The total number of hours as a float
+    Notes:
+        - Only visits with both check-in and check-out dates are considered.
+        - Only visits marked as verified (is_verified=True) are included.
+    """
     visits = Visit.objects.filter(student_netid=netid, is_verified=True)
     total_seconds = sum([
         (visit.check_out_date - visit.check_in_date).total_seconds()
@@ -161,14 +305,39 @@ def get_total_hours_by_netid(netid):
 
 
 def get_visits_pending_verification():
+    """
+    Retrieve all Visit objects that are pending verification.
+
+    Returns:
+        QuerySet: A Django QuerySet containing Visit instances where
+                  'is_verified' is False.
+    """
     return Visit.objects.filter(is_verified=False)
 
 
 def get_visits_pending_checkout():
+    """
+    Retrieve all Visit objects that are pending checkout.
+
+    Returns:
+        QuerySet: A Django QuerySet containing Visit instances where
+                  'is_verified' is True and 'check_out_date' is null.
+    """
     return Visit.objects.filter(is_verified=True, check_out_date__isnull=True)
 
 
 def get_completed_visits_by_netid(netid):
+    """
+    Retrieve all completed Visit objects for a student by NetID.
+
+    Args:
+        netid (str): The NetID of the student to retrieve completed visits for.
+
+    Returns:
+        QuerySet: A Django QuerySet containing Visit instances where
+                  'is_verified' is True and 'check_out_date' is not null,
+                  ordered by 'check_in_date' in descending order.
+    """
     return (Visit.objects.filter(student_netid=netid, is_verified=True,
                                  check_out_date__isnull=False)
             .order_by('-check_in_date'))

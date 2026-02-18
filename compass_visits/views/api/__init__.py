@@ -11,6 +11,21 @@ from compass_visits.decorator import token_required
 
 
 class RESTDispatch(View):
+    """
+    RESTDispatch provides static methods for returning JSON HTTP responses in
+    Django views.
+
+    Methods
+    -------
+    json_response(content={}, status=200):
+        Serializes the given content to JSON and returns an HttpResponse
+        with the specified status code.
+        If serialization fails, returns a 400 error response.
+
+    error_response(status, message='', content={}):
+        Returns an HttpResponse with the given status code and a JSON body
+        containing an error message.
+    """
     @staticmethod
     def json_response(content={}, status=200):
         try:
@@ -33,12 +48,42 @@ class RESTDispatch(View):
 
 
 class RESTDispatchLogin(RESTDispatch):
+    """
+    A RESTful dispatch view that requires user authentication.
+
+    This class extends `RESTDispatch` and ensures that all incoming requests
+    are authenticated using Django's `login_required` decorator. Any request
+    to this view will be redirected to the login page if the user is not
+    authenticated.
+
+    Methods
+    -------
+    dispatch(*args, **kwargs)
+        Handles the HTTP request and enforces authentication before delegating
+        to the parent class's dispatch method.
+    """
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
 
 class RESTDispatchToken(RESTDispatch):
+    """
+    A subclass of RESTDispatch that enforces token-based authentication on
+    all requests.
+
+    Methods
+    -------
+    dispatch(request, *args, **kwargs)
+        Handles incoming HTTP requests. If an authentication error is
+        present in kwargs, returns a 403 error response with the provided
+        error message. Otherwise, delegates request handling to the parent
+        class's dispatch method.
+
+    Decorators
+    ----------
+        Ensures that the dispatch method requires a valid token.
+    """
     @method_decorator(token_required)
     def dispatch(self, request, *args, **kwargs):
         if kwargs.get('error'):
