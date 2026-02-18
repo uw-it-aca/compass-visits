@@ -57,7 +57,6 @@
     },
     {
         "model": "compass_visits.visit",
-
         "pk": 5,
         "fields": {
             "student_netid": "dlee",

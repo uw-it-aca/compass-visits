@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.db import models
+from django.utils import timezone
 
 
 class ProgramArea(models.Model):
@@ -65,7 +66,7 @@ class Visit(models.Model):
         json_data(): Returns a dictionary representation of the visit suitable
                      for JSON serialization.
     """
-    student_netid = models.CharField(max_length=255)
+    student_netid = models.CharField(max_length=255, db_index=True)
     program_area = models.ForeignKey(ProgramArea, on_delete=models.PROTECT)
     tutoring_option = models.ForeignKey(TutoringOption,
                                         on_delete=models.PROTECT)
@@ -73,7 +74,7 @@ class Visit(models.Model):
                                         on_delete=models.PROTECT,
                                         null=True, blank=True)
     course = models.CharField(max_length=255, null=True, blank=True)
-    check_in_date = models.DateTimeField(auto_now_add=True)
+    check_in_date = models.DateTimeField(default=timezone.now, db_index=True)
     check_out_date = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
 

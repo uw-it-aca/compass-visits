@@ -3,6 +3,7 @@
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.utils.crypto import constant_time_compare
 from userservice.user import UserService
 from compass_visits.exceptions import OverrideNotPermitted
 
@@ -58,5 +59,5 @@ def validate_token(token):
         raise PermissionDenied("Invalid API token format")
     token_value = token[len(TOKEN_PREFIX):]
     set_token = getattr(settings, "EXTERNAL_API_TOKEN", None)
-    if set_token is None or token_value != set_token:
+    if set_token is None or not constant_time_compare(token_value, set_token):
         raise PermissionDenied("Invalid API token")

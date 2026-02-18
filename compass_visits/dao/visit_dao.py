@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.db.models import Q
-from django.utils import timezone
+from django.utils import timezone, dateparse
 from compass_visits.exceptions import ValidationError
+from django.db.models import F, ExpressionWrapper, DurationField, Sum
 from compass_visits.models import (Visit,
                                    ProgramArea,
                                    TutoringOption,
@@ -220,7 +221,7 @@ def manager_update_visit(visit, request_data):
             raise ValidationError("Visit is already verified")
         visit.is_verified = True
     if request_data.get('checkout', False):
-        if visit.is_verified is False:
+        if not visit.is_verified:
             raise ValidationError("Visit must be verified before checkout")
         if visit.check_out_date:
             raise ValidationError("Visit is already checked out")
@@ -243,6 +244,8 @@ def manager_create_visit_from_request(request_data):
             - 'tutoring_option' (int): ID of the TutoringOption (required).
             - 'writing_service' (int, optional): ID of the WritingService.
             - 'verify' (bool, optional): If True, marks the visit as verified.
+            - 'check_in_date' (datetime, optional): Check-in date for the
+                                                    visit. Defaults to now.
             - 'checkout' (bool, optional): If True, marks the visit as
                     verified and sets check_out_date.
             - 'course' (str, optional): Course information.
@@ -263,6 +266,12 @@ def manager_create_visit_from_request(request_data):
     visit.student_netid = request_data.get('student_netid')
     if not visit.student_netid:
         raise ValidationError("student_netid is required")
+    if request_data.get('check_in_date'):
+        try:
+            visit.check_in_date = dateparse.parse_datetime(
+                request_data['check_in_date'])
+        except (ValueError, TypeError):
+            raise ValidationError("Invalid check_in_date format")
     visit.program_area = ProgramArea.objects.get(
         id=request_data['program_area'])
     visit.tutoring_option = TutoringOption.objects.get(
@@ -293,15 +302,21 @@ def get_total_hours_by_netid(netid):
         - Only visits with both check-in and check-out dates are considered.
         - Only visits marked as verified (is_verified=True) are included.
     """
-    visits = Visit.objects.filter(student_netid=netid, is_verified=True)
-    total_seconds = sum([
-        (visit.check_out_date - visit.check_in_date).total_seconds()
-        for visit in visits
-        if visit.check_in_date and visit.check_out_date
-    ])
-    total_hours = total_seconds / 3600
-
-    return total_hours
+    visits = Visit.objects.filter(
+        student_netid=netid,
+        is_verified=True,
+        check_in_date__isnull=False,
+        check_out_date__isnull=False
+    ).annotate(
+        duration=ExpressionWrapper(
+            F('check_out_date') - F('check_in_date'),
+            output_field=DurationField()
+        )
+    )
+    total_duration = visits.aggregate(total=Sum('duration'))['total']
+    if total_duration is None:
+        return 0.0
+    return total_duration.total_seconds() / 3600
 
 
 def get_visits_pending_verification():
@@ -312,7 +327,9 @@ def get_visits_pending_verification():
         QuerySet: A Django QuerySet containing Visit instances where
                   'is_verified' is False.
     """
-    return Visit.objects.filter(is_verified=False)
+    return Visit.objects.select_related(
+        'program_area', 'tutoring_option', 'writing_service'
+    ).filter(is_verified=False)
 
 
 def get_visits_pending_checkout():
@@ -323,7 +340,9 @@ def get_visits_pending_checkout():
         QuerySet: A Django QuerySet containing Visit instances where
                   'is_verified' is True and 'check_out_date' is null.
     """
-    return Visit.objects.filter(is_verified=True, check_out_date__isnull=True)
+    return Visit.objects.select_related(
+        'program_area', 'tutoring_option', 'writing_service'
+    ).filter(is_verified=True, check_out_date__isnull=True)
 
 
 def get_completed_visits_by_netid(netid):
@@ -338,6 +357,8 @@ def get_completed_visits_by_netid(netid):
                   'is_verified' is True and 'check_out_date' is not null,
                   ordered by 'check_in_date' in descending order.
     """
-    return (Visit.objects.filter(student_netid=netid, is_verified=True,
-                                 check_out_date__isnull=False)
+    return (Visit.objects.select_related(
+        'program_area', 'tutoring_option', 'writing_service'
+    ).filter(student_netid=netid, is_verified=True,
+             check_out_date__isnull=False)
             .order_by('-check_in_date'))

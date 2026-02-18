@@ -31,8 +31,12 @@ class StudentVisitList(RESTDispatchLogin):
                 visits.
         """
         student_netid = UserService().get_user()
-        visits = Visit.objects.filter(student_netid=student_netid).order_by(
-            '-check_in_date')
+        visits = (Visit.objects
+                  .select_related('program_area',
+                                  'tutoring_option',
+                                  'writing_service')
+                  .filter(student_netid=student_netid)
+                  .order_by('-check_in_date'))
         visit_list = [visit.json_data() for visit in visits]
         return self.json_response(status=200, content=visit_list)
 

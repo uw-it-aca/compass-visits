@@ -127,6 +127,7 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertEqual(data['writing_service'], 'Application')
 
         self.assertIsNotNone(data['check_in_date'])
+        self.assertEqual(data['check_in_date'], '2024-01-01T10:00:00+00:00')
         self.assertIsNone(data['check_out_date'])
         self.assertTrue(data['is_verified'])
 
