@@ -74,7 +74,11 @@ class ManageVisitsView(RESTDispatchToken):
             JsonResponse: A JSON response with a 400 status code if the
                 provided data is invalid.
         """
-        request_body = json.loads(request.body)
+        try:
+            request_body = json.loads(request.body)
+        except json.JSONDecodeError:
+            return self.error_response(status=400,
+                                       message="Invalid JSON format")
         try:
             visit = Visit.objects.get(id=visit_id)
             manager_update_visit(visit, request_body)
@@ -100,7 +104,11 @@ class ManageVisitsView(RESTDispatchToken):
             JsonResponse: An error response with status 400 and validation
                 error message on failure.
         """
-        request_body = json.loads(request.body)
+        try:
+            request_body = json.loads(request.body)
+        except json.JSONDecodeError:
+            return self.error_response(status=400,
+                                       message="Invalid JSON format")
         try:
             visit = manager_create_visit_from_request(request_body)
             return self.json_response(status=200, content=visit.json_data())

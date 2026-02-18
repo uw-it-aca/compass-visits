@@ -23,7 +23,7 @@ class TutoringOption(models.Model):
 
     Attributes:
         name (CharField): The name of the tutoring option.
-        allow_usage (BooleanField): Indicates whether the program area is
+        allow_usage (BooleanField): Indicates whether the tutoring option is
         allowed for usage. Defaults to True.
     """
     name = models.CharField(max_length=255)
@@ -36,7 +36,7 @@ class WritingService(models.Model):
 
     Attributes:
         name (CharField): The name of the writing service.
-        allow_usage (BooleanField): Indicates whether the program area is
+        allow_usage (BooleanField): Indicates whether the writing service is
         allowed for usage. Defaults to True.
     """
     name = models.CharField(max_length=255)

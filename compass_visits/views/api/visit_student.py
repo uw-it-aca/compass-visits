@@ -68,7 +68,10 @@ class VisitView(RESTDispatchLogin):
         except ValidationError as e:
             return self.error_response(status=400, message=e)
         except OverrideNotPermitted as e:
-            return self.error_response(status=403, message=str(e))
+            return self.error_response(status=403, message=e)
+        except JSONDecodeError:
+            return self.error_response(status=400,
+                                       message="Invalid JSON format")
 
 
 class VisitDetailView(RESTDispatchLogin):
@@ -78,7 +81,7 @@ class VisitDetailView(RESTDispatchLogin):
 
         Args:
             request: The HTTP request object containing the PATCH data in
-                SON format.
+                     JSON format.
             visit_id (int): The ID of the Visit to update.
 
         Returns:
@@ -91,7 +94,11 @@ class VisitDetailView(RESTDispatchLogin):
             JsonResponse: A JSON error response with HTTP 403 status if
                 the user lacks permission.
         """
-        request_body = json.loads(request.body)
+        try:
+            request_body = json.loads(request.body)
+        except json.JSONDecodeError:
+            return self.error_response(status=400,
+                                       message="Invalid JSON format")
         try:
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
@@ -103,7 +110,7 @@ class VisitDetailView(RESTDispatchLogin):
         except ValidationError as e:
             return self.error_response(status=400, message=e)
         except (OverrideNotPermitted, PermissionDenied) as e:
-            return self.error_response(status=403, message=str(e))
+            return self.error_response(status=403, message=e)
 
     def delete(self, request, visit_id, *args, **kwargs):
         """
@@ -128,4 +135,4 @@ class VisitDetailView(RESTDispatchLogin):
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")
         except (OverrideNotPermitted, PermissionDenied) as e:
-            return self.error_response(status=403, message=str(e))
+            return self.error_response(status=403, message=e)
