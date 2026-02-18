@@ -1,9 +1,9 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.views.api import RESTDispatch
+from compass_visits.views.api import RESTDispatchLogin
 from compass_visits.dao.visit_dao import (create_visit_from_request,
-                                          update_visit)
+                                          sudent_update_visit)
 from compass_visits.exceptions import ValidationError, OverrideNotPermitted
 from compass_visits.models import Visit
 from compass_visits.dao.auth import valid_user_override, can_write_visit
@@ -12,7 +12,7 @@ from userservice.user import UserService
 import json
 
 
-class StudentVisitList(RESTDispatch):
+class StudentVisitList(RESTDispatchLogin):
     def get(self, request, *args, **kwargs):
         student_netid = UserService().get_user()
         visits = Visit.objects.filter(student_netid=student_netid).order_by(
@@ -21,7 +21,7 @@ class StudentVisitList(RESTDispatch):
         return self.json_response(status=200, content=visit_list)
 
 
-class VisitView(RESTDispatch):
+class VisitView(RESTDispatchLogin):
     def post(self, request, *args, **kwargs):
         try:
             valid_user_override()
@@ -35,14 +35,14 @@ class VisitView(RESTDispatch):
             return self.error_response(status=403, message=str(e))
 
 
-class VisitDetailView(RESTDispatch):
+class VisitDetailView(RESTDispatchLogin):
     def patch(self, request, visit_id, *args, **kwargs):
         request_body = json.loads(request.body)
         try:
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_netid)
-            update_visit(visit, request_body)
+            sudent_update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")

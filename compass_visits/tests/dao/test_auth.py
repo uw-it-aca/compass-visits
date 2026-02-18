@@ -5,7 +5,9 @@ from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from compass_visits.exceptions import ValidationError, OverrideNotPermitted
 from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.auth import valid_user_override, can_write_visit
+from compass_visits.dao.auth import (valid_user_override,
+                                     can_write_visit,
+                                     validate_token)
 from unittest.mock import patch
 
 
@@ -49,3 +51,20 @@ class AuthDAOTest(CompassVisitsTestCase):
 
         with self.assertRaises(PermissionDenied):
             can_write_visit('otheruser')
+
+    def test_validate_token(self):
+        with self.settings(EXTERNAL_API_TOKEN='validtoken'):
+            with self.assertRaises(PermissionDenied):
+                validate_token(None)
+
+            with self.assertRaises(PermissionDenied):
+                validate_token('InvalidFormat')
+
+            with self.assertRaises(PermissionDenied):
+                validate_token('Token invalidtoken')
+
+            try:
+                validate_token('Token validtoken')
+            except PermissionDenied:
+                self.fail("validate_token raised PermissionDenied"
+                          " unexpectedly!")

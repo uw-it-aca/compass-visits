@@ -78,7 +78,7 @@ def create_visit_from_request(request_data, student_netid):
     return visit
 
 
-def update_visit(visit, request_data):
+def sudent_update_visit(visit, request_data):
     """
     Allow student to check out
 
@@ -92,6 +92,51 @@ def update_visit(visit, request_data):
         if not visit.is_verified:
             raise ValidationError("Visit must be verified before checkout")
         visit.check_out_date = timezone.now()
+    visit.save()
+    return visit
+
+
+def manager_update_visit(visit, request_data):
+    """
+    Allow manager to verify visit and/or check out
+
+    :param visit: visit object to update
+    :param request_data: dict containing the fields to update,
+    e.g. {"verify": true, "checkout": true}
+    """
+    if request_data.get('verify', False):
+        if visit.is_verified:
+            raise ValidationError("Visit is already verified")
+        visit.is_verified = True
+    if request_data.get('checkout', False):
+        if visit.is_verified is False:
+            raise ValidationError("Visit must be verified before checkout")
+        if visit.check_out_date:
+            raise ValidationError("Visit is already checked out")
+        visit.check_out_date = timezone.now()
+    visit.save()
+    return visit
+
+
+def manager_create_visit_from_request(request_data):
+    validate_visit_data(request_data)
+    visit = Visit()
+    visit.student_netid = request_data.get('student_netid')
+    if not visit.student_netid:
+        raise ValidationError("student_netid is required")
+    visit.program_area = ProgramArea.objects.get(
+        id=request_data['program_area'])
+    visit.tutoring_option = TutoringOption.objects.get(
+        id=request_data['tutoring_option'])
+    if request_data.get('writing_service'):
+        visit.writing_service = WritingService.objects.get(
+            id=request_data['writing_service'])
+    if request_data.get('verify', False):
+        visit.is_verified = True
+    if request_data.get('checkout', False):
+        visit.is_verified = True
+        visit.check_out_date = timezone.now()
+    visit.course = request_data.get('course')
     visit.save()
     return visit
 

@@ -1,12 +1,12 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APITestCase
+from compass_visits.tests import APILoginTestCase
 from compass_visits.models import Visit
 from unittest.mock import patch
 
 
-class VisitAPITestCase(APITestCase):
+class VisitAPITestCase(APILoginTestCase):
     def test_patch_visit_checked_out(self):
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 1},

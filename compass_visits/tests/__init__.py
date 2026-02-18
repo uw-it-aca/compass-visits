@@ -13,7 +13,7 @@ class CompassVisitsTestCase(TestCase):
                 'initial_data/visit.json']
 
 
-class APITestCase(CompassVisitsTestCase):
+class APILoginTestCase(CompassVisitsTestCase):
     def setUp(self):
         self.client = Client(HTTP_USER_AGENT='Mozilla/5.0',
                              HTTP_X_REQUESTED_WITH='XMLHttpRequest')
@@ -41,5 +41,35 @@ class APITestCase(CompassVisitsTestCase):
 
     def delete_response(self, url_name, url_args=None, netid=None, data=None):
         self._set_user(netid)
+        url = reverse(url_name, kwargs=url_args)
+        return self.client.delete(url, data, content_type='application/json')
+
+
+class APITokenTestCase(CompassVisitsTestCase):
+    def setUp(self):
+        self.client = Client(HTTP_USER_AGENT='Mozilla/5.0',
+                             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+    def get_response(self, url_name, url_args=None, token=None, data=None):
+        if token is not None:
+            self.client.defaults['HTTP_AUTHORIZATION'] = token
+        url = reverse(url_name, kwargs=url_args)
+        return self.client.get(url, data)
+
+    def post_response(self, url_name, token=None, data=None):
+        if token is not None:
+            self.client.defaults['HTTP_AUTHORIZATION'] = token
+        url = reverse(url_name)
+        return self.client.post(url, data, content_type='application/json')
+
+    def patch_response(self, url_name, url_args=None, token=None, data=None):
+        if token is not None:
+            self.client.defaults['HTTP_AUTHORIZATION'] = token
+        url = reverse(url_name, kwargs=url_args)
+        return self.client.patch(url, data, content_type='application/json')
+
+    def delete_response(self, url_name, url_args=None, token=None, data=None):
+        if token is not None:
+            self.client.defaults['HTTP_AUTHORIZATION'] = token
         url = reverse(url_name, kwargs=url_args)
         return self.client.delete(url, data, content_type='application/json')

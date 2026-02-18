@@ -7,9 +7,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 import json
+from compass_visits.decorator import token_required
 
 
-@method_decorator(login_required, name='dispatch')
 class RESTDispatch(View):
     @staticmethod
     def json_response(content={}, status=200):
@@ -30,3 +30,17 @@ class RESTDispatch(View):
                             status=status,
                             content_type='application/json',
                             )
+
+
+class RESTDispatchLogin(RESTDispatch):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+
+class RESTDispatchToken(RESTDispatch):
+    @method_decorator(token_required)
+    def dispatch(self, request, *args, **kwargs):
+        if kwargs.get('error'):
+            return self.error_response(403, message=kwargs['error'])
+        return super().dispatch(request, *args, **kwargs)

@@ -10,10 +10,12 @@ from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           get_visits_pending_checkout,
                                           get_visits_pending_verification,
                                           validate_visit_data,
-                                          update_visit,
+                                          sudent_update_visit,
                                           create_visit_from_request,
                                           get_total_hours_by_netid,
-                                          get_student_state)
+                                          get_student_state,
+                                          manager_create_visit_from_request,
+                                          manager_update_visit)
 
 
 class VisitDAOTest(CompassVisitsTestCase):
@@ -113,7 +115,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         try:
-            update_visit(visit, request_data)
+            sudent_update_visit(visit, request_data)
         except Exception as e:
             self.fail(f"update_visit raised an exception unexpectedly: {e}")
         self.assertIsNotNone(visit.check_out_date)
@@ -129,7 +131,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         with self.assertRaises(ValidationError) as context:
-            update_visit(unverified_visit, request_data)
+            sudent_update_visit(unverified_visit, request_data)
         self.assertEqual(str(context.exception),
                          "Visit must be verified before checkout")
 
@@ -146,7 +148,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         with self.assertRaises(ValidationError) as context:
-            update_visit(visit, request_data)
+            sudent_update_visit(visit, request_data)
         self.assertEqual(str(context.exception),
                          "Visit is already checked out")
 
@@ -161,7 +163,7 @@ class VisitDAOTest(CompassVisitsTestCase):
             "checkout": True,
         }
         with self.assertRaises(ValidationError) as context:
-            update_visit(unverified_visit, request_data)
+            sudent_update_visit(unverified_visit, request_data)
         self.assertEqual(str(context.exception),
                          "Visit must be verified before checkout")
         self.assertIsNone(unverified_visit.check_out_date)
@@ -327,3 +329,80 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertEqual(completed_visits.count(), 1)
         self.assertEqual(completed_visits.first().student_netid,
                          "completeduser")
+
+    def test_manager_create_visit_from_request(self):
+        request_data = {
+            "student_netid": "newstudent",
+            "program_area": 1,
+            "tutoring_option": 1,
+            "writing_service": 1,
+            "course": None,
+            "verify": True,
+            "checkout": True
+        }
+        visit = manager_create_visit_from_request(request_data)
+        self.assertEqual(visit.student_netid, request_data['student_netid'])
+        self.assertEqual(visit.program_area.id, request_data['program_area'])
+        self.assertEqual(visit.tutoring_option.id,
+                         request_data['tutoring_option'])
+        self.assertEqual(visit.writing_service.id,
+                         request_data['writing_service'])
+        self.assertIsNone(visit.course)
+        self.assertTrue(visit.is_verified)
+        self.assertIsNotNone(visit.check_out_date)
+
+        request_data = {
+            "program_area": 1,
+            "tutoring_option": 1,
+            "writing_service": 1,
+        }
+        with self.assertRaises(ValidationError) as context:
+            manager_create_visit_from_request(request_data)
+        self.assertIn("student_netid is required",
+                      str(context.exception))
+
+        request_data = {
+            "student_netid": "newstudent2",
+            "program_area": 1,
+            "tutoring_option": 1,
+            "writing_service": 1,
+            "checkout": True
+        }
+        visit = manager_create_visit_from_request(request_data)
+        self.assertTrue(visit.is_verified)
+
+    def test_manager_update_visit(self):
+        visit = Visit.objects.create(
+            student_netid="updatetestuser",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+        )
+        request_data = {
+            "verify": True,
+            "checkout": True
+        }
+        try:
+            manager_update_visit(visit, request_data)
+        except Exception as e:
+            self.fail(f"manager_update_visit raised an exception "
+                      f"unexpectedly: {e}")
+        self.assertTrue(visit.is_verified)
+        self.assertIsNotNone(visit.check_out_date)
+
+    def test_manager_update_visit_invalid_checkout(self):
+        visit = Visit.objects.create(
+            student_netid="updatetestuser2",
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+        )
+        request_data = {
+            "checkout": True
+        }
+        with self.assertRaises(ValidationError) as context:
+            manager_update_visit(visit, request_data)
+        self.assertEqual(str(context.exception),
+                         "Visit must be verified before checkout")
+        self.assertFalse(visit.is_verified)
+        self.assertIsNone(visit.check_out_date)

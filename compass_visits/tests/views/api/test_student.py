@@ -1,10 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APITestCase
+from compass_visits.tests import APILoginTestCase
 
 
-class StudentAPITestCase(APITestCase):
+class StudentAPITestCase(APILoginTestCase):
     def test_get_active_current_state(self):
         response = self.get_response('student_profile', netid='javerage')
         self.assertEqual(response.status_code, 200)

@@ -1,10 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APITestCase
+from compass_visits.tests import APILoginTestCase
 
 
-class VisitOptionsAPITestCase(APITestCase):
+class VisitOptionsAPITestCase(APILoginTestCase):
     def test_get_visit_options(self):
         response = self.get_response('visit_options', netid='javerage')
         self.assertEqual(response.status_code, 200)

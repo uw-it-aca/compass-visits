@@ -6,10 +6,10 @@ from userservice.user import UserService
 from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           get_total_hours_by_netid,
                                           get_student_state)
-from compass_visits.views.api import RESTDispatch
+from compass_visits.views.api import RESTDispatchLogin
 
 
-class StudentProfileView(RESTDispatch):
+class StudentProfileView(RESTDispatchLogin):
     def get(self, request, *args, **kwargs):
         # TODO Get student info from PDS
         netid = UserService().get_user()

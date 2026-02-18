@@ -17,3 +17,15 @@ def can_write_visit(visit_netid):
     if UserService().get_user() != visit_netid:
         raise PermissionDenied("User does not have permission to modify "
                                "this visit")
+
+
+def validate_token(token):
+    TOKEN_PREFIX = "Token "
+    if token is None:
+        raise PermissionDenied("API token is required")
+    if not token.startswith(TOKEN_PREFIX):
+        raise PermissionDenied("Invalid API token format")
+    token_value = token[len(TOKEN_PREFIX):]
+    set_token = getattr(settings, "EXTERNAL_API_TOKEN", None)
+    if set_token is None or token_value != set_token:
+        raise PermissionDenied("Invalid API token")
