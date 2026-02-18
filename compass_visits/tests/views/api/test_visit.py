@@ -40,13 +40,14 @@ class VisitAPITestCase(APILoginTestCase):
                                        netid='javerage')
         self.assertEqual(response.status_code, 403)
 
-        mock_get_user.return_value = 'dlee'
-        mock_get_override_user.return_value = 'javerage'
-        response = self.patch_response('visit_detail',
-                                       url_args={'visit_id': 5},
-                                       data={'checkout': True},
-                                       netid='javerage')
-        self.assertEqual(response.status_code, 403)
+        with self.settings(ALLOW_USER_OVERRIDE_FOR_WRITE=False):
+            mock_get_user.return_value = 'dlee'
+            mock_get_override_user.return_value = 'javerage'
+            response = self.patch_response('visit_detail',
+                                           url_args={'visit_id': 5},
+                                           data={'checkout': True},
+                                           netid='javerage')
+            self.assertEqual(response.status_code, 403)
 
         mock_get_user.return_value = 'dlee'
         mock_get_override_user.return_value = None
@@ -67,12 +68,13 @@ class VisitAPITestCase(APILoginTestCase):
                                         netid='javerage')
         self.assertEqual(response.status_code, 403)
 
-        mock_get_user.return_value = 'emartin'
-        mock_get_override_user.return_value = "javerage"
-        response = self.delete_response('visit_detail',
-                                        url_args={'visit_id': 6},
-                                        netid='javerage')
-        self.assertEqual(response.status_code, 403)
+        with self.settings(ALLOW_USER_OVERRIDE_FOR_WRITE=False):
+            mock_get_user.return_value = 'emartin'
+            mock_get_override_user.return_value = "javerage"
+            response = self.delete_response('visit_detail',
+                                            url_args={'visit_id': 6},
+                                            netid='javerage')
+            self.assertEqual(response.status_code, 403)
 
         mock_get_user.return_value = 'emartin'
         mock_get_override_user.return_value = None
@@ -110,11 +112,12 @@ class VisitAPITestCase(APILoginTestCase):
         self.assertEqual(data['tutoring_option'], 'Drop In')
         self.assertEqual(data['writing_service'], 'Application')
 
-        mock_get_override_user.return_value = 'javerage'
-        response = self.post_response('visit',
-                                      netid='jnew',
-                                      data=new_visit_data)
-        self.assertEqual(response.status_code, 403)
+        with self.settings(ALLOW_USER_OVERRIDE_FOR_WRITE=False):
+            mock_get_override_user.return_value = 'javerage'
+            response = self.post_response('visit',
+                                          netid='jnew',
+                                          data=new_visit_data)
+            self.assertEqual(response.status_code, 403)
 
     def test_already_active_visit(self):
         new_visit_data = {
