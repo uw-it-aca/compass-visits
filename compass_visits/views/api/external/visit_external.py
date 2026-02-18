@@ -34,7 +34,6 @@ class CompassStudentVisitsView(RESTDispatchToken):
 class ManageVisitsView(RESTDispatchToken):
     def patch(self, request, visit_id, *args, **kwargs):
         request_body = json.loads(request.body)
-        print('manage id', visit_id)
         try:
             visit = Visit.objects.get(id=visit_id)
             manager_update_visit(visit, request_body)
@@ -49,8 +48,6 @@ class ManageVisitsView(RESTDispatchToken):
         try:
             visit = manager_create_visit_from_request(request_body)
             return self.json_response(status=200, content=visit.json_data())
-        except Visit.DoesNotExist:
-            return self.error_response(status=404, message="Visit not found")
         except ValidationError as e:
             return self.error_response(status=400, message=e)
 

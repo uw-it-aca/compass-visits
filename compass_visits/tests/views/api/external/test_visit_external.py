@@ -6,6 +6,28 @@ from compass_visits.models import Visit
 
 
 class VisitExternalAPITestCase(APITokenTestCase):
+    def test_bad_token(self):
+        response = self.get_response('visit_admin_list',
+                                     token='Token badtoken')
+        self.assertEqual(response.status_code, 403)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid API token')
+
+    def test_no_token(self):
+        response = self.get_response('visit_admin_list', token=None)
+        self.assertEqual(response.status_code, 403)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'API token is required')
+
+    def test_bad_token_format(self):
+        response = self.get_response('visit_admin_list',
+                                     token='badformat')
+        self.assertEqual(response.status_code, 403)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid API token format')
 
     def test_get_visit_admin_list(self):
         response = self.get_response('visit_admin_list',
@@ -41,6 +63,49 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertEqual(data['id'], 2)
         self.assertTrue(data['is_verified'])
 
+    def test_manage_visits_patch_visit_not_found(self):
+        response = self.patch_response('manage_visit',
+                                       url_args={'visit_id': 999},
+                                       token='Token testtoken',
+                                       data={'verify': True}
+                                       )
+        self.assertEqual(response.status_code, 404)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Visit not found')
+
+    def test_manage_visits_patch_validation_error(self):
+        response = self.patch_response('manage_visit',
+                                       url_args={'visit_id': 1},
+                                       token='Token testtoken',
+                                       data={'verify': True}
+                                       )
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Visit is already verified')
+
+        response = self.patch_response('manage_visit',
+                                       url_args={'visit_id': 1},
+                                       token='Token testtoken',
+                                       data={'checkout': True}
+                                       )
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Visit is already checked out')
+
+        response = self.patch_response('manage_visit',
+                                       url_args={'visit_id': 2},
+                                       token='Token testtoken',
+                                       data={'checkout': True}
+                                       )
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Visit must be verified before'
+                                        ' checkout')
+
     def test_manage_visits_post(self):
         new_visit_data = {
             'student_netid': 'newstudent',
@@ -65,6 +130,23 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertIsNone(data['check_out_date'])
         self.assertTrue(data['is_verified'])
 
+    def test_manage_visits_post_validation_error(self):
+        new_visit_data = {
+            'program_area': 1,
+            'tutoring_option': 1,
+            'writing_service': 1,
+            'check_in_date': '2024-01-01T10:00:00Z',
+            'verify': True
+        }
+        response = self.post_response('manage_visits',
+                                      token='Token testtoken',
+                                      data=new_visit_data
+                                      )
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'student_netid is required')
+
     def test_manage_visits_delete(self):
         response = self.delete_response('manage_visit',
                                         url_args={'visit_id': 3},
@@ -75,26 +157,3 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertEqual(data, {})
         with self.assertRaises(Visit.DoesNotExist):
             Visit.objects.get(id=3)
-
-    def test_bad_token(self):
-        response = self.get_response('visit_admin_list',
-                                     token='Token badtoken')
-        self.assertEqual(response.status_code, 403)
-        data = response.json()
-        self.assertIn('error', data)
-        self.assertEqual(data['error'], 'Invalid API token')
-
-    def test_no_token(self):
-        response = self.get_response('visit_admin_list', token=None)
-        self.assertEqual(response.status_code, 403)
-        data = response.json()
-        self.assertIn('error', data)
-        self.assertEqual(data['error'], 'API token is required')
-
-    def test_bad_token_format(self):
-        response = self.get_response('visit_admin_list',
-                                     token='badformat')
-        self.assertEqual(response.status_code, 403)
-        data = response.json()
-        self.assertIn('error', data)
-        self.assertEqual(data['error'], 'Invalid API token format')
