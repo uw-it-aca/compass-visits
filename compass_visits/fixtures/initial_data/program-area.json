@@ -1,0 +1,74 @@
+[
+    {
+        "model": "compass_visits.programarea",
+        "pk": 1,
+        "fields": {
+            "name": "Biology/Natural Sci",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 2,
+        "fields": {
+            "name": "Chemistry",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 3,
+        "fields": {
+            "name": "Econ/Accounting",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 4,
+        "fields": {
+            "name": "Math/Stat/CSE",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 5,
+        "fields": {
+            "name": "Physics/Engineering",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 6,
+        "fields": {
+            "name": "Psych/Soc/Humanities",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 7,
+        "fields": {
+            "name": "Writing Assistance",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 8,
+        "fields": {
+            "name": "Other",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.programarea",
+        "pk": 9,
+        "fields": {
+            "name": "Retired Program Area",
+            "allow_usage": false
+        }
+    }
+]

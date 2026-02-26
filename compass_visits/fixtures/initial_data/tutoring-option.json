@@ -1,0 +1,26 @@
+[
+    {
+        "model": "compass_visits.tutoringoption",
+        "pk": 1,
+        "fields": {
+            "name": "Drop In",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.tutoringoption",
+        "pk": 2,
+        "fields": {
+            "name": "Workshop",
+            "allow_usage": true
+        }
+    },
+    {
+        "model": "compass_visits.tutoringoption",
+        "pk": 3,
+        "fields": {
+            "name": "Other",
+            "allow_usage": false
+        }
+    }
+]

@@ -28,3 +28,11 @@ class ViteTestClass(TestCase):
             r'<script\s+[^>]*src="[^"]*main-[^"]*"[^>]*></script>'
         )
         self.assertTrue(pattern.search(script))
+
+    def test_duplicate(self):
+        entries = ("compass_visits_vue/main.js", "compass_visits_vue/main.js")
+        script = vite_scripts(*entries)
+        pattern = re.compile(
+            r'<script\s+[^>]*src="[^"]*main-[^"]*"[^>]*></script>'
+        )
+        self.assertTrue(pattern.search(script))

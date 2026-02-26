@@ -1,8 +1,10 @@
+import os
 from .base_settings import *
 
 INSTALLED_APPS += [
     'compass_visits.apps.CompassVisitsConfig',
     'compass_visits.apps.ViteStaticFilesConfig',
+    'userservice'
 ]
 
 INSTALLED_APPS.remove('django.contrib.staticfiles')
@@ -11,6 +13,10 @@ INSTALLED_APPS.remove('django.contrib.staticfiles')
 # DATA_ROOT = os.path.join(BASE_DIR, 'compass_visits/data')
 
 GOOGLE_ANALYTICS_KEY = os.getenv('GOOGLE_ANALYTICS_KEY', default=' ')
+
+MIDDLEWARE += [
+    "userservice.user.UserServiceMiddleware",
+]
 
 TEMPLATES = [
     {
@@ -25,7 +31,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'compass_visits.context_processors.google_analytics',
                 'compass_visits.context_processors.django_debug',
-                'compass_visits.context_processors.auth_user',
             ],
         },
     }
@@ -33,8 +38,34 @@ TEMPLATES = [
 
 if os.getenv('ENV') == 'localdev':
     DEBUG = True
+    ALLOWED_HOSTS = ['*']
+    CORS_ORIGIN_ALLOW_ALL = True
     VITE_MANIFEST_PATH = os.path.join(
         BASE_DIR, 'compass_visits', 'static', '.vite', 'manifest.json'
     )
-else:
+    MOCK_SAML_ATTRIBUTES = {
+        "uwnetid": ["javerage"],
+        "affiliations": ["student", "member"],
+        "eppn": ["javerage@uw.edu"],
+        "scopedAffiliations": [
+            "student@washington.edu",
+            "member@washington.edu",
+        ],
+        "isMemberOf": ["u_test_group"],
+        "displayName": ["James Average"],
+        "preferredFirst": ["James"],
+        "preferredSurname": ["Average"],
+    }
+    ADMIN_GROUP = "u_test_group"
+    SUPPORT_GROUP = "u_test_group"
+    EXTERNAL_API_TOKEN = "testtoken"
+
+if os.getenv('ENV') == 'localdev' or os.getenv('ENV') == 'test' :
+    ALLOW_USER_OVERRIDE_FOR_WRITE = True
+
+if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
     VITE_MANIFEST_PATH = os.path.join(os.sep, 'static', '.vite', 'manifest.json')
+    EXTERNAL_API_TOKEN = os.getenv('EXTERNAL_API_TOKEN')
+
+if os.getenv('ENV') == 'prod':
+    ALLOW_USER_OVERRIDE_FOR_WRITE = False
