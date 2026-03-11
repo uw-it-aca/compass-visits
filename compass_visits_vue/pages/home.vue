@@ -5,9 +5,7 @@
     <template #title>
       {{ pageTitle }}
     </template>
-    <template #content>
-
-    </template>
+    <template #content> </template>
   </DefaultLayout>
 </template>
 
@@ -19,48 +17,42 @@ import { useVisitStore } from "@/stores/visit";
 export default {
   name: "PagesHome",
   components: { DefaultLayout, StudentProfile },
+  setup() {
+    const visitStore = useVisitStore();
+    return { visitStore };
+  },
   data() {
     return {
       pageTitle: "Home",
-      visitStore: useVisitStore(),
       profile: null,
     };
   },
-  computed: {
-    studentProfile() {
-      return this.visitStore.studentProfile;
-    },
+  created() {
+    this.loadStudentProfile();
   },
   methods: {
     redirectToVerify() {
-      console.log('verify')
       this.$router.push("/verify");
     },
     redirectToCheckout() {
-      console.log('checkout')
       this.$router.push("/checkout");
+    },
+    loadStudentProfile() {
+      this.visitStore.fetchStudentProfile().then(() => {
+        this.profile = this.visitStore.studentProfile.data;
+      });
     },
   },
   watch: {
-      visitStore: {
-        handler(newValue) {
-          // Redirect students with in-progress visit to verificatin or
-          // confirmation page based on the current state of the visit
-          console.log('visit store changed', newValue)
-          console.log('visit store changed student profile', newValue.data)
-
-
-          if("data" in newValue && "current_state" in newValue.data){
-            console.log('has state')
-            if ( newValue.data.current_state === "pending_verification") {
-              this.redirectToVerify();
-            } else if (newValue.data.current_state === "active") {
-              this.redirectToCheckout();
-            }
-          }
-        },
-        deep: true,
-      },
-  }
+    profile(newValue) {
+      if ("current_state" in newValue) {
+        if (newValue.current_state === "pending_verification") {
+          this.redirectToVerify();
+        } else if (newValue.current_state === "active") {
+          this.redirectToCheckout();
+        }
+      }
+    },
+  },
 };
 </script>

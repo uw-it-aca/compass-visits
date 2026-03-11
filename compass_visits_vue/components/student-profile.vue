@@ -15,7 +15,6 @@ export default {
     };
   },
   mounted() {
-    console.log("StudentProfile mounted");
     this.visitStore.fetchStudentProfile();
   },
   methods: {},

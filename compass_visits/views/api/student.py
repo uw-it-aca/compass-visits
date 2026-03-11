@@ -3,7 +3,7 @@
 
 from userservice.user import UserService
 from compass_visits.dao.visit_dao import (get_active_visit_for_student,
-                                          get_total_hours_by_netid,
+                                          get_total_minutes_by_netid,
                                           get_student_state)
 from compass_visits.views.api import RESTDispatchLogin
 
@@ -33,7 +33,7 @@ class StudentProfileView(RESTDispatchLogin):
             "netid": netid,
             "student_name": "James Average",
             "photo_url": "https://example.com/photo.jpg",
-            "total_hours": get_total_hours_by_netid(netid),
+            "total_minutes": get_total_minutes_by_netid(netid),
             "current_state": get_student_state(active_visit),
             "visit": active_visit.json_data() if active_visit else None
         }

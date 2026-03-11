@@ -43,8 +43,8 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertEqual(data['student_name'], "James Average")
         self.assertIn('photo_url', data)
         self.assertEqual(data['photo_url'], "https://example.com/photo.jpg")
-        self.assertIn('total_hours', data)
-        self.assertEqual(data['total_hours'], 3.75)
+        self.assertIn('total_minutes', data)
+        self.assertEqual(data['total_minutes'], 225.0)
 
     def test_get_student_visits(self):
         response = self.get_response('student_visits', netid='javerage')
