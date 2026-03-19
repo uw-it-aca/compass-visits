@@ -9,16 +9,17 @@
       <div v-if="showCheckout">
         <p>Visit Verified</p>
         <h2>{{ profile.student_name }}</h2>
-        <visit-details
-          :visit-data="profile.visit"
-        />
+        <visit-details :visit-data="profile.visit" />
         <br />
         Time
         <br />
         {{ visitDuration }}
         <br />
         (Total: {{ totalMinutes }} min)
-        <button class="btn btn-primary" @click="visitStore.checkout()">
+        <button class="btn btn-primary" @click="handleSwitchSession">
+          Switch <Search></Search>
+        </button>
+        <button class="btn btn-primary" @click="handleCheckout">
           Check Out
         </button>
       </div>
@@ -63,6 +64,17 @@ export default {
       return this.visitStore.totalMinutes;
     },
   },
-  methods: {},
+  methods: {
+    handleCheckout() {
+      this.visitStore.handleCheckout().then(() => {
+        this.$router.push("/");
+      });
+    },
+    handleSwitchSession() {
+      this.visitStore.handleCheckout().then(() => {
+        this.$router.push("/create");
+      });
+    },
+  },
 };
 </script>

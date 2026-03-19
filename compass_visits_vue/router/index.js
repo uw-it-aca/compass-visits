@@ -7,12 +7,18 @@ import { createWebHistory, createRouter } from "vue-router";
 import Home from "@/pages/home.vue";
 import Verify from "@/pages/verify.vue";
 import Checkout from "@/pages/checkout.vue";
+import Create from "@/pages/create.vue";
 
 const routes = [
   {
     path: "/",
     name: "Home",
     component: Home,
+  },
+  {
+    path: "/create",
+    name: "Create",
+    component: Create,
   },
   {
     path: "/verify",
