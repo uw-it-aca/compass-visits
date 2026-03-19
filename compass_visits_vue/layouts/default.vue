@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       // minimum application setup overrides
-      appName: "Django+Vue",
+      appName: "Compass Visits",
       // automatically set year
       currentYear: new Date().getFullYear(),
     };

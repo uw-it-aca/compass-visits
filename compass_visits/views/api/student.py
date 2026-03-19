@@ -29,12 +29,20 @@ class StudentProfileView(RESTDispatchLogin):
         # TODO Get student info from PDS
         netid = UserService().get_user()
         active_visit = get_active_visit_for_student(netid)
+        mock_IC_elligible = True
         mock_profile = {
             "netid": netid,
             "student_name": "James Average",
+            "student_number": "123456789",
             "photo_url": "https://example.com/photo.jpg",
-            "total_minutes": get_total_minutes_by_netid(netid),
-            "current_state": get_student_state(active_visit),
-            "visit": active_visit.json_data() if active_visit else None
+
+            "ic_elligible": mock_IC_elligible
         }
+        if mock_IC_elligible:
+            mock_profile.update({
+                "total_minutes": get_total_minutes_by_netid(netid),
+                "current_state": get_student_state(active_visit),
+                "visit": active_visit.json_data() if active_visit else None
+            })
+
         return self.json_response(status=200, content=mock_profile)

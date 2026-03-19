@@ -5,7 +5,24 @@
     <template #title>
       {{ pageTitle }}
     </template>
-    <template #content> </template>
+    <template #content>
+      <StudentProfile :profile="profile" />
+      <div v-if="isElligible">
+        <button class="btn btn-primary"  @click="redirectToCreate">
+          Check In
+        </button>
+      </div>
+      <div v-else>
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-octagon-fill"></i> You are not
+          Instructional Center elligible.
+        </div>
+        <p>
+          Please contact Director of the Instructional Center
+          <a href="mailto:therese@uw.edu">therese@uw.edu</a> for assistance.
+        </p>
+      </div>
+    </template>
   </DefaultLayout>
 </template>
 
@@ -25,6 +42,7 @@ export default {
     return {
       pageTitle: "Home",
       profile: null,
+      isElligible: false,
     };
   },
   created() {
@@ -36,6 +54,9 @@ export default {
     },
     redirectToCheckout() {
       this.$router.push("/checkout");
+    },
+    redirectToCreate() {
+      this.$router.push("/create");
     },
     loadStudentProfile() {
       this.visitStore.fetchStudentProfile().then(() => {
@@ -52,6 +73,7 @@ export default {
           this.redirectToCheckout();
         }
       }
+      this.isElligible = newValue.ic_elligible;
     },
   },
 };

@@ -1,7 +1,11 @@
 // student-profile.vue
 
 <template>
-  <p>{{ visitStore.studentProfile }}</p>
+  <div v-if="showProfile">
+    <img :src="visitStore.studentProfile.data.photo_url" alt="Profile Image" />
+    <h2>{{ visitStore.studentProfile.data.student_name }}</h2>
+    <p>{{ visitStore.studentProfile.data.student_number }}</p>
+  </div>
 </template>
 
 <script>
@@ -16,6 +20,11 @@ export default {
   },
   mounted() {
     this.visitStore.fetchStudentProfile();
+  },
+  computed: {
+    showProfile() {
+      return this.visitStore.studentProfile.data !== undefined;
+    },
   },
   methods: {},
 };
