@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getStudentProfile, updateVisit } from "@/utils/data";
+import { getStudentProfile, updateVisit, createVisit, deleteVisit } from "@/utils/data";
 
 export const useVisitStore = defineStore("visit", {
   state: () => {
@@ -54,6 +54,13 @@ export const useVisitStore = defineStore("visit", {
         );
       }
       return Promise.resolve();
+    },
+    handleCreateVisit(visitData) {
+      return createVisit(visitData).then(() => {
+        this.studentVisit = {};
+        this.studentProfile = {};
+        this.fetchStudentProfile();
+      });
     },
   },
 });

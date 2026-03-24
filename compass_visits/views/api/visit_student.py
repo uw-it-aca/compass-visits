@@ -131,6 +131,7 @@ class VisitDetailView(RESTDispatchLogin):
 
         """
         try:
+            # TODO: Ensure only owning student can delete
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_netid)

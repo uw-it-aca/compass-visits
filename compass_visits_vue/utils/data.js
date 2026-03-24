@@ -40,10 +40,16 @@ async function getStudentVisits() {
   return useCustomFetch(url);
 }
 
+async function getVisitOptions() {
+  const url = "/api/v1/visitoptions/";
+  return useCustomFetch(url);
+}
+
 export {
   getStudentProfile,
   updateVisit,
   deleteVisit,
   createVisit,
   getStudentVisits,
+  getVisitOptions,
 };
