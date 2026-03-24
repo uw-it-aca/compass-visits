@@ -2,10 +2,10 @@
 
 <template>
   <p>Program Area</p>
-  {{ this.visitData.program_area }}
+  {{ programAreaString }}
   <br />
   <p>Tutoring Type</p>
-  {{ this.visitData.tutoring_option }}
+  {{ tutoringTypeString }}
   <br />
   <p>Course</p>
   {{ courseString }}
@@ -26,11 +26,23 @@ export default {
     return {};
   },
   computed: {
+    programAreaString: function() {
+      if (this.visitData && this.visitData.program_area) {
+        return this.visitData.program_area;
+      }
+      return "";
+    },
+    tutoringTypeString: function() {
+      if (this.visitData && this.visitData.tutoring_option) {
+        return this.visitData.tutoring_option;
+      }
+      return "";
+    },
     courseString: function() {
-      if (this.visitData.course) {
+      if (this.visitData && this.visitData.course) {
         return this.visitData.course;
       }
-      return this.visitData.writing_service;
+      return this.visitData && this.visitData.writing_service ? this.visitData.writing_service : "";
     },
   },
 };

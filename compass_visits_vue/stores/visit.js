@@ -43,6 +43,10 @@ export const useVisitStore = defineStore("visit", {
       }
       return this.studentProfile.request;
     },
+    refreshStudentProfile() {
+      this.studentProfile = {};
+      return this.fetchStudentProfile();
+    },
     handleCheckout() {
       if (this.studentHasVisit) {
         return updateVisit(this.studentVisit.id, { checkout: true }).then(
@@ -62,5 +66,15 @@ export const useVisitStore = defineStore("visit", {
         this.fetchStudentProfile();
       });
     },
+    deleteVisit() {
+      if (this.studentHasVisit) {
+        return deleteVisit(this.studentVisit.id).then(() => {
+          this.studentVisit = {};
+          this.studentProfile = {};
+          this.fetchStudentProfile();
+        });
+      }
+      return Promise.resolve();
+    }
   },
 });

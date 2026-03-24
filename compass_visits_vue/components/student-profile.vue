@@ -5,6 +5,7 @@
     <img :src="visitStore.studentProfile.data.photo_url" alt="Profile Image" />
     <h2>{{ visitStore.studentProfile.data.student_name }}</h2>
     <p>{{ visitStore.studentProfile.data.student_number }}</p>
+    <p>Total Hours: {{ totalHours.toFixed(2) }}</p>
   </div>
 </template>
 
@@ -24,6 +25,12 @@ export default {
   computed: {
     showProfile() {
       return this.visitStore.studentProfile.data !== undefined;
+    },
+    totalHours() {
+      if (this.visitStore.studentProfile.data) {
+        return this.visitStore.totalMinutes / 60;
+      }
+      return 0;
     },
   },
   methods: {},
