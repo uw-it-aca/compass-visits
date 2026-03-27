@@ -11,6 +11,9 @@
         <button class="btn btn-primary"  @click="redirectToCreate">
           Check In
         </button>
+        <button class="btn btn-secondary" @click="redirectToSummary">
+          Visit Summary
+        </button>
       </div>
       <div v-else>
         <div class="alert alert-danger" role="alert">
@@ -57,6 +60,9 @@ export default {
     },
     redirectToCreate() {
       this.$router.push("/create");
+    },
+    redirectToSummary() {
+      this.$router.push("/summary");
     },
     loadStudentProfile() {
       this.visitStore.fetchStudentProfile().then(() => {

@@ -1,5 +1,11 @@
 import { defineStore } from "pinia";
-import { getStudentProfile, updateVisit, createVisit, deleteVisit } from "@/utils/data";
+import {
+  getStudentProfile,
+  updateVisit,
+  createVisit,
+  deleteVisit,
+  getStudentVisits,
+} from "@/utils/data";
 
 export const useVisitStore = defineStore("visit", {
   state: () => {
@@ -7,6 +13,7 @@ export const useVisitStore = defineStore("visit", {
       getStudentProfile,
       studentProfile: {},
       studentVisit: {},
+      studentVisitList: {},
     };
   },
   getters: {
@@ -43,6 +50,18 @@ export const useVisitStore = defineStore("visit", {
       }
       return this.studentProfile.request;
     },
+    fetchStudentVisitList() {
+      if (
+        !Object.prototype.hasOwnProperty.call(this.studentVisitList, "request")
+      ) {
+        this.studentVisitList = {
+          request: getStudentVisits().then((response) => {
+            this.studentVisitList.data = response;
+          }),
+        };
+      }
+      return this.studentVisitList.request;
+    },
     refreshStudentProfile() {
       this.studentProfile = {};
       return this.fetchStudentProfile();
@@ -75,6 +94,6 @@ export const useVisitStore = defineStore("visit", {
         });
       }
       return Promise.resolve();
-    }
+    },
   },
 });

@@ -61,7 +61,7 @@ urlpatterns += [
             ManageVisitsView.as_view(),
             name="manage_visits"),
     re_path(
-        r"^(verify|checkout|create).*$",
+        r"^(verify|checkout|create|summary).*$",
         DefaultPageView.as_view(),
         name="vue_router_page"),
     re_path(r"^$", DefaultPageView.as_view(), name="default_page"),

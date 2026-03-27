@@ -93,9 +93,12 @@ class Visit(models.Model):
             "is_verified": self.is_verified,
         }
 
-        if not self.check_out_date and self.is_verified:
-            now = timezone.now()
-            duration = now - self.check_in_date
-            duration_minutes = int(duration.total_seconds() / 60)
-            json_data["active_minutes"] = duration_minutes
+        json_data["active_minutes"] = self._get_duration_minutes()
         return json_data
+
+    def _get_duration_minutes(self):
+        if not self.is_verified:
+            return 0
+        check_out_date = self.check_out_date or timezone.now()
+        duration = check_out_date - self.check_in_date
+        return int(duration.total_seconds() / 60)

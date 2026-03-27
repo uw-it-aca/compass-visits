@@ -30,6 +30,7 @@ class StudentVisitList(RESTDispatchLogin):
             JsonResponse: A JSON response containing a list of the student's
                 visits.
         """
+        # TODO: Scope this to current quarter visits only
         student_netid = UserService().get_user()
         visits = (Visit.objects
                   .select_related('program_area',

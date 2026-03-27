@@ -8,6 +8,7 @@ import Home from "@/pages/home.vue";
 import Verify from "@/pages/verify.vue";
 import Checkout from "@/pages/checkout.vue";
 import Create from "@/pages/create.vue";
+import Summary from "@/pages/summary.vue";
 
 const routes = [
   {
@@ -30,6 +31,12 @@ const routes = [
     name: "Checkout",
     component: Checkout,
   },
+  {
+    path: "/summary",
+    name: "Visit Summary",
+    component: Summary,
+  },
+
 
 ];
 
