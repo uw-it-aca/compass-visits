@@ -9,7 +9,8 @@ from compass_visits.views.api.visit_student import (StudentVisitList,
                                                     VisitView,
                                                     VisitDetailView)
 from compass_visits.views.api.options import VisitOptions
-from compass_visits.views.api.student import StudentProfileView
+from compass_visits.views.api.student import (StudentProfileView,
+                                              StudentPhotoView)
 from compass_visits.views.api.external.visit_external import (
     VisitAdminListView, CompassStudentVisitsView, ManageVisitsView)
 
@@ -45,6 +46,9 @@ urlpatterns += [
     re_path(r'^api/internal/profile/$',
             StudentProfileView.as_view(),
             name="student_profile"),
+    re_path(r'^api/internal/photo/$',
+            StudentPhotoView.as_view(),
+            name="student_photo"),
     re_path(r'^api/v1/visitadminlist/$',
             VisitAdminListView.as_view(),
             name="visit_admin_list"),
