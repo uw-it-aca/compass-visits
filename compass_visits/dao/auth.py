@@ -73,5 +73,6 @@ def is_admin_user(request):
     """
     return is_member_of_group(request, getattr(settings, "ADMIN_GROUP", ""))
 
+
 def can_proxy_restclients(request, service, url):
     return is_admin_user(request)

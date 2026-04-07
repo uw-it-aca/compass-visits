@@ -2,7 +2,7 @@
 
 <template>
   <div v-if="showProfile">
-    <img :src="visitStore.studentProfile.data.photo_url" alt="Profile Image" />
+    <img :src="`data:image/png;base64,${visitStore.studentProfile.data.photo}`" alt="Profile Image" />
     <h2>{{ visitStore.studentProfile.data.student_name }}</h2>
     <p>{{ visitStore.studentProfile.data.student_number }}</p>
     <p>Total Hours: {{ totalHours.toFixed(2) }}</p>
