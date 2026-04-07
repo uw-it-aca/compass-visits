@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
 from userservice.user import UserService
 from compass_visits.exceptions import OverrideNotPermitted
+from uw_saml.utils import is_member_of_group
 
 
 def valid_user_override():
@@ -61,3 +62,16 @@ def validate_token(token):
     set_token = getattr(settings, "EXTERNAL_API_TOKEN", None)
     if set_token is None or not constant_time_compare(token_value, set_token):
         raise PermissionDenied("Invalid API token")
+
+
+def is_admin_user(request):
+    """
+    Checks if the given user is an admin user based on group membership.
+
+    Args:
+        request: The HTTP request object containing the user information.
+    """
+    return is_member_of_group(request, getattr(settings, "ADMIN_GROUP", ""))
+
+def can_proxy_restclients(request, service, url):
+    return is_admin_user(request)
