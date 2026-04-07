@@ -13,6 +13,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@400;500;700&family=Open+Sans:ital,wght@0,400;0,700;1,400&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- vite css bundle -->
     {% vite_styles 'compass_visits_vue/main.js' %}
+    <script>
+      window.persistent_msgs = {{ messages|safe }};
+      window.persistent_msgs_level = "{{ message_level }}";
+    </script>
   </head>
   <body {% if google_analytics %}data-google-analytics="{{ google_analytics }}"{% endif %}
         {% if logout_url %}data-logout-url="{{ logout_url }}"{% endif %}

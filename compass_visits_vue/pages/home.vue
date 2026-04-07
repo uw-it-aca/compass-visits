@@ -34,6 +34,7 @@ import DefaultLayout from "@/layouts/default.vue";
 import StudentProfile from "@/components/student-profile.vue";
 import { useVisitStore } from "@/stores/visit";
 
+
 export default {
   name: "PagesHome",
   components: { DefaultLayout, StudentProfile },
@@ -46,6 +47,7 @@ export default {
       pageTitle: "Home",
       profile: null,
       isElligible: false,
+      persMsg: window.persistent_msgs || [],
     };
   },
   created() {
