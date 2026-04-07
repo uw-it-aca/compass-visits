@@ -20,7 +20,7 @@ from compass_visits.dao.visit_dao import (get_active_visit_for_student,
 
 class VisitDAOTest(CompassVisitsTestCase):
     def test_get_active_visit_for_student(self):
-        netid = "asmith"
+        netid = "jnewstudent"
         visit = get_active_visit_for_student(netid)
         self.assertIsNotNone(visit)
 
@@ -242,7 +242,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertEqual(total_minutes, 225)
 
         # single visit
-        total_minutes = get_total_minutes_by_netid("bthompson")
+        total_minutes = get_total_minutes_by_netid("jinternational")
         self.assertEqual(total_minutes, 60)
 
         # Only in progress

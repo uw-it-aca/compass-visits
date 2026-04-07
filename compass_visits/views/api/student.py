@@ -37,10 +37,14 @@ class StudentProfileView(RESTDispatchLogin):
         mock_IC_elligible = True
 
         student_profile = get_student_profile(netid)
-        photo_data = get_student_photo(netid)
-        student_profile['photo'] = (base64
-                                    .b64encode(photo_data.getvalue())
-                                    .decode('ascii')) if photo_data else None
+        try:
+            photo_data = get_student_photo(netid)
+            student_profile['photo'] = (base64
+                                        .b64encode(photo_data.getvalue())
+                                        .decode('ascii')) \
+                if photo_data else None
+        except DataFailureException as ex:
+            student_profile['photo'] = None
 
         student_profile['ic_elligible'] = mock_IC_elligible
 
