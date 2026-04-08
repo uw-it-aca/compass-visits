@@ -3,6 +3,8 @@
 
 from compass_visits.tests import APILoginTestCase
 from compass_visits.views.pages import PageView
+from persistent_message.models import Message
+import datetime
 
 
 class PageViewTestCase(APILoginTestCase):
@@ -15,3 +17,17 @@ class PageViewTestCase(APILoginTestCase):
         self.assertEqual(context['user_netid'], 'javerage')
         self.assertIn('user_override', context)
         self.assertEqual(context['user_override'], 'javerage')
+
+    def test_message_context(self):
+        message = Message.objects.create(
+            content="This is a test message.",
+            created=datetime.datetime.now(),
+            level=Message.SUCCESS_LEVEL
+        )
+        response = self.get_response('default_page', netid='javerage')
+        context = response.context
+        self.assertIn('messages', context)
+        self.assertEqual(len(context['messages']), 1)
+        self.assertIn("This is a test message.", context['messages'][0])
+        self.assertIn('message_level', context)
+        self.assertEqual(context['message_level'], 'success')

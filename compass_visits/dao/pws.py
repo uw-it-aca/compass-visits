@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from uw_pws import PWS
+from restclients_core.exceptions import DataFailureException
 
 
 PHOTO_SIZE = "large"
@@ -21,8 +22,8 @@ def get_student_profile(uwnetid):
 
 def get_student_photo(uwnetid):
     pws = PWS()
-    person = pws.get_person_by_netid(uwnetid)
-    if person is None:
+    try:
+        person = pws.get_person_by_netid(uwnetid)
+        return pws.get_idcard_photo(person.uwregid, size=PHOTO_SIZE)
+    except DataFailureException:
         return None
-
-    return pws.get_idcard_photo(person.uwregid, size=PHOTO_SIZE)
