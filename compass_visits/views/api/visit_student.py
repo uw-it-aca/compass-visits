@@ -30,6 +30,7 @@ class StudentVisitList(RESTDispatchLogin):
             JsonResponse: A JSON response containing a list of the student's
                 visits.
         """
+        # TODO: Scope this to current quarter visits only
         student_netid = UserService().get_user()
         visits = (Visit.objects
                   .select_related('program_area',
@@ -131,6 +132,7 @@ class VisitDetailView(RESTDispatchLogin):
 
         """
         try:
+            # TODO: Ensure only owning student can delete
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_netid)

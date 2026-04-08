@@ -289,15 +289,15 @@ def manager_create_visit_from_request(request_data):
     return visit
 
 
-def get_total_hours_by_netid(netid):
+def get_total_minutes_by_netid(netid):
     """
-    Calculates the total completed visit hours for a student by NetID.
+    Calculates the total completed visit minutes for a student by NetID.
 
     Args:
-        netid (str): The NetID of the student to calculate total hours for.
+        netid (str): The NetID of the student to calculate total minutes for.
 
     Returns:
-        float: The total number of hours as a float
+        float: The total number of minutes as a float
     Notes:
         - Only visits with both check-in and check-out dates are considered.
         - Only visits marked as verified (is_verified=True) are included.
@@ -316,7 +316,7 @@ def get_total_hours_by_netid(netid):
     total_duration = visits.aggregate(total=Sum('duration'))['total']
     if total_duration is None:
         return 0.0
-    return total_duration.total_seconds() / 3600
+    return total_duration.total_seconds() / 60
 
 
 def get_visits_pending_verification():

@@ -29,8 +29,19 @@ def get_visit_options():
                             .values('id', 'name'))
 
     # TODO: Add SWS client and include student's course list in the response
+    courses = [
+        {
+            "id": "CSE 142",
+            "name": "CSE 142"
+        },
+        {
+            "id": "MATH 124",
+            "name": "MATH 124"
+        }
+    ]
     return {
         'program_areas': program_areas,
         'tutoring_options': tutoring_options,
-        'writing_services': writing_services
+        'writing_services': writing_services,
+        'courses': courses
     }

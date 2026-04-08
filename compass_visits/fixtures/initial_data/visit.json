@@ -17,7 +17,7 @@
         "model": "compass_visits.visit",
         "pk": 2,
         "fields": {
-            "student_netid": "asmith",
+            "student_netid": "jnewstudent",
             "program_area": 2,
             "tutoring_option": 2,
             "writing_service": 2,
@@ -31,7 +31,7 @@
         "model": "compass_visits.visit",
         "pk": 3,
         "fields": {
-            "student_netid": "bthompson",
+            "student_netid": "jinternational",
             "program_area": 5,
             "tutoring_option": 1,
             "writing_service": null,

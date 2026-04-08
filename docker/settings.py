@@ -4,7 +4,10 @@ from .base_settings import *
 INSTALLED_APPS += [
     'compass_visits.apps.CompassVisitsConfig',
     'compass_visits.apps.ViteStaticFilesConfig',
-    'userservice'
+    'userservice',
+    'supporttools',
+    "rc_django",
+    "persistent_message",
 ]
 
 INSTALLED_APPS.remove('django.contrib.staticfiles')
@@ -29,6 +32,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "supporttools.context_processors.supportools_globals",
+                "supporttools.context_processors.has_less_compiled",
                 'compass_visits.context_processors.google_analytics',
                 'compass_visits.context_processors.django_debug',
             ],
@@ -36,6 +41,17 @@ TEMPLATES = [
     }
 ]
 
+
+SUPPORTTOOLS_PARENT_APP = "Compass Visits"
+SUPPORTTOOLS_PARENT_APP_URL = "/"
+
+USERSERVICE_OVERRIDE_AUTH_MODULE = "compass_visits.dao.auth.is_admin_user"
+RESTCLIENTS_ADMIN_AUTH_MODULE = "compass_visits.dao.auth.can_proxy_restclients"
+PERSISTENT_MESSAGE_AUTH_MODULE = (
+    "compass_visits.dao.auth.is_admin_user"
+)
+
+# ENV specific settings
 if os.getenv('ENV') == 'localdev':
     DEBUG = True
     ALLOWED_HOSTS = ['*']
@@ -60,11 +76,12 @@ if os.getenv('ENV') == 'localdev':
     SUPPORT_GROUP = "u_test_group"
     EXTERNAL_API_TOKEN = "testtoken"
 
-if os.getenv('ENV') == 'localdev' or os.getenv('ENV') == 'test' :
+if os.getenv('ENV') == 'localdev' or os.getenv('ENV') == 'test':
     ALLOW_USER_OVERRIDE_FOR_WRITE = True
 
 if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
-    VITE_MANIFEST_PATH = os.path.join(os.sep, 'static', '.vite', 'manifest.json')
+    VITE_MANIFEST_PATH = os.path.join(
+        os.sep, 'static', '.vite', 'manifest.json')
     EXTERNAL_API_TOKEN = os.getenv('EXTERNAL_API_TOKEN')
 
 if os.getenv('ENV') == 'prod':

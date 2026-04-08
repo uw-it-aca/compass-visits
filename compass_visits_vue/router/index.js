@@ -5,7 +5,10 @@ import { createWebHistory, createRouter } from "vue-router";
 
 // page components
 import Home from "@/pages/home.vue";
-import Customize from "@/pages/customize.vue";
+import Verify from "@/pages/verify.vue";
+import Checkout from "@/pages/checkout.vue";
+import Create from "@/pages/create.vue";
+import Summary from "@/pages/summary.vue";
 
 const routes = [
   {
@@ -14,11 +17,27 @@ const routes = [
     component: Home,
   },
   {
-    path: "/customize",
-    name: "Customize",
-    component: Customize,
-    pathToRegexpOptions: { strict: true },
+    path: "/create",
+    name: "Create",
+    component: Create,
   },
+  {
+    path: "/verify",
+    name: "Verify",
+    component: Verify,
+  },
+  {
+    path: "/checkout",
+    name: "Checkout",
+    component: Checkout,
+  },
+  {
+    path: "/summary",
+    name: "Visit Summary",
+    component: Summary,
+  },
+
+
 ];
 
 const router = createRouter({

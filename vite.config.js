@@ -20,7 +20,8 @@ export default defineConfig({
     },
     outDir: "./compass_visits/static/", // relative path to django's static directory
     assetsDir: "compass_visits/assets", // default ('assets')... this is the namespaced subdirectory of outDir that vite uses
-    emptyOutDir: false, // set to false to ensure favicon is not overwritten
+    emptyOutDir: false, // set to false to ensure favicon is not overwritten,
+    sourcemap: true, // include source maps in the build output for easier debugging of production code
   },
   base: "/static/", // allows for proper css url path creation during the build process
 

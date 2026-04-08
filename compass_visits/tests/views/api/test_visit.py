@@ -20,7 +20,7 @@ class VisitAPITestCase(APILoginTestCase):
     def test_patch_visit_not_verified_checkout(self):
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 2},
-                                       netid='asmith',
+                                       netid='jnewstudent',
                                        data={'checkout': True})
         self.assertEqual(response.status_code, 400)
         data = response.json()

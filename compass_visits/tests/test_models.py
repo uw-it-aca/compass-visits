@@ -3,6 +3,7 @@
 
 from compass_visits.tests import CompassVisitsTestCase
 from compass_visits.models import Visit
+from django.utils import timezone
 
 
 class VisitModelTest(CompassVisitsTestCase):
@@ -31,3 +32,13 @@ class VisitModelTest(CompassVisitsTestCase):
         self.assertFalse(json_data['is_verified'])
         self.assertIsNotNone(json_data['check_in_date'])
         self.assertIsNone(json_data['check_out_date'])
+
+    def test_active_duration(self):
+        # Simulate an active visit by setting check_in_date to 30 minutes ago
+        self.sample_visit.check_in_date =\
+            self.sample_visit.check_in_date - timezone.timedelta(minutes=30)
+        self.sample_visit.is_verified = True
+        self.sample_visit.save()
+        json_data = self.sample_visit.json_data()
+        self.assertIn('active_minutes', json_data)
+        self.assertEqual(json_data['active_minutes'], 30)

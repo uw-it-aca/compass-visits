@@ -79,7 +79,7 @@ class Visit(models.Model):
     is_verified = models.BooleanField(default=False)
 
     def json_data(self):
-        return {
+        json_data = {
             "id": self.id,
             "student_netid": self.student_netid,
             "program_area": self.program_area.name,
@@ -92,3 +92,13 @@ class Visit(models.Model):
             self.check_out_date else None,
             "is_verified": self.is_verified,
         }
+
+        json_data["active_minutes"] = self._get_duration_minutes()
+        return json_data
+
+    def _get_duration_minutes(self):
+        if not self.is_verified:
+            return 0
+        check_out_date = self.check_out_date or timezone.now()
+        duration = check_out_date - self.check_in_date
+        return int(duration.total_seconds() / 60)

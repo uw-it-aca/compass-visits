@@ -12,7 +12,7 @@ from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           validate_visit_data,
                                           student_update_visit,
                                           create_visit_from_request,
-                                          get_total_hours_by_netid,
+                                          get_total_minutes_by_netid,
                                           get_student_state,
                                           manager_create_visit_from_request,
                                           manager_update_visit)
@@ -20,7 +20,7 @@ from compass_visits.dao.visit_dao import (get_active_visit_for_student,
 
 class VisitDAOTest(CompassVisitsTestCase):
     def test_get_active_visit_for_student(self):
-        netid = "asmith"
+        netid = "jnewstudent"
         visit = get_active_visit_for_student(netid)
         self.assertIsNotNone(visit)
 
@@ -236,22 +236,22 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertEqual(str(context.exception),
                          "Student already has an active visit")
 
-    def test_get_total_hours_by_netid(self):
+    def test_get_total_minutes_by_netid(self):
         # multi with in progress
-        total_hours = get_total_hours_by_netid("javerage")
-        self.assertEqual(total_hours, 3.75)
+        total_minutes = get_total_minutes_by_netid("javerage")
+        self.assertEqual(total_minutes, 225)
 
         # single visit
-        total_hours = get_total_hours_by_netid("bthompson")
-        self.assertEqual(total_hours, 1)
+        total_minutes = get_total_minutes_by_netid("jinternational")
+        self.assertEqual(total_minutes, 60)
 
         # Only in progress
-        total_hours = get_total_hours_by_netid("kmiller")
-        self.assertEqual(total_hours, 0)
+        total_minutes = get_total_minutes_by_netid("kmiller")
+        self.assertEqual(total_minutes, 0)
 
         # No visits
-        total_hours = get_total_hours_by_netid("nobody")
-        self.assertEqual(total_hours, 0)
+        total_minutes = get_total_minutes_by_netid("nobody")
+        self.assertEqual(total_minutes, 0)
 
     def test_get_student_state(self):
         active_visit = Visit.objects.create(

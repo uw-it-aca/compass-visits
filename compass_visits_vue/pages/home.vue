@@ -2,124 +2,28 @@
 
 <template>
   <DefaultLayout :page-title="pageTitle">
-    <!-- page content -->
     <template #title>
       {{ pageTitle }}
     </template>
-
-    <template #description>
-      <div class="p-0 col-md-8 lead">
-        <p>
-          <a href="https://github.com/uw-it-aca/django-vue">django-vue</a>
-          is a highly-opinionated template repository created and used by
-          Coordination &amp; Design (DC) and Student &amp; Educational
-          Technology Services (SETS) to make our build processes consistent and
-          repeatable through established patterns across a containerized CICD
-          infrastructure.
-        </p>
-      </div>
-    </template>
-
     <template #content>
-      <div class="row">
-        <div class="col-md-6">
-          <h2>Requirements</h2>
-          <p>Download the following:</p>
-          <ul>
-            <li>
-              <a href="https://www.docker.com" target="_blank">Docker </a>
-            </li>
-            <li>
-              <a href="https://nodejs.org/en" target="_blank">Node</a>
-            </li>
-          </ul>
-
-          <h2>Development</h2>
-          <p>
-            What's included? This template repository is intended to start you
-            off with a supported development stack.
-          </p>
-          <ul>
-            <li>
-              <a href="https://www.djangoproject.com/" target="_blank"
-                >Django</a
-              >
-              (back-end)
-            </li>
-            <li>
-              <a href="https://vuejs.org/" target="_blank">Vue</a> (front-end)
-            </li>
-          </ul>
-
-          <h2>Design</h2>
-          <p>
-            We use the
-            <a href="https://test.solstice.uw.edu">Solstice Design System</a> as
-            the basis of our design.
-          </p>
+      <StudentProfile :profile="profile" />
+      <div v-if="isElligible">
+        <button class="btn btn-primary"  @click="redirectToCreate">
+          Check In
+        </button>
+        <button class="btn btn-secondary" @click="redirectToSummary">
+          Visit Summary
+        </button>
+      </div>
+      <div v-else>
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-octagon-fill"></i> You are not
+          Instructional Center elligible.
         </div>
-        <div class="col-md-6">
-          <h2>Testing</h2>
-          <ul>
-            <li>
-              <a
-                href="https://docs.djangoproject.com/en/5.2/topics/testing/tools/#testing-tools"
-                target="_blank"
-                >Django Test Client</a
-              >
-            </li>
-            <li>
-              <a href="https://test-utils.vuejs.org/" target="_blank"
-                >Vue Test Utils</a
-              >
-              with
-              <a href="https://vitest.dev/" target="_blank">Vitest</a> (test
-              runner)
-            </li>
-          </ul>
-
-          <h2>Linting (code quality)</h2>
-          <ul>
-            <li>
-              <a
-                href="https://pycodestyle.pycqa.org/en/latest/index.html"
-                target="_blank"
-                >Pycodestyle</a
-              >
-              or
-              <a
-                href="https://black.readthedocs.io/en/stable/index.html"
-                target="_blank"
-                >Black</a
-              >
-              (Python)
-            </li>
-            <li>
-              <a href="https://eslint.vuejs.org/" target="_blank"
-                >eslint-plugin-vue</a
-              >
-              (Javascript)
-            </li>
-            <li>
-              <a
-                href="https://github.com/ota-meshi/stylelint-config-recommended-vue"
-                target="_blank"
-                >stylelint-config-recommended-vue</a
-              >
-              (CSS)
-            </li>
-          </ul>
-        </div>
-
-        <div class="col-md-8">
-          <hr class="my-5 w-50" />
-
-          <h2>Get Started</h2>
-          <p>
-            View the <a href="/customize">customizing your app</a> page to learn
-            how to get started.
-          </p>
-        </div>
+        <p>
+          Please contact Director of the Instructional Center
+          <a href="mailto:therese@uw.edu">therese@uw.edu</a> for assistance.
+        </p>
       </div>
     </template>
   </DefaultLayout>
@@ -127,13 +31,58 @@
 
 <script>
 import DefaultLayout from "@/layouts/default.vue";
+import StudentProfile from "@/components/student-profile.vue";
+import { useVisitStore } from "@/stores/visit";
+
 
 export default {
   name: "PagesHome",
-  components: { DefaultLayout },
-  data() {
-    return { pageTitle: "Getting started" };
+  components: { DefaultLayout, StudentProfile },
+  setup() {
+    const visitStore = useVisitStore();
+    return { visitStore };
   },
-  methods: {},
+  data() {
+    return {
+      pageTitle: "Home",
+      profile: null,
+      isElligible: false,
+      persMsg: window.persistent_msgs || [],
+    };
+  },
+  created() {
+    this.loadStudentProfile();
+  },
+  methods: {
+    redirectToVerify() {
+      this.$router.push("/verify");
+    },
+    redirectToCheckout() {
+      this.$router.push("/checkout");
+    },
+    redirectToCreate() {
+      this.$router.push("/create");
+    },
+    redirectToSummary() {
+      this.$router.push("/summary");
+    },
+    loadStudentProfile() {
+      this.visitStore.fetchStudentProfile().then(() => {
+        this.profile = this.visitStore.studentProfile.data;
+      });
+    },
+  },
+  watch: {
+    profile(newValue) {
+      if ("current_state" in newValue) {
+        if (newValue.current_state === "pending_verification") {
+          this.redirectToVerify();
+        } else if (newValue.current_state === "active") {
+          this.redirectToCheckout();
+        }
+      }
+      this.isElligible = newValue.ic_elligible;
+    },
+  },
 };
 </script>
