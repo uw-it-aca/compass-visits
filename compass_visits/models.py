@@ -17,6 +17,9 @@ class ProgramArea(models.Model):
     name = models.CharField(max_length=255)
     allow_usage = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.name
+
 
 class TutoringOption(models.Model):
     """
@@ -30,6 +33,9 @@ class TutoringOption(models.Model):
     name = models.CharField(max_length=255)
     allow_usage = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.name
+
 
 class WritingService(models.Model):
     """
@@ -42,6 +48,9 @@ class WritingService(models.Model):
     """
     name = models.CharField(max_length=255)
     allow_usage = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Visit(models.Model):
