@@ -12,6 +12,7 @@ from compass_visits.views.api.options import VisitOptions
 from compass_visits.views.api.student import StudentProfileView
 from compass_visits.views.api.external.visit_external import (
     VisitAdminListView, CompassStudentVisitsView, ManageVisitsView)
+from compass_visits.admin import admin_site
 
 
 # start with an empty url array
@@ -33,6 +34,7 @@ if settings.DEBUG:
     ]
 
 urlpatterns += [
+    re_path(r"^admin", admin_site.urls),
     re_path(r'^api/internal/visit/(?P<visit_id>\d+)/$',
             VisitDetailView.as_view(),
             name="visit_detail"),
