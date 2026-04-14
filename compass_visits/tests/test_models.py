@@ -10,7 +10,7 @@ class VisitModelTest(CompassVisitsTestCase):
 
     def setUp(self):
         self.sample_visit = Visit.objects.create(
-            student_syskey="asmith",
+            student_syskey="012345678",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
