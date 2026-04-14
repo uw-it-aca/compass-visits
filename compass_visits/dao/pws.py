@@ -36,3 +36,11 @@ def get_syskey_by_netid(uwnetid):
     if person is None:
         return None
     return person.student_system_key
+
+
+def get_regid_by_netid(uwnetid):
+    pws = PWS()
+    person = pws.get_person_by_netid(uwnetid)
+    if person is None:
+        return None
+    return person.uwregid
