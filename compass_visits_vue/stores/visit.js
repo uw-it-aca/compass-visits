@@ -81,8 +81,6 @@ export const useVisitStore = defineStore("visit", {
     handleCreateVisit(visitData) {
       return createVisit(visitData).then(() => {
         this.studentVisit = {};
-        this.studentProfile = {};
-        this.fetchStudentProfile();
       });
     },
     deleteVisit() {

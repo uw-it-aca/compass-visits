@@ -51,6 +51,12 @@ export default {
   created() {
     this.visitStore.fetchStudentProfile().then(() => {
       this.profile = this.visitStore.studentProfile.data;
+      if(this.profile.visit && !this.profile.visit.is_verified) {
+        this.$router.push({ name: "verify" });
+      }
+      if(!this.profile.visit) {
+        this.$router.push({ name: "home" });
+      }
     });
   },
   computed: {
@@ -67,12 +73,12 @@ export default {
   methods: {
     handleCheckout() {
       this.visitStore.handleCheckout().then(() => {
-        this.$router.push("/");
+        this.$router.push({ name: "home" });
       });
     },
     handleSwitchSession() {
       this.visitStore.handleCheckout().then(() => {
-        this.$router.push("/create");
+        this.$router.push({ name: "create" });
       });
     },
   },
