@@ -9,6 +9,7 @@ from compass_visits.models import (Visit,
                                    ProgramArea,
                                    TutoringOption,
                                    WritingService)
+from compass_visits.dao.sws import get_term_start_date
 
 
 def get_active_visit_for_student(student_syskey):
@@ -363,4 +364,28 @@ def get_completed_visits_by_syskey(student_syskey):
         'program_area', 'tutoring_option', 'writing_service'
     ).filter(student_syskey=student_syskey, is_verified=True,
              check_out_date__isnull=False)
-            .order_by('-check_in_date'))
+        .order_by('-check_in_date'))
+
+
+def get_current_quarter_visits_by_syskey(student_syskey):
+    """
+    Retrieve all Visit objects for a student by SysKey that have a check-in
+    date within the current quarter.
+    Args:
+        student_syskey (str): The SysKey of the student to retrieve visits for.
+    Returns:
+        QuerySet: A Django QuerySet containing Visit instances where
+                    'student_syskey' matches the provided SysKey and
+                    'check_in_date'is greater than or equal to the start date
+                    of the current quarter, ordered by 'check_in_date' in
+                    descending order.
+    """
+    current_term_start = get_term_start_date()
+    visits = (Visit.objects
+              .select_related('program_area',
+                              'tutoring_option',
+                              'writing_service')
+              .filter(student_syskey=student_syskey,
+                      check_in_date__gte=current_term_start)
+              .order_by('-check_in_date'))
+    return visits

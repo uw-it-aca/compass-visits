@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.sws import get_class_list
+from compass_visits.dao.sws import get_class_list, get_term_start_date
 from compass_visits.dao.pws import get_regid_by_netid
+import datetime
 
 
 class SWSDAOTest(CompassVisitsTestCase):
@@ -18,3 +19,9 @@ class SWSDAOTest(CompassVisitsTestCase):
                                          "name": "TRAIN 101"})
         self.assertEqual(class_list[2], {"id": "PHYS 121",
                                          "name": "PHYS 121"})
+
+    def test_term(self):
+        start_date = get_term_start_date()
+        self.assertIsNotNone(start_date)
+        self.assertTrue(isinstance(start_date, datetime.datetime))
+        self.assertEqual(start_date.date(), datetime.date(2013, 4, 1))

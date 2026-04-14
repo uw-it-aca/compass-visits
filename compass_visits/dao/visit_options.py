@@ -3,7 +3,6 @@
 
 from compass_visits.models import ProgramArea, TutoringOption, WritingService
 from compass_visits.dao.sws import get_class_list
-from compass_visits.dao.pws import get_regid_by_netid
 
 
 def get_visit_options(student_regid):

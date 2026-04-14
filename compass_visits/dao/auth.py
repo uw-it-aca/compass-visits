@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
 from userservice.user import UserService
 from compass_visits.exceptions import OverrideNotPermitted
-from compass_visits.dao.pws import get_syskey_by_netid
+from compass_visits.dao.pws import DataFailureException, get_syskey_by_netid
 from uw_saml.utils import is_member_of_group
 
 
@@ -36,7 +36,11 @@ def can_write_visit(visit_syskey):
     Raises:
         PermissionDenied: If the current user does not match the visit owner.
     """
-    if get_syskey_by_netid(UserService().get_user()) != visit_syskey:
+    try:
+        syskey = get_syskey_by_netid(UserService().get_user())
+    except DataFailureException:
+        raise PermissionDenied("Unable to retrieve user information")
+    if syskey != visit_syskey:
         raise PermissionDenied("User does not have permission to modify "
                                "this visit")
 
