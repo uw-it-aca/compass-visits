@@ -11,9 +11,9 @@ from compass_visits.models import (Visit,
                                    WritingService)
 
 
-def get_active_visit_for_student(netid):
+def get_active_visit_for_student(student_syskey):
     """
-    Retrieve the active visit for a given student's netid.
+    Retrieve the active visit for a given student's syskey.
 
     An active visit is defined as a visit where either the check-out date is
     null or the visit is not verified. If multiple active visits are found,
@@ -21,7 +21,7 @@ def get_active_visit_for_student(netid):
     exists, returns None.
 
     Args:
-        netid (str): The student's network ID.
+        student_syskey (str): The SysKey of the student.
 
     Returns:
         Visit or None: The active Visit object for the student, or None if
@@ -30,13 +30,13 @@ def get_active_visit_for_student(netid):
     try:
         return Visit.objects.filter(Q(check_out_date__isnull=True) |
                                     Q(is_verified=False)
-                                    ).get(student_netid=netid)
+                                    ).get(student_syskey=student_syskey)
     except Visit.DoesNotExist:
         return None
     except Visit.MultipleObjectsReturned:
         return (Visit.objects.filter(Q(check_out_date__isnull=True) |
                                      Q(is_verified=False),
-                                     student_netid=netid)
+                                     student_syskey=student_syskey)
                 .latest('check_in_date'))
 
 
@@ -109,7 +109,7 @@ def validate_visit_data(request):
         raise ValidationError("Invalid writing_service")
 
 
-def create_visit_from_request(request_data, student_netid):
+def create_visit_from_request(request_data, student_syskey):
     """
     Creates a new Visit instance from the provided request data for a given
     student.
@@ -124,7 +124,7 @@ def create_visit_from_request(request_data, student_netid):
         request_data (dict): Dictionary containing visit details,
                              including 'program_area', 'tutoring_option',
                              and optionally 'writing_service' and 'course'.
-        student_netid (str): The NetID of the student for whom the visit
+        student_syskey (str): The SysKey of the student for whom the visit
                              is being created.
 
     Returns:
@@ -139,12 +139,12 @@ def create_visit_from_request(request_data, student_netid):
         WritingService.DoesNotExist: If the specified WritingService does
             not exist (when provided).
     """
-    active_visit = get_active_visit_for_student(student_netid)
+    active_visit = get_active_visit_for_student(student_syskey)
     if active_visit is not None:
         raise ValidationError("Student already has an active visit")
     validate_visit_data(request_data)
     visit = Visit()
-    visit.student_netid = student_netid
+    visit.student_syskey = student_syskey
     visit.program_area = ProgramArea.objects.get(
         id=request_data['program_area'])
     visit.tutoring_option = TutoringOption.objects.get(
@@ -239,7 +239,7 @@ def manager_create_visit_from_request(request_data):
 
     Args:
         request_data (dict): Dictionary containing visit data. Expected keys:
-            - 'student_netid' (str): NetID of the student (required).
+            - 'student_syskey' (str): SysKey of the student (required).
             - 'program_area' (int): ID of the ProgramArea (required).
             - 'tutoring_option' (int): ID of the TutoringOption (required).
             - 'writing_service' (int, optional): ID of the WritingService.
@@ -263,9 +263,9 @@ def manager_create_visit_from_request(request_data):
     """
     validate_visit_data(request_data)
     visit = Visit()
-    visit.student_netid = request_data.get('student_netid')
-    if not visit.student_netid:
-        raise ValidationError("student_netid is required")
+    visit.student_syskey = request_data.get('student_syskey')
+    if not visit.student_syskey:
+        raise ValidationError("student_syskey is required")
     if request_data.get('check_in_date'):
         try:
             visit.check_in_date = dateparse.parse_datetime(
@@ -289,12 +289,13 @@ def manager_create_visit_from_request(request_data):
     return visit
 
 
-def get_total_minutes_by_netid(netid):
+def get_total_minutes_by_syskey(student_syskey):
     """
-    Calculates the total completed visit minutes for a student by NetID.
+    Calculates the total completed visit minutes for a student by SysKey.
 
     Args:
-        netid (str): The NetID of the student to calculate total minutes for.
+        student_syskey (str): The SysKey of the student to calculate total
+            minutes for.
 
     Returns:
         float: The total number of minutes as a float
@@ -303,7 +304,7 @@ def get_total_minutes_by_netid(netid):
         - Only visits marked as verified (is_verified=True) are included.
     """
     visits = Visit.objects.filter(
-        student_netid=netid,
+        student_syskey=student_syskey,
         is_verified=True,
         check_in_date__isnull=False,
         check_out_date__isnull=False
@@ -345,12 +346,13 @@ def get_visits_pending_checkout():
     ).filter(is_verified=True, check_out_date__isnull=True)
 
 
-def get_completed_visits_by_netid(netid):
+def get_completed_visits_by_syskey(student_syskey):
     """
-    Retrieve all completed Visit objects for a student by NetID.
+    Retrieve all completed Visit objects for a student by SysKey.
 
     Args:
-        netid (str): The NetID of the student to retrieve completed visits for.
+        student_syskey (str): The SysKey of the student to retrieve completed
+            visits for.
 
     Returns:
         QuerySet: A Django QuerySet containing Visit instances where
@@ -359,6 +361,6 @@ def get_completed_visits_by_netid(netid):
     """
     return (Visit.objects.select_related(
         'program_area', 'tutoring_option', 'writing_service'
-    ).filter(student_netid=netid, is_verified=True,
+    ).filter(student_syskey=student_syskey, is_verified=True,
              check_out_date__isnull=False)
             .order_by('-check_in_date'))

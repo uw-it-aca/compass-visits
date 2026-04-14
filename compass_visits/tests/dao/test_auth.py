@@ -45,7 +45,7 @@ class AuthDAOTest(CompassVisitsTestCase):
     def test_can_write_visit(self, mock_get_user):
         mock_get_user.return_value = 'javerage'
         try:
-            can_write_visit('javerage')
+            can_write_visit('000083856')
         except PermissionDenied:
             self.fail("can_write_visit raised PermissionDenied unexpectedly!")
 

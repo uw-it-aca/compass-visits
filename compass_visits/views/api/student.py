@@ -5,7 +5,7 @@ from userservice.user import UserService
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import StreamingHttpResponse
 from compass_visits.dao.visit_dao import (get_active_visit_for_student,
-                                          get_total_minutes_by_netid,
+                                          get_total_minutes_by_syskey,
                                           get_student_state)
 from compass_visits.dao.pws import get_student_profile, get_student_photo
 from compass_visits.views.api import RESTDispatchLogin
@@ -33,7 +33,6 @@ class StudentProfileView(RESTDispatchLogin):
         """
 
         netid = UserService().get_user()
-        active_visit = get_active_visit_for_student(netid)
         mock_IC_elligible = True
 
         student_profile = get_student_profile(netid)
@@ -49,8 +48,10 @@ class StudentProfileView(RESTDispatchLogin):
         student_profile['ic_elligible'] = mock_IC_elligible
 
         if mock_IC_elligible:
+            student_syskey = student_profile.get('student_syskey')
+            active_visit = get_active_visit_for_student(student_syskey)
             student_profile.update({
-                "total_minutes": get_total_minutes_by_netid(netid),
+                "total_minutes": get_total_minutes_by_syskey(student_syskey),
                 "current_state": get_student_state(active_visit),
                 "visit": active_visit.json_data() if active_visit else None
             })
