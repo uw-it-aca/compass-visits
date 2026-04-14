@@ -49,8 +49,10 @@ class AbstractSAMLAdminModel():
 class SAMLAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
     pass
 
+
 class VisitAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
-    list_display = ('student_netid', 'program_area__name', 'tutoring_option__name',
+    list_display = ('student_syskey', 'program_area__name',
+                    'tutoring_option__name',
                     'writing_service__name', 'course', 'check_in_date',
                     'check_out_date', 'is_verified')
 

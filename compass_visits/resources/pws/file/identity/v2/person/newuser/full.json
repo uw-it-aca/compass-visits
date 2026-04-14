@@ -1,0 +1,59 @@
+{
+  "PreferredSurname": null,
+  "WhitepagesPublish": false,
+  "DisplayName": "NEW STUDENT",
+  "UIDNumber": "35443",
+  "RegisteredFirstMiddleName": "NEW",
+  "PreferredMiddleName": null,
+  "PreferredFirstName": null,
+  "UWRegID": "FE36CCB8F66711D5BE060004AC494FFF",
+  "RegisteredName": "NEW STUDENT",
+  "IsTestEntity": true,
+  "RegisteredSurname": "STUDENT",
+  "EduPersonAffiliations": [
+    "member",
+    "student",
+    "alum",
+    "staff",
+    "employee"
+  ],
+  "PriorUWRegIDs": [],
+  "PersonAffiliations": {
+    "StudentPersonAffiliation": {
+      "StudentNumber": "1233334",
+      "StudentSystemKey": "000012345",
+      "StudentWhitePages": {
+        "Name": "NEW STUDENT",
+        "Departments": [],
+        "Email": null,
+        "Phone": null,
+        "PublishInDirectory": false,
+        "Class": null
+      }
+    },
+    "AlumPersonAffiliation": {
+      "DevelopmentID": "0000773877"
+    },
+    "EmployeePersonAffiliation": {
+      "EmployeeWhitePages": {
+        "TouchDials": [],
+        "Name": "NEW STUDENT",
+        "Positions": [],
+        "VoiceMails": [],
+        "EmailAddresses": [],
+        "PublishInDirectory": false,
+        "Pagers": [],
+        "Faxes": [],
+        "Addresses": [],
+        "Phones": [],
+        "Mobiles": []
+      },
+      "MailStop": null,
+      "EmployeeID": "133456789",
+      "HomeDepartment": "C&C TEST BUDGET"
+    }
+  },
+  "RepositoryTimeStamp": "05/02/2018 04:20:32 PM",
+  "PriorUWNetIDs": [],
+  "UWNetID": "newuser"
+}

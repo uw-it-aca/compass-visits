@@ -32,29 +32,29 @@ class VisitAPITestCase(APILoginTestCase):
     def test_patch_visit_checkout_success(self,
                                           mock_get_override_user,
                                           mock_get_user):
-        mock_get_user.return_value = 'asd'
+        mock_get_user.return_value = 'newuser'
         mock_get_override_user.return_value = None
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 5},
                                        data={'checkout': True},
-                                       netid='javerage')
+                                       netid='newuser')
         self.assertEqual(response.status_code, 403)
 
         with self.settings(ALLOW_USER_OVERRIDE_FOR_WRITE=False):
-            mock_get_user.return_value = 'dlee'
+            mock_get_user.return_value = 'newuser'
             mock_get_override_user.return_value = 'javerage'
             response = self.patch_response('visit_detail',
                                            url_args={'visit_id': 5},
                                            data={'checkout': True},
-                                           netid='javerage')
+                                           netid='newuser')
             self.assertEqual(response.status_code, 403)
 
-        mock_get_user.return_value = 'dlee'
+        mock_get_user.return_value = 'jbothell'
         mock_get_override_user.return_value = None
         response = self.patch_response('visit_detail',
                                        url_args={'visit_id': 5},
                                        data={'checkout': True},
-                                       netid='javerage')
+                                       netid='jbothell')
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIsNotNone(data['check_out_date'])
@@ -69,14 +69,14 @@ class VisitAPITestCase(APILoginTestCase):
         self.assertEqual(response.status_code, 403)
 
         with self.settings(ALLOW_USER_OVERRIDE_FOR_WRITE=False):
-            mock_get_user.return_value = 'emartin'
+            mock_get_user.return_value = 'jbothell'
             mock_get_override_user.return_value = "javerage"
             response = self.delete_response('visit_detail',
                                             url_args={'visit_id': 6},
                                             netid='javerage')
             self.assertEqual(response.status_code, 403)
 
-        mock_get_user.return_value = 'emartin'
+        mock_get_user.return_value = 'bill'
         mock_get_override_user.return_value = None
         response = self.delete_response('visit_detail',
                                         url_args={'visit_id': 6},
@@ -103,7 +103,7 @@ class VisitAPITestCase(APILoginTestCase):
             "writing_service": 1,
         }
         response = self.post_response('visit',
-                                      netid='jnew',
+                                      netid='newuser',
                                       data=new_visit_data)
         self.assertEqual(response.status_code, 200)
         data = response.json()

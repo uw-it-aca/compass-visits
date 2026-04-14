@@ -3,7 +3,7 @@
         "model": "compass_visits.visit",
         "pk": 1,
         "fields": {
-            "student_netid": "javerage",
+            "student_syskey": "000083856",
             "program_area": 1,
             "tutoring_option": 1,
             "writing_service": 1,
@@ -17,7 +17,7 @@
         "model": "compass_visits.visit",
         "pk": 2,
         "fields": {
-            "student_netid": "jnewstudent",
+            "student_syskey": "000083857",
             "program_area": 2,
             "tutoring_option": 2,
             "writing_service": 2,
@@ -31,7 +31,7 @@
         "model": "compass_visits.visit",
         "pk": 3,
         "fields": {
-            "student_netid": "jinternational",
+            "student_syskey": "000083859",
             "program_area": 5,
             "tutoring_option": 1,
             "writing_service": null,
@@ -45,7 +45,7 @@
         "model": "compass_visits.visit",
         "pk": 4,
         "fields": {
-            "student_netid": "cwilson",
+            "student_syskey": "000083860",
             "program_area": 3,
             "tutoring_option": 3,
             "writing_service": 3,
@@ -59,7 +59,7 @@
         "model": "compass_visits.visit",
         "pk": 5,
         "fields": {
-            "student_netid": "dlee",
+            "student_syskey": "000083851",
             "program_area": 2,
             "tutoring_option": 2,
             "writing_service": 2,
@@ -73,7 +73,7 @@
         "model": "compass_visits.visit",
         "pk": 6,
         "fields": {
-            "student_netid": "emartin",
+            "student_syskey": "000083861",
             "program_area": 6,
             "tutoring_option": 1,
             "writing_service": 1,
@@ -87,7 +87,7 @@
         "model": "compass_visits.visit",
         "pk": 7,
         "fields": {
-            "student_netid": "fgarcia",
+            "student_syskey": "000083862",
             "program_area": 4,
             "tutoring_option": 3,
             "writing_service": 3,
@@ -101,7 +101,7 @@
         "model": "compass_visits.visit",
         "pk": 8,
         "fields": {
-            "student_netid": "hrodriguez",
+            "student_syskey": "000083863",
             "program_area": 2,
             "tutoring_option": 2,
             "writing_service": null,
@@ -115,7 +115,7 @@
         "model": "compass_visits.visit",
         "pk": 9,
         "fields": {
-            "student_netid": "ijohnson",
+            "student_syskey": "000083858",
             "program_area": 1,
             "tutoring_option": 1,
             "writing_service": 1,
@@ -129,7 +129,7 @@
         "model": "compass_visits.visit",
         "pk": 10,
         "fields": {
-            "student_netid": "kmiller",
+            "student_syskey": "000083855",
             "program_area": 3,
             "tutoring_option": 3,
             "writing_service": null,
@@ -143,7 +143,7 @@
         "model": "compass_visits.visit",
         "pk": 11,
         "fields": {
-            "student_netid": "javerage",
+            "student_syskey": "000083856",
             "program_area": 1,
             "tutoring_option": 1,
             "writing_service": 1,
@@ -157,7 +157,7 @@
         "model": "compass_visits.visit",
         "pk": 12,
         "fields": {
-            "student_netid": "javerage",
+            "student_syskey": "000083856",
             "program_area": 1,
             "tutoring_option": 1,
             "writing_service": 1,

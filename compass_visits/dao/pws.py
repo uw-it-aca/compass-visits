@@ -17,6 +17,7 @@ def get_student_profile(uwnetid):
         "netid": uwnetid,
         "student_name": person.display_name,
         "student_number": person.student_number,
+        "student_syskey": person.student_system_key
     }
 
 
@@ -27,3 +28,11 @@ def get_student_photo(uwnetid):
         return pws.get_idcard_photo(person.uwregid, size=PHOTO_SIZE)
     except DataFailureException:
         return None
+
+
+def get_syskey_by_netid(uwnetid):
+    pws = PWS()
+    person = pws.get_person_by_netid(uwnetid)
+    if person is None:
+        return None
+    return person.student_system_key

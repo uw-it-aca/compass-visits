@@ -27,7 +27,7 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertEqual(data['visit']['id'], 2)
 
     def test_new_user(self):
-        response = self.get_response('student_profile', netid='bill')
+        response = self.get_response('student_profile', netid='newuser')
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data['current_state'], "none")

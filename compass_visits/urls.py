@@ -53,7 +53,7 @@ urlpatterns += [
     re_path(r'^api/v1/visitoptions/$',
             VisitOptions.as_view(),
             name="visit_options"),
-    re_path(r'^api/v1/studentvisits/(?P<student_netid>\w+)/$',
+    re_path(r'^api/v1/studentvisits/(?P<student_syskey>\w+)/$',
             CompassStudentVisitsView.as_view(),
             name="compass_student_visits"),
     re_path(r'^api/v1/managevisit/(?P<visit_id>\d+)/$',

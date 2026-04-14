@@ -8,6 +8,7 @@ from compass_visits.exceptions import ValidationError, OverrideNotPermitted
 from compass_visits.models import Visit
 from compass_visits.dao.auth import valid_user_override, can_write_visit
 from django.core.exceptions import PermissionDenied
+from compass_visits.dao.pws import get_syskey_by_netid
 from userservice.user import UserService
 import json
 
@@ -32,11 +33,12 @@ class StudentVisitList(RESTDispatchLogin):
         """
         # TODO: Scope this to current quarter visits only
         student_netid = UserService().get_user()
+        student_syskey = get_syskey_by_netid(student_netid)
         visits = (Visit.objects
                   .select_related('program_area',
                                   'tutoring_option',
                                   'writing_service')
-                  .filter(student_netid=student_netid)
+                  .filter(student_syskey=student_syskey)
                   .order_by('-check_in_date'))
         visit_list = [visit.json_data() for visit in visits]
         return self.json_response(status=200, content=visit_list)
@@ -67,8 +69,9 @@ class VisitView(RESTDispatchLogin):
         try:
             valid_user_override()
             student_netid = UserService().get_user()
+            student_syskey = get_syskey_by_netid(student_netid)
             request_body = json.loads(request.body)
-            visit = create_visit_from_request(request_body, student_netid)
+            visit = create_visit_from_request(request_body, student_syskey)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:
             return self.error_response(status=400, message=e)
@@ -107,7 +110,7 @@ class VisitDetailView(RESTDispatchLogin):
         try:
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
-            can_write_visit(visit.student_netid)
+            can_write_visit(visit.student_syskey)
             student_update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:
@@ -135,7 +138,7 @@ class VisitDetailView(RESTDispatchLogin):
             # TODO: Ensure only owning student can delete
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
-            can_write_visit(visit.student_netid)
+            can_write_visit(visit.student_syskey)
             visit.delete()
             return self.json_response(status=200, content={})
         except Visit.DoesNotExist:

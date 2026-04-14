@@ -58,7 +58,7 @@ class Visit(models.Model):
     Represents a student visit record in the Compass Visits system.
 
     Fields:
-        student_netid (CharField): The NetID of the student.
+        student_syskey (CharField): The SysKey of the student.
         program_area (ForeignKey): Reference to the ProgramArea.
         tutoring_option (ForeignKey): Reference to the TutoringOption.
         writing_service (ForeignKey, optional): Reference to the
@@ -75,7 +75,7 @@ class Visit(models.Model):
         json_data(): Returns a dictionary representation of the visit suitable
                      for JSON serialization.
     """
-    student_netid = models.CharField(max_length=255, db_index=True)
+    student_syskey = models.CharField(max_length=10, db_index=True)
     program_area = models.ForeignKey(ProgramArea, on_delete=models.PROTECT)
     tutoring_option = models.ForeignKey(TutoringOption,
                                         on_delete=models.PROTECT)
@@ -90,7 +90,7 @@ class Visit(models.Model):
     def json_data(self):
         json_data = {
             "id": self.id,
-            "student_netid": self.student_netid,
+            "student_syskey": self.student_syskey,
             "program_area": self.program_area.name,
             "tutoring_option": self.tutoring_option.name,
             "writing_service": self.writing_service.name if

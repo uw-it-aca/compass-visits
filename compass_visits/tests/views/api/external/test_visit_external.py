@@ -43,7 +43,7 @@ class VisitExternalAPITestCase(APITokenTestCase):
 
     def test_get_compass_student_visits(self):
         response = self.get_response('compass_student_visits',
-                                     url_args={'student_netid': 'javerage'},
+                                     url_args={'student_syskey': '000083856'},
                                      token='Token testtoken'
                                      )
         self.assertEqual(response.status_code, 200)
@@ -108,7 +108,7 @@ class VisitExternalAPITestCase(APITokenTestCase):
 
     def test_manage_visits_post(self):
         new_visit_data = {
-            'student_netid': 'newstudent',
+            'student_syskey': '000043868',
             'program_area': 1,
             'tutoring_option': 1,
             'writing_service': 1,
@@ -121,7 +121,7 @@ class VisitExternalAPITestCase(APITokenTestCase):
                                       )
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data['student_netid'], 'newstudent')
+        self.assertEqual(data['student_syskey'], '000043868')
         self.assertEqual(data['program_area'], 'Biology/Natural Sci')
         self.assertEqual(data['tutoring_option'], 'Drop In')
         self.assertEqual(data['writing_service'], 'Application')
@@ -146,7 +146,7 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertEqual(response.status_code, 400)
         data = response.json()
         self.assertIn('error', data)
-        self.assertEqual(data['error'], 'student_netid is required')
+        self.assertEqual(data['error'], 'student_syskey is required')
 
     def test_manage_visits_delete(self):
         response = self.delete_response('manage_visit',
