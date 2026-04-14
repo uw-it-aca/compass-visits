@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied
 from compass_visits.dao.pws import get_syskey_by_netid
 from userservice.user import UserService
 import json
+from restclients_core.exceptions import DataFailureException
 
 
 class StudentVisitList(RESTDispatchLogin):
@@ -33,7 +34,13 @@ class StudentVisitList(RESTDispatchLogin):
         """
         # TODO: Scope this to current quarter visits only
         student_netid = UserService().get_user()
-        student_syskey = get_syskey_by_netid(student_netid)
+        try:
+            student_syskey = get_syskey_by_netid(student_netid)
+        except DataFailureException:
+            return self.error_response(status=400,
+                                       message="Unable to retrieve student "
+                                               "information")
+
         visits = (Visit.objects
                   .select_related('program_area',
                                   'tutoring_option',
@@ -135,7 +142,6 @@ class VisitDetailView(RESTDispatchLogin):
 
         """
         try:
-            # TODO: Ensure only owning student can delete
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_syskey)

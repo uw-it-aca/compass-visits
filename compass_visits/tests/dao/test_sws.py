@@ -12,6 +12,9 @@ class SWSDAOTest(CompassVisitsTestCase):
         class_list = get_class_list(regid)
         self.assertIsNotNone(class_list)
         self.assertEqual(len(class_list), 3)
-        self.assertEqual(class_list[0], "TRAIN 100")
-        self.assertEqual(class_list[1], "TRAIN 101")
-        self.assertEqual(class_list[2], "PHYS 121")
+        self.assertEqual(class_list[0], {"id": "TRAIN 100",
+                                         "name": "TRAIN 100"})
+        self.assertEqual(class_list[1], {"id": "TRAIN 101",
+                                         "name": "TRAIN 101"})
+        self.assertEqual(class_list[2], {"id": "PHYS 121",
+                                         "name": "PHYS 121"})

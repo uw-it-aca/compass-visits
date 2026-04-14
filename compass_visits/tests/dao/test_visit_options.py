@@ -34,6 +34,9 @@ class VisitOptionsTestCase(CompassVisitsTestCase):
         self.assertEqual(options['writing_services'][0]['id'], 1)
 
         self.assertEqual(len(options['courses']), 3)
-        self.assertEqual(options['courses'][0], "TRAIN 100")
-        self.assertEqual(options['courses'][1], "TRAIN 101")
-        self.assertEqual(options['courses'][2], "PHYS 121")
+        self.assertEqual(options['courses'][0], {"id": "TRAIN 100",
+                                                 "name": "TRAIN 100"})
+        self.assertEqual(options['courses'][1], {"id": "TRAIN 101",
+                                                 "name": "TRAIN 101"})
+        self.assertEqual(options['courses'][2], {"id": "PHYS 121",
+                                                 "name": "PHYS 121"})
