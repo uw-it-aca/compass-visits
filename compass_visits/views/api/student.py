@@ -34,8 +34,12 @@ class StudentProfileView(RESTDispatchLogin):
 
         netid = UserService().get_user()
         mock_IC_elligible = True
-
-        student_profile = get_student_profile(netid)
+        try:
+            student_profile = get_student_profile(netid)
+        except DataFailureException:
+            return self.error_response(status=400,
+                                       message="Unable to retrieve student "
+                                               "information")
         try:
             photo_data = get_student_photo(netid)
             student_profile['photo'] = (base64

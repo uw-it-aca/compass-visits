@@ -131,7 +131,7 @@ export default {
             ? this.selectedWritingService.id
             : null,
         });
-        this.$router.push("/verify");
+        this.$router.push({ name: "verify" });
       }
     },
   },

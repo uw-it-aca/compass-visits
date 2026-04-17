@@ -55,16 +55,16 @@ export default {
   },
   methods: {
     redirectToVerify() {
-      this.$router.push("/verify");
+      this.$router.push({ name: "verify" });
     },
     redirectToCheckout() {
-      this.$router.push("/checkout");
+      this.$router.push({ name: "checkout" });
     },
     redirectToCreate() {
-      this.$router.push("/create");
+      this.$router.push({ name: "create" });
     },
     redirectToSummary() {
-      this.$router.push("/summary");
+      this.$router.push({ name: "summary" });
     },
     loadStudentProfile() {
       this.visitStore.fetchStudentProfile().then(() => {

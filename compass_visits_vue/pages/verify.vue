@@ -39,28 +39,46 @@ export default {
     };
   },
   created() {
-    this.visitStore.fetchStudentProfile().then(() => {
+    this.visitStore.refreshStudentProfile().then(() => {
       this.profile = this.visitStore.studentProfile.data;
+      if (
+        this.profile &&
+        this.profile.visit &&
+        this.profile.visit.is_verified
+      ) {
+        this.redirectToCheckout();
+      }
+      if (!this.profile.visit) {
+        this.redirectToHome();
+      }
     });
   },
   computed: {
     visitDetails() {
       return this.profile ? this.profile.visit : null;
-    }
+    },
   },
   methods: {
     refreshPage() {
       this.visitStore.refreshStudentProfile().then(() => {
         this.profile = this.visitStore.studentProfile.data;
+        if (this.profile.visit.is_verified) {
+          this.redirectToCheckout();
+        }
       });
     },
-     cancelVisit() {
+    cancelVisit() {
       this.visitStore.deleteVisit().then(() => {
         this.profile = null;
-          this.$router.push("/");
+        this.redirectToHome();
       });
-     },
+    },
+    redirectToCheckout() {
+      this.$router.push({ name: "checkout" });
+    },
+    redirectToHome() {
+      this.$router.push({ name: "home" });
+    },
   },
-  watch: {},
 };
 </script>

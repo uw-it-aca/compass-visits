@@ -2,7 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.pws import get_student_photo, get_student_profile
+from compass_visits.dao.pws import (get_student_photo,
+                                    get_student_profile,
+                                    get_regid_by_netid,
+                                    get_syskey_by_netid)
+from restclients_core.exceptions import DataFailureException
 
 
 class PWSDAOTest(CompassVisitsTestCase):
@@ -18,3 +22,17 @@ class PWSDAOTest(CompassVisitsTestCase):
         self.assertIsNotNone(photo)
         no_photo = get_student_photo("nonexistent")
         self.assertIsNone(no_photo)
+
+    def test_get_regid_by_netid(self):
+        regid = get_regid_by_netid("javerage")
+        self.assertEqual(regid, "9136CCB8F66711D5BE060004AC494FFE")
+        with self.assertRaises(DataFailureException):
+            no_regid = get_regid_by_netid("nonexistent")
+            self.assertIsNone(no_regid)
+
+    def test_get_syskey_by_netid(self):
+        syskey = get_syskey_by_netid("javerage")
+        self.assertEqual(syskey, "000083856")
+        with self.assertRaises(DataFailureException):
+            no_syskey = get_syskey_by_netid("nonexistent")
+            self.assertIsNone(no_syskey)
