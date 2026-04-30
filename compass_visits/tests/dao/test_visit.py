@@ -15,7 +15,8 @@ from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           get_total_minutes_by_syskey,
                                           get_student_state,
                                           manager_create_visit_from_request,
-                                          manager_update_visit)
+                                          manager_update_visit,
+                                          checkout_active_verified_visit)
 
 
 class VisitDAOTest(CompassVisitsTestCase):
@@ -214,6 +215,12 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = create_visit_from_request(request_data, student_syskey)
         self.assertEqual(visit.course, request_data['course'])
         self.assertIsNone(visit.writing_service)
+        visit.delete()
+
+        visit = create_visit_from_request(request_data,
+                                          student_syskey,
+                                          verified=True)
+        self.assertTrue(visit.is_verified)
 
     def test_create_from_request_with_active_visit(self):
         Visit.objects.all().delete()  # Clear existing visits
@@ -460,3 +467,24 @@ class VisitDAOTest(CompassVisitsTestCase):
             manager_update_visit(visit, request_data)
         self.assertEqual(str(context.exception),
                          "Visit is already verified")
+
+    def test_checkout_active_verified_visit(self):
+        student_syskey = "000043874"
+        active_visit = Visit.objects.create(
+            student_syskey=student_syskey,
+            program_area_id=1,
+            tutoring_option_id=1,
+            writing_service_id=1,
+            is_verified=True
+        )
+        checkout_active_verified_visit(student_syskey)
+        active_visit.refresh_from_db()
+        self.assertIsNotNone(active_visit.check_out_date)
+
+        # Test with no active verified visit
+        student_syskey_no_active = "000043875"
+        try:
+            checkout_active_verified_visit(student_syskey_no_active)
+        except Exception as e:
+            self.fail(f"checkout_active_verified_visit raised an exception "
+                      f"unexpectedly: {e}")

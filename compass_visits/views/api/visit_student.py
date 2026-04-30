@@ -4,7 +4,8 @@
 from compass_visits.views.api import RESTDispatchLogin
 from compass_visits.dao.visit_dao import (create_visit_from_request,
                                           student_update_visit,
-                                          get_current_quarter_visits_by_syskey)
+                                          get_current_quarter_visits_by_syskey,
+                                          checkout_active_verified_visit)
 from compass_visits.exceptions import ValidationError, OverrideNotPermitted
 from compass_visits.models import Visit
 from compass_visits.dao.auth import valid_user_override, can_write_visit
@@ -55,6 +56,9 @@ class VisitView(RESTDispatchLogin):
         - Validate user override permissions.
         - Retrieve the current student's NetID.
         - Parse the request body as JSON.
+        - If a verified visit is in progress it will check out that visit and
+            create a new, verified visit with the new request data. Handles
+            the "switch" use case
         - Create a visit record using the request data and student NetID.
         - Return a JSON response with the created visit data on success.
 
@@ -72,8 +76,11 @@ class VisitView(RESTDispatchLogin):
             valid_user_override()
             student_netid = UserService().get_user()
             student_syskey = get_syskey_by_netid(student_netid)
+            switch_visit = checkout_active_verified_visit(student_syskey)
             request_body = json.loads(request.body)
-            visit = create_visit_from_request(request_body, student_syskey)
+            visit = create_visit_from_request(request_body,
+                                              student_syskey,
+                                              verified=switch_visit)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:
             return self.error_response(status=400, message=e)
