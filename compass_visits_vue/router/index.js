@@ -20,6 +20,7 @@ const routes = [
     path: "/create",
     name: "create",
     component: Create,
+    props: route => ({ ...route.params, switch: route.query.switch === 'true' }),
   },
   {
     path: "/verify",

@@ -6,7 +6,6 @@
       {{ pageTitle }}
     </template>
     <template #content>
-      <p>Create Visit Page</p>
       <h3>Program Area<span style="color: red">*</span></h3>
       <select
         v-model="selectedProgramArea"
@@ -73,7 +72,7 @@
         :disabled="!allAreSelected"
         @click="createVisit"
       >
-        Create Visit
+        {{ pageTitle }}
       </button>
     </template>
   </DefaultLayout>
@@ -93,9 +92,14 @@ export default {
     visitOptionsStore.fetchVisitOptions();
     return { visitOptionsStore, visitStore };
   },
+  props: {
+    switch: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      pageTitle: "Create Visit",
       selectedProgramArea: "",
       selectedTutoringOption: "",
       selectedCourseOrWriting: "",
@@ -119,6 +123,9 @@ export default {
         (service) => service.id === this.selectedCourseOrWriting
       );
     },
+    pageTitle() {
+      return this.switch ? "Switch Session" : "Create Visit";
+    },
   },
   methods: {
     createVisit() {
@@ -130,8 +137,13 @@ export default {
           writing_service: this.selectedWritingService
             ? this.selectedWritingService.id
             : null,
+        }).then(() => {
+          if (this.switch) {
+            this.$router.push({ name: "checkout" });
+          } else {
+            this.$router.push({ name: "verify" });
+          }
         });
-        this.$router.push({ name: "verify" });
       }
     },
   },
