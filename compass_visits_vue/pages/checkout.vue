@@ -77,9 +77,9 @@ export default {
       });
     },
     handleSwitchSession() {
-      this.visitStore.handleCheckout().then(() => {
-        this.$router.push({ name: "create" });
-      });
+      this.profile = null;
+      this.visitStore.studentProfile = null;
+      this.$router.push({ name: "create", query: { switch: true } });
     },
   },
 };

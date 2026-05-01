@@ -110,7 +110,7 @@ def validate_visit_data(request):
         raise ValidationError("Invalid writing_service")
 
 
-def create_visit_from_request(request_data, student_syskey):
+def create_visit_from_request(request_data, student_syskey, verified=False):
     """
     Creates a new Visit instance from the provided request data for a given
     student.
@@ -154,6 +154,7 @@ def create_visit_from_request(request_data, student_syskey):
         visit.writing_service = WritingService.objects.get(
             id=request_data['writing_service'])
     visit.course = request_data.get('course')
+    visit.is_verified = verified
     visit.save()
     return visit
 
@@ -389,3 +390,28 @@ def get_current_quarter_visits_by_syskey(student_syskey):
                       check_in_date__gte=current_term_start)
               .order_by('-check_in_date'))
     return visits
+
+
+def checkout_active_verified_visit(student_syskey):
+    """
+    Checks out the active verified visit for a student by setting the
+    check_out_date to the current time.
+
+    This function looks for an active visit that is verified (is_verified=True)
+    and has no check_out_date. If such a visit exists, it updates the
+    check_out_date to the current time. If no such visit exists, it does
+    nothing.
+
+    Args:
+        student_syskey (str): The SysKey of the student whose visit should be
+            checked out.
+    Returns:
+        bool: True if a visit was checked out, False if no active verified
+            visit was found.
+    """
+
+    updated_count = Visit.objects.filter(student_syskey=student_syskey,
+                                         is_verified=True,
+                                         check_out_date=None)\
+        .update(check_out_date=timezone.now())
+    return updated_count > 0

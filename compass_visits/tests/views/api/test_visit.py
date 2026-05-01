@@ -125,10 +125,18 @@ class VisitAPITestCase(APILoginTestCase):
             "tutoring_option": 1,
             "writing_service": 1,
         }
+        old_visit = Visit.objects.get(id=12)
+        self.assertEqual(old_visit.check_out_date, None)
         response = self.post_response('visit',
                                       netid='javerage',
                                       data=new_visit_data)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data['error'],
-                         "Student already has an active visit")
+        old_visit.refresh_from_db()
+        self.assertIsNotNone(old_visit.check_out_date)
+        self.assertEqual(data['program_area'], 'Biology/Natural Sci')
+        self.assertEqual(data['tutoring_option'], 'Drop In')
+        self.assertEqual(data['writing_service'], 'Application')
+        new_visit = Visit.objects.get(id=data['id'])
+        self.assertEqual(new_visit.is_verified, True)
+        self.assertEqual(new_visit.check_out_date, None)
