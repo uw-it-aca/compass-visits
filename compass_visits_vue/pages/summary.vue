@@ -3,13 +3,17 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      {{ pageTitle }}
+      <div class="row">
+        <div class="col-1">
+          <a href="/"><i class="bi bi-arrow-left"></i></a>
+        </div>
+        <div class="col text-center">{{ pageTitle }}</div>
+      </div>
     </template>
     <template #content>
-    <visit-group :visit-list="visitsThisWeek" group-title="This Week" />
-    <visit-group :visit-list="visitsLastWeek" group-title="Last Week" />
-    <visit-group :visit-list="remainingVisits" group-title="This Quarter" />
-
+      <visit-group :visit-list="visitsThisWeek" group-title="This Week" />
+      <visit-group :visit-list="visitsLastWeek" group-title="Last Week" />
+      <visit-group :visit-list="remainingVisits" group-title="This Quarter" />
     </template>
   </DefaultLayout>
 </template>

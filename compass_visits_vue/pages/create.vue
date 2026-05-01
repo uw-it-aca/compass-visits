@@ -3,77 +3,89 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      {{ pageTitle }}
+      <div class="row mb-3">
+        <div class="col-1">
+          <a href="/"><i class="bi bi-arrow-left"></i></a>
+        </div>
+        <div class="col text-center">{{ pageTitle }}</div>
+      </div>
     </template>
     <template #content>
-      <p>Create Visit Page</p>
-      <h3>Program Area<span style="color: red">*</span></h3>
-      <select
-        v-model="selectedProgramArea"
-        class="form-select"
-        aria-label="Select Program Area"
-      >
-        <option value="" disabled selected>Select a program area</option>
-        <option
-          v-for="programArea in visitOptionsStore.visitOptions.program_areas"
-          :key="programArea.id"
-          :value="programArea.id"
+      <h3 class="pb-1">Program Area<span style="color: red">*</span></h3>
+      <div class="pb-4">
+        <select
+          v-model="selectedProgramArea"
+          class="form-select"
+          aria-label="Select Program Area"
         >
-          {{ programArea.name }}
-        </option>
-      </select>
-      <h3>Tutoring Option<span style="color: red">*</span></h3>
-      <select
-        v-model="selectedTutoringOption"
-        class="form-select"
-        aria-label="Select Tutoring Option"
-      >
-        <option value="" disabled selected>Select a tutoring option</option>
-        <option
-          v-for="tutoringOption in visitOptionsStore.visitOptions
-            .tutoring_options"
-          :key="tutoringOption.id"
-          :value="tutoringOption.id"
+          <option value="" disabled selected>Select a program area</option>
+          <option
+            v-for="programArea in visitOptionsStore.visitOptions.program_areas"
+            :key="programArea.id"
+            :value="programArea.id"
+          >
+            {{ programArea.name }}
+          </option>
+        </select>
+      </div>
+      <h3 class="pb-1">Tutoring Option<span style="color: red">*</span></h3>
+      <div class="pb-4">
+        <select
+          v-model="selectedTutoringOption"
+          class="form-select"
+          aria-label="Select Tutoring Option"
         >
-          {{ tutoringOption.name }}
-        </option>
-      </select>
+          <option value="" disabled selected>Select a tutoring option</option>
+          <option
+            v-for="tutoringOption in visitOptionsStore.visitOptions
+              .tutoring_options"
+            :key="tutoringOption.id"
+            :value="tutoringOption.id"
+          >
+            {{ tutoringOption.name }}
+          </option>
+        </select>
+      </div>
+      <h3 class="pb-1">
+        Course or Writing Service<span style="color: red">*</span>
+      </h3>
+      <div class="pb-4">
+        <select
+          v-model="selectedCourseOrWriting"
+          class="form-select"
+          aria-label="Select Course or Writing Service"
+        >
+          <option value="" disabled selected>
+            Select a course or writing service
+          </option>
+          <optgroup label="Courses">
+            <option
+              v-for="course in visitOptionsStore.visitOptions.courses"
+              :key="course.id"
+              :value="course.id"
+            >
+              {{ course.name }}
+            </option>
+          </optgroup>
 
-      <h3>Course or Writing Service<span style="color: red">*</span></h3>
-      <select
-        v-model="selectedCourseOrWriting"
-        class="form-select"
-        aria-label="Select Course or Writing Service"
-      >
-        <option value="" disabled selected>
-          Select a course or writing service
-        </option>
-        <optgroup label="Writing Services">
-          <option
-            v-for="writingService in visitOptionsStore.visitOptions
-              .writing_services"
-            :key="writingService.id"
-            :value="writingService.id"
-          >
-            {{ writingService.name }}
-          </option>
-        </optgroup>
-        <optgroup label="Courses">
-          <option
-            v-for="course in visitOptionsStore.visitOptions.courses"
-            :key="course.id"
-            :value="course.id"
-          >
-            {{ course.name }}
-          </option>
-        </optgroup>
-      </select>
+          <optgroup v-if="selectedProgramArea === 7" label="Writing Services">
+            <option
+              v-for="writingService in visitOptionsStore.visitOptions
+                .writing_services"
+              :key="writingService.id"
+              :value="writingService.id"
+            >
+              {{ writingService.name }}
+            </option>
+          </optgroup>
+        </select>
+      </div>
       <button
         class="btn btn-primary mt-3"
         :disabled="!allAreSelected"
         @click="createVisit"
       >
-        Create Visit
+        Confirm
       </button>
     </template>
   </DefaultLayout>

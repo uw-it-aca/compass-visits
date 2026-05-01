@@ -11,18 +11,18 @@
       </header>
 
       <main>
-        <h1 class="">
+        <h1>
           <slot name="title">
             {{ pageTitle }}
           </slot>
         </h1>
 
         <slot name="description" />
-        <hr class="my-5 w-25 d-inline-block" />
+
         <slot name="content" />
       </main>
 
-      <footer class="pt-2 mt-5 mb-3 text-muted border-top">
+      <footer class="mb-2 ps-3 text-muted fixed-bottom">
         Copyright &copy; {{ new Date().getFullYear() }} University of Washington
       </footer>
     </div>

@@ -1,8 +1,12 @@
 // visit-group.vue
 
 <template>
-  <h3>{{ groupTitle }}</h3>
-  <p>{{ visitList.length }} {{ visitString }}, {{ totalVisitDuration }} min</p>
+  <div class="row pt-3">
+    <h3 class="col">{{ groupTitle }}</h3>
+    <p class="col-auto text-body-secondary pt-1">
+      {{ visitList.length }} {{ visitString }}, {{ totalVisitDuration }} min
+    </p>
+  </div>
   <div v-if="visitList.length === 0" class="text-muted">
     No visits in this time period.
   </div>

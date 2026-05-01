@@ -1,21 +1,18 @@
 // home.vue
 
 <template>
-  <DefaultLayout :page-title="pageTitle">
-    <template #title>
-      {{ pageTitle }}
-    </template>
+  <DefaultLayout>
     <template #content>
       <StudentProfile :profile="profile" />
-      <div v-if="isElligible">
-        <button class="btn btn-primary"  @click="redirectToCreate">
+      <div v-if="isElligible" class="text-center row">
+        <button class="btn btn-primary my-2" @click="redirectToCreate">
           Check In
         </button>
-        <button class="btn btn-secondary" @click="redirectToSummary">
-          Visit Summary
+        <button class="btn btn-secondary my-2" @click="redirectToSummary">
+          Summary
         </button>
       </div>
-      <div v-else>
+      <div v-else class="text-center">
         <div class="alert alert-danger" role="alert">
           <i class="bi bi-exclamation-octagon-fill"></i> You are not
           Instructional Center elligible.
@@ -33,7 +30,6 @@
 import DefaultLayout from "@/layouts/default.vue";
 import StudentProfile from "@/components/student-profile.vue";
 import { useVisitStore } from "@/stores/visit";
-
 
 export default {
   name: "PagesHome",

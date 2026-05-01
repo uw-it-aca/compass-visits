@@ -6,7 +6,6 @@
       {{ pageTitle }}
     </template>
     <template #content>
-      <p>Verification Required</p>
       <div class="alert alert-warning" role="alert">
         <i class="bi bi-exclamation-triangle-fill"></i>
         Your check-in is not yet complete. Please verify with the IC front desk,
@@ -46,20 +45,21 @@ export default {
   computed: {
     visitDetails() {
       return this.profile ? this.profile.visit : null;
-    }
+    },
   },
   methods: {
     refreshPage() {
       this.visitStore.refreshStudentProfile().then(() => {
         this.profile = this.visitStore.studentProfile.data;
+        this.$router.push("/checkout");
       });
     },
-     cancelVisit() {
+    cancelVisit() {
       this.visitStore.deleteVisit().then(() => {
         this.profile = null;
-          this.$router.push("/");
+        this.$router.push("/");
       });
-     },
+    },
   },
   watch: {},
 };

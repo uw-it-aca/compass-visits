@@ -1,16 +1,20 @@
 // student-profile.vue
 
 <template>
-  <div v-if="showProfile">
-    <img :src="`data:image/png;base64,${visitStore.studentProfile.data.photo}`" alt="Profile Image" />
-    <h2>{{ visitStore.studentProfile.data.student_name }}</h2>
-    <p>{{ visitStore.studentProfile.data.student_number }}</p>
-    <p>Total Hours: {{ totalHours.toFixed(2) }}</p>
+  <div v-if="showProfile" class="text-center">
+    <img
+      :src="`data:image/png;base64,${visitStore.studentProfile.data.photo}`"
+      alt="Profile Image"
+    />
+    <h2 class="my-3">{{ visitStore.studentProfile.data.student_name }}</h2>
+    <p>student ID: {{ visitStore.studentProfile.data.student_number }}</p>
+    <p>Total Hours:</p>
+    <p class="fw-bold">{{ totalHours.toFixed(2) }}</p>
   </div>
 </template>
 
 <script>
-import { useVisitStore } from '../stores/visit';
+import { useVisitStore } from "../stores/visit";
 
 export default {
   name: "StudentProfile",
