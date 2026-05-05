@@ -41,7 +41,7 @@ async function getStudentVisits() {
 }
 
 async function getVisitOptions() {
-  const url = "/api/v1/visitoptions/";
+  const url = "/api/internal/visitoptions/";
   return useCustomFetch(url);
 }
 

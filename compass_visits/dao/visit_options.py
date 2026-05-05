@@ -3,6 +3,7 @@
 
 from compass_visits.models import ProgramArea, TutoringOption, WritingService
 from compass_visits.dao.sws import get_class_list
+from restclients_core.exceptions import DataFailureException
 
 
 def get_visit_options(student_regid):
@@ -28,8 +29,10 @@ def get_visit_options(student_regid):
                             .values('id', 'name'))
     writing_services = list(WritingService.objects.filter(allow_usage=True)
                             .values('id', 'name'))
-
-    courses = get_class_list(student_regid)
+    try:
+        courses = get_class_list(student_regid)
+    except DataFailureException:
+        courses = []
     return {
         'program_areas': program_areas,
         'tutoring_options': tutoring_options,
