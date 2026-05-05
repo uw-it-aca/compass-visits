@@ -12,6 +12,8 @@ from compass_visits.views.api.options import VisitOptions
 from compass_visits.views.api.student import StudentProfileView
 from compass_visits.views.api.external.visit_external import (
     VisitAdminListView, CompassStudentVisitsView, ManageVisitsView)
+from compass_visits.views.api.external.options_external import \
+    VisitOptionsExternal
 from compass_visits.admin import admin_site
 
 
@@ -47,12 +49,15 @@ urlpatterns += [
     re_path(r'^api/internal/profile/$',
             StudentProfileView.as_view(),
             name="student_profile"),
+    re_path(r'^api/internal/visitoptions/$',
+            VisitOptions.as_view(),
+            name="visit_options"),
     re_path(r'^api/v1/visitadminlist/$',
             VisitAdminListView.as_view(),
             name="visit_admin_list"),
-    re_path(r'^api/v1/visitoptions/$',
-            VisitOptions.as_view(),
-            name="visit_options"),
+    re_path(r'^api/v1/visitoptions/(?P<student_regid>\w+)/$',
+            VisitOptionsExternal.as_view(),
+            name="visit_options_external"),
     re_path(r'^api/v1/studentvisits/(?P<student_syskey>\w+)/$',
             CompassStudentVisitsView.as_view(),
             name="compass_student_visits"),
