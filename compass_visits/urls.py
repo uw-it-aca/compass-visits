@@ -64,7 +64,7 @@ urlpatterns += [
     re_path(r'^api/v1/managevisit/(?P<visit_id>\d+)/$',
             ManageVisitsView.as_view(),
             name="manage_visit"),
-    re_path(r'^api/v1/studentvisit/$',
+    re_path(r'^api/v1/managevisit/$',
             ManageVisitsView.as_view(),
             name="manage_visits"),
     re_path(
