@@ -274,13 +274,20 @@ def manager_create_visit_from_request(request_data):
                 request_data['check_in_date'])
         except (ValueError, TypeError):
             raise ValidationError("Invalid check_in_date format")
-    visit.program_area = ProgramArea.objects.get(
-        id=request_data['program_area'])
-    visit.tutoring_option = TutoringOption.objects.get(
-        id=request_data['tutoring_option'])
-    if request_data.get('writing_service'):
-        visit.writing_service = WritingService.objects.get(
-            id=request_data['writing_service'])
+    try:
+        visit.program_area = ProgramArea.objects.get(
+            id=request_data['program_area'])
+        visit.tutoring_option = TutoringOption.objects.get(
+            id=request_data['tutoring_option'])
+        if request_data.get('writing_service'):
+            visit.writing_service = WritingService.objects.get(
+                id=request_data['writing_service'])
+    except ProgramArea.DoesNotExist:
+        raise ValidationError("Invalid program_area")
+    except TutoringOption.DoesNotExist:
+        raise ValidationError("Invalid tutoring_option")
+    except WritingService.DoesNotExist:
+        raise ValidationError("Invalid writing_service")
     if request_data.get('verify', False):
         visit.is_verified = True
     if request_data.get('checkout', False):

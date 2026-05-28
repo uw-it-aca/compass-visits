@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 import json
 from compass_visits.decorator import token_required
 
@@ -85,6 +86,7 @@ class RESTDispatchToken(RESTDispatch):
         Ensures that the dispatch method requires a valid token.
     """
     @method_decorator(token_required)
+    @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         if kwargs.get('error'):
             return self.error_response(403, message=kwargs['error'])

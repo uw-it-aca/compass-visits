@@ -399,6 +399,37 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = manager_create_visit_from_request(request_data)
         self.assertTrue(visit.is_verified)
 
+        request_data = {
+            "student_syskey": "000043870",
+            "program_area": 99,
+            "tutoring_option": 1,
+            "writing_service": 1,
+        }
+        with self.assertRaises(ValidationError) as context:
+            manager_create_visit_from_request(request_data)
+        self.assertIn("Invalid program_area", str(context.exception))
+
+        request_data = {
+            "student_syskey": "000043870",
+            "program_area": 1,
+            "tutoring_option": 99,
+            "writing_service": 1,
+        }
+        with self.assertRaises(ValidationError) as context:
+            manager_create_visit_from_request(request_data)
+        self.assertIn("Invalid tutoring_option", str(context.exception))
+
+        request_data = {
+            "student_syskey": "000043870",
+            "program_area": 1,
+            "tutoring_option": 1,
+            "writing_service": 99,
+        }
+        with self.assertRaises(ValidationError) as context:
+            manager_create_visit_from_request(request_data)
+        self.assertIn("Invalid writing_service", str(context.exception))
+
+
     def test_manager_update_visit(self):
         visit = Visit.objects.create(
             student_syskey="000043870",
