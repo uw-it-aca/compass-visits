@@ -3,18 +3,31 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      {{ pageTitle }}
+      <div class="text-center">
+        {{ pageTitle }}
+      </div>
     </template>
     <template #content>
-      <div class="alert alert-warning" role="alert">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-        Your check-in is not yet complete. Please verify with the IC front desk,
-        and refresh the page to see the most up-to-date status.
+      <div class="text-center">
+        <div class="alert alert-warning" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          Your check-in is not yet complete. Please verify with the IC front
+          desk, and refresh the page to see the most up-to-date status.
+        </div>
+        <h2>{{ profile.student_name }}</h2>
+        <visit-details :visit-data="visitDetails" />
+        <div class="row">
+          <button class="btn btn-primary btn-lg my-2" @click="refreshPage">
+            Refresh
+          </button>
+          <button
+            class="btn btn-outline-danger btn-lg my-2"
+            @click="cancelVisit"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-      <visit-details :visit-data="visitDetails" />
-      <br />
-      <button class="btn btn-primary" @click="refreshPage">Refresh</button>
-      <button class="btn btn-danger" @click="cancelVisit">Cancel</button>
     </template>
   </DefaultLayout>
 </template>
@@ -33,7 +46,7 @@ export default {
   },
   data() {
     return {
-      pageTitle: "Verify Visit",
+      pageTitle: "Verification Required",
       profile: null,
     };
   },

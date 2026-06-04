@@ -3,28 +3,39 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      {{ pageTitle }}
+      <div class="text-center">{{ pageTitle }}</div>
     </template>
     <template #content>
-      <div v-if="showCheckout">
-        <p>Visit Verified</p>
+      <div v-if="showCheckout" class="text-center">
+        <div class="alert alert-success" role="alert">
+          <i class="bi-check-circle-fill me-1"></i>
+          Check-in successful
+          <button type="button" class="btn-close" aria-label="Close"></button>
+        </div>
         <h2>{{ profile.student_name }}</h2>
         <visit-details :visit-data="profile.visit" />
-        <br />
-        Time
-        <br />
-        {{ visitDuration }}
-        <br />
-        (Total: {{ totalMinutes }} min)
-        <button class="btn btn-primary" @click="handleSwitchSession">
-          Switch <Search></Search>
-        </button>
-        <button class="btn btn-primary" @click="handleCheckout">
-          Check Out
-        </button>
+        <div>
+          <h6>Time</h6>
+          {{ visitDuration }}
+          (Total: {{ totalMinutes }} min)
+        </div>
+        <div class="row">
+          <button
+            class="btn btn-outline-primary btn-lg my-2"
+            @click="handleSwitchSession"
+          >
+            Switch <Search></Search>
+          </button>
+          <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
+            Check Out
+          </button>
+        </div>
       </div>
-      <div v-else>
-        <p>You are not currently checked in.</p>
+      <div v-else class="text-center">
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-octagon-fill"></i> You are not currently
+          checked in.
+        </div>
       </div>
     </template>
   </DefaultLayout>
@@ -44,7 +55,7 @@ export default {
   },
   data() {
     return {
-      pageTitle: "Check Out of Visit",
+      pageTitle: "Visit Verfied",
       profile: null,
     };
   },

@@ -80,13 +80,15 @@
           </optgroup>
         </select>
       </div>
-      <button
-        class="btn btn-primary mt-3"
-        :disabled="!allAreSelected"
-        @click="createVisit"
-      >
-        Confirm
-      </button>
+      <div class="text-center row">
+        <button
+          class="btn btn-primary btn-lg my-2"
+          :disabled="!allAreSelected"
+          @click="createVisit"
+        >
+          Confirm
+        </button>
+      </div>
     </template>
   </DefaultLayout>
 </template>

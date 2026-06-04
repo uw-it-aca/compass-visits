@@ -1,19 +1,25 @@
 // student-profile.vue
 
 <template>
-  <p>Program Area</p>
-  {{ programAreaString }}
-  <br />
-  <p>Tutoring Type</p>
-  {{ tutoringTypeString }}
-  <br />
-  <p>Course</p>
-  {{ courseString }}
+  <div class="text-center">
+    <div class="mb-4">
+      <h6>Program Area</h6>
+      {{ programAreaString }}
+    </div>
 
+    <div class="mb-4">
+      <h6>Tutoring Type</h6>
+      {{ tutoringTypeString }}
+    </div>
+
+    <div class="mb-4">
+      <h6>Course</h6>
+      {{ courseString }}
+    </div>
+  </div>
 </template>
 
 <script>
-
 export default {
   name: "VisitDetails",
   props: {
@@ -26,23 +32,25 @@ export default {
     return {};
   },
   computed: {
-    programAreaString: function() {
+    programAreaString: function () {
       if (this.visitData && this.visitData.program_area) {
         return this.visitData.program_area;
       }
       return "";
     },
-    tutoringTypeString: function() {
+    tutoringTypeString: function () {
       if (this.visitData && this.visitData.tutoring_option) {
         return this.visitData.tutoring_option;
       }
       return "";
     },
-    courseString: function() {
+    courseString: function () {
       if (this.visitData && this.visitData.course) {
         return this.visitData.course;
       }
-      return this.visitData && this.visitData.writing_service ? this.visitData.writing_service : "";
+      return this.visitData && this.visitData.writing_service
+        ? this.visitData.writing_service
+        : "";
     },
   },
 };

@@ -5,11 +5,14 @@
     <template #content>
       <StudentProfile :profile="profile" />
       <div v-if="isElligible" class="text-center row">
-        <button class="btn btn-primary my-2" @click="redirectToCreate">
-          Check In
-        </button>
-        <button class="btn btn-secondary my-2" @click="redirectToSummary">
+        <button
+          class="btn btn-secondary btn-lg my-2"
+          @click="redirectToSummary"
+        >
           Summary
+        </button>
+        <button class="btn btn-primary btn-lg my-2" @click="redirectToCreate">
+          Check In
         </button>
       </div>
       <div v-else class="text-center">
