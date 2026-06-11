@@ -3,11 +3,13 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      <div class="row">
+      <div class="row align-items-center">
         <div class="col-1">
-          <a href="/"><i class="bi bi-arrow-left"></i></a>
+          <a href="/"><i class="bi bi-arrow-left fs-3"></i></a>
         </div>
-        <div class="col text-center">{{ pageTitle }}</div>
+        <h1 class="col fs-3 fw-light ff-encode-sans text-center m-0">
+          {{ pageTitle }}
+        </h1>
       </div>
     </template>
     <template #content>

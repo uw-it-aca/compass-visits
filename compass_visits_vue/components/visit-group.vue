@@ -1,9 +1,9 @@
 // visit-group.vue
 
 <template>
-  <div class="row pt-3">
-    <h3 class="col">{{ groupTitle }}</h3>
-    <p class="col-auto text-body-secondary pt-1">
+  <div class="row align-items-center pt-4 pb-2">
+    <h2 class="fs-5 fw-bold ff-open-sans col m-0">{{ groupTitle }}</h2>
+    <p class="col-auto text-body-secondary m-0">
       {{ visitList.length }} {{ visitString }}, {{ totalVisitDuration }} min
     </p>
   </div>

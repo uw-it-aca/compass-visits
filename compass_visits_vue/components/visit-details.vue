@@ -3,17 +3,17 @@
 <template>
   <div class="text-center">
     <div class="mb-4">
-      <h6>Program Area</h6>
+      <h3 class="fs-6 ff-open-sans mb-2">Program Area</h3>
       {{ programAreaString }}
     </div>
 
     <div class="mb-4">
-      <h6>Tutoring Type</h6>
+      <h3 class="fs-6 ff-open-sans mb-2">Tutoring Type</h3>
       {{ tutoringTypeString }}
     </div>
 
     <div class="mb-4">
-      <h6>Course</h6>
+      <h3 class="fs-6 ff-open-sans mb-2">Course</h3>
       {{ courseString }}
     </div>
   </div>

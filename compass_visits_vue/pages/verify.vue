@@ -3,18 +3,20 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      <div class="text-center">
+      <h1 class="col fs-3 fw-light ff-encode-sans text-center">
         {{ pageTitle }}
-      </div>
+      </h1>
     </template>
     <template #content>
-      <div class="text-center">
+      <div class="text-center mt-3">
         <div class="alert alert-warning" role="alert">
           <i class="bi bi-exclamation-triangle-fill"></i>
           Your check-in is not yet complete. Please verify with the IC front
           desk, and refresh the page to see the most up-to-date status.
         </div>
-        <h2>{{ profile.student_name }}</h2>
+        <h2 class="fs-2 fw-semibold ff-encode-sans mb-3">
+          {{ profile.student_name }}
+        </h2>
         <visit-details :visit-data="visitDetails" />
         <div class="row">
           <button class="btn btn-primary btn-lg my-2" @click="refreshPage">

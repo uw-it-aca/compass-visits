@@ -3,15 +3,19 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      <div class="row mb-3">
+      <div class="row mb-4 align-items-center">
         <div class="col-1">
-          <a href="/"><i class="bi bi-arrow-left"></i></a>
+          <a href="/"><i class="bi bi-arrow-left fs-3"></i></a>
         </div>
-        <div class="col text-center">{{ pageTitle }}</div>
+        <h1 class="col fs-3 fw-light ff-encode-sans text-center m-0">
+          {{ pageTitle }}
+        </h1>
       </div>
     </template>
     <template #content>
-      <h3 class="pb-1">Program Area<span style="color: red">*</span></h3>
+      <h2 class="fs-6 fw-bold ff-open-sans mb-2">
+        Program Area<span style="color: red">*</span>
+      </h2>
       <div class="pb-4">
         <select
           v-model="selectedProgramArea"
@@ -28,7 +32,9 @@
           </option>
         </select>
       </div>
-      <h3 class="pb-1">Tutoring Option<span style="color: red">*</span></h3>
+      <h2 class="fs-6 fw-bold ff-open-sans mb-2">
+        Tutoring Option<span style="color: red">*</span>
+      </h2>
       <div class="pb-4">
         <select
           v-model="selectedTutoringOption"
@@ -46,9 +52,9 @@
           </option>
         </select>
       </div>
-      <h3 class="pb-1">
+      <h2 class="fs-6 fw-bold ff-open-sans mb-2">
         Course or Writing Service<span style="color: red">*</span>
-      </h3>
+      </h2>
       <div class="pb-4">
         <select
           v-model="selectedCourseOrWriting"

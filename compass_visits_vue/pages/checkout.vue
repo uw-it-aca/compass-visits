@@ -3,19 +3,28 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      <div class="text-center">{{ pageTitle }}</div>
+      <h1 class="fs-3 fw-light ff-encode-sans mb-3 text-center">
+        {{ pageTitle }}
+      </h1>
     </template>
     <template #content>
       <div v-if="showCheckout" class="text-center">
-        <div class="alert alert-success" role="alert">
+        <div class="alert alert-success alert-dismissible" role="alert">
           <i class="bi-check-circle-fill me-1"></i>
           Check-in successful
-          <button type="button" class="btn-close" aria-label="Close"></button>
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            data-bs-dismiss="alert"
+          ></button>
         </div>
-        <h2>{{ profile.student_name }}</h2>
+        <h2 class="fs-2 fw-semibold ff-encode-sans mb-3">
+          {{ profile.student_name }}
+        </h2>
         <visit-details :visit-data="profile.visit" />
         <div>
-          <h6>Time</h6>
+          <h3 class="fs-6 ff-open-sans mb-2">Time</h3>
           {{ visitDuration }}
           (Total: {{ totalMinutes }} min)
         </div>

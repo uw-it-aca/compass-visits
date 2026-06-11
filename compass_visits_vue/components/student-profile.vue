@@ -4,7 +4,8 @@
   <div v-if="showProfile" class="text-center">
     <img
       :src="`data:image/png;base64,${visitStore.studentProfile.data.photo}`"
-      alt="Profile Image"
+      :alt="visitStore.studentProfile.data.student_name + ' profile picture'"
+      class="img-profile rounded-circle"
     />
     <h2 class="my-3">{{ visitStore.studentProfile.data.student_name }}</h2>
     <p>student ID: {{ visitStore.studentProfile.data.student_number }}</p>
