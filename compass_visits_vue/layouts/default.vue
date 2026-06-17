@@ -75,6 +75,10 @@
     </template>-->
     <template #bar></template>
     <template #main>
+<<<<<<< HEAD
+=======
+        <h1>{{ pageTitle }}</h1>
+>>>>>>> c906c07684336538ea5a656de181904ed9c511b0
         <slot name="content" />
     </template>
     <template #footer></template>
