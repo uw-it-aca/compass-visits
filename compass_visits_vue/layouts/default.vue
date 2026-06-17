@@ -75,7 +75,7 @@
     </template>-->
     <template #bar></template>
     <template #main>
-        <slot name="description" />
+        <h1>{{ pageTitle }}</h1>
         <slot name="content" />
     </template>
     <template #footer></template>
