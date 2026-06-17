@@ -7,7 +7,7 @@
       {{ visitList.length }} {{ visitString }}, {{ totalVisitDuration }} min
     </p>
   </div>
-  <div v-if="visitList.length === 0" class="text-muted">
+  <div v-if="visitList.length === 0" class="text-muted pb-4">
     No visits in this time period.
   </div>
   <div v-for="visit in visitList" :key="visit.id">

@@ -7,9 +7,11 @@
         <div class="col-1">
           <a href="/"><i class="bi bi-arrow-left fs-3"></i></a>
         </div>
-        <h1 class="col fs-3 fw-light ff-encode-sans text-center m-0">
-          {{ pageTitle }}
-        </h1>
+        <div class="col">
+          <h1 class="fs-5 fw-medium ff-open-sans text-center m-0">
+            {{ pageTitle }}
+          </h1>
+        </div>
       </div>
     </template>
     <template #content>
@@ -86,14 +88,26 @@
           </optgroup>
         </select>
       </div>
-      <div class="text-center row">
-        <button
-          class="btn btn-primary btn-lg my-2"
-          :disabled="!allAreSelected"
-          @click="createVisit"
-        >
-          Confirm
-        </button>
+      <div
+        style="
+          position: fixed;
+          bottom: 32px;
+          left: 16px;
+          right: 16px;
+          display: flex;
+          background-color: white;
+          justify-content: center;
+        "
+      >
+        <div class="row" style="width: 100%; max-width: 1200px">
+          <button
+            class="btn btn-primary btn-lg my-2"
+            :disabled="!allAreSelected"
+            @click="createVisit"
+          >
+            Confirm
+          </button>
+        </div>
       </div>
     </template>
   </DefaultLayout>

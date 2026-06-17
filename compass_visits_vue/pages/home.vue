@@ -3,17 +3,41 @@
 <template>
   <DefaultLayout>
     <template #content>
-      <StudentProfile :profile="profile" />
-      <div v-if="isElligible" class="text-center row">
-        <button
-          class="btn btn-secondary btn-lg my-2"
-          @click="redirectToSummary"
-        >
-          Summary
-        </button>
-        <button class="btn btn-primary btn-lg my-2" @click="redirectToCreate">
-          Check In
-        </button>
+      <div
+        v-if="isElligible"
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: calc(100vh - 180px);
+          padding-bottom: 180px;
+        "
+      >
+        <StudentProfile :profile="profile" />
+      </div>
+      <div
+        style="
+          position: fixed;
+          bottom: 32px;
+          left: 16px;
+          right: 16px;
+          display: flex;
+          background-color: white;
+          justify-content: center;
+        "
+        v-if="isElligible"
+      >
+        <div class="row" style="width: 100%; max-width: 1200px">
+          <button
+            class="btn btn-secondary btn-lg my-2"
+            @click="redirectToSummary"
+          >
+            Summary
+          </button>
+          <button class="btn btn-primary btn-lg my-2" @click="redirectToCreate">
+            Check In
+          </button>
+        </div>
       </div>
       <div v-else class="text-center">
         <div class="alert alert-danger" role="alert">

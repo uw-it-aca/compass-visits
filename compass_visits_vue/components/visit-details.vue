@@ -4,17 +4,17 @@
   <div class="text-center">
     <div class="mb-4">
       <h3 class="fs-6 ff-open-sans mb-2">Program Area</h3>
-      {{ programAreaString }}
+      <p class="lead">{{ programAreaString }}</p>
     </div>
 
     <div class="mb-4">
       <h3 class="fs-6 ff-open-sans mb-2">Tutoring Type</h3>
-      {{ tutoringTypeString }}
+      <p class="lead">{{ tutoringTypeString }}</p>
     </div>
 
     <div class="mb-4">
       <h3 class="fs-6 ff-open-sans mb-2">Course</h3>
-      {{ courseString }}
+      <p class="lead">{{ courseString }}</p>
     </div>
   </div>
 </template>

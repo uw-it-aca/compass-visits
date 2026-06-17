@@ -3,12 +3,12 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #title>
-      <h1 class="fs-3 fw-light ff-encode-sans mb-3 text-center">
+      <h1 class="fs-5 fw-medium ff-open-sans text-center">
         {{ pageTitle }}
       </h1>
     </template>
     <template #content>
-      <div v-if="showCheckout" class="text-center">
+      <div v-if="showCheckout">
         <div class="alert alert-success alert-dismissible" role="alert">
           <i class="bi-check-circle-fill me-1"></i>
           Check-in successful
@@ -19,26 +19,41 @@
             data-bs-dismiss="alert"
           ></button>
         </div>
-        <h2 class="fs-2 fw-semibold ff-encode-sans mb-3">
-          {{ profile.student_name }}
-        </h2>
-        <visit-details :visit-data="profile.visit" />
-        <div>
-          <h3 class="fs-6 ff-open-sans mb-2">Time</h3>
-          {{ visitDuration }}
-          (Total: {{ totalMinutes }} min)
+        <div class="text-center">
+          <h2 class="fs-2 fw-semibold ff-encode-sans mb-3">
+            {{ profile.student_name }}
+          </h2>
+          <visit-details :visit-data="profile.visit" />
+          <div>
+            <h3 class="fs-6 ff-open-sans mb-2">Time</h3>
+            {{ visitDuration }}
+            (Total: {{ totalMinutes }} min)
+          </div>
         </div>
-        <div class="row">
-          <button
-            class="btn btn-outline-primary btn-lg my-2"
-            @click="handleSwitchSession"
-          >
-            Switch <Search></Search>
-          </button>
-          <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
-            Check Out
-          </button>
+        <div
+          style="
+            position: fixed;
+            bottom: 32px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            background-color: white;
+            justify-content: center;
+          "
+        >
+          <div class="row" style="width: 100%; max-width: 1200px">
+            <button
+              class="btn btn-outline-primary btn-lg my-2"
+              @click="handleSwitchSession"
+            >
+              Switch <Search></Search>
+            </button>
+            <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
+              Check Out
+            </button>
+          </div>
         </div>
+        <div style="height: 100px"></div>
       </div>
       <div v-else class="text-center">
         <div class="alert alert-danger" role="alert">

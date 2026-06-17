@@ -7,7 +7,7 @@
         <div class="col-1">
           <a href="/"><i class="bi bi-arrow-left fs-3"></i></a>
         </div>
-        <h1 class="col fs-3 fw-light ff-encode-sans text-center m-0">
+        <h1 class="col fs-5 fw-medium ff-open-sans text-center m-0">
           {{ pageTitle }}
         </h1>
       </div>

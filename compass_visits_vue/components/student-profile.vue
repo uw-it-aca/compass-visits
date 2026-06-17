@@ -5,12 +5,16 @@
     <img
       :src="`data:image/png;base64,${visitStore.studentProfile.data.photo}`"
       :alt="visitStore.studentProfile.data.student_name + ' profile picture'"
-      class="img-profile rounded-circle"
+      class="img-profile rounded-circle m-4"
     />
-    <h2 class="my-3">{{ visitStore.studentProfile.data.student_name }}</h2>
+    <h2 class="display-5 fw-bold ff-encode-sans">
+      {{ visitStore.studentProfile.data.student_name }}
+    </h2>
     <p>student ID: {{ visitStore.studentProfile.data.student_number }}</p>
-    <p>Total Hours:</p>
-    <p class="fw-bold">{{ totalHours.toFixed(2) }}</p>
+    <div class="mt-5">
+      <p>Total Hours:</p>
+      <p class="fs-3 fw-bold">{{ totalHours.toFixed(2) }}</p>
+    </div>
   </div>
 </template>
 
