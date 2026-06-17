@@ -16,15 +16,7 @@
         <StudentProfile :profile="profile" />
       </div>
       <div
-        style="
-          position: fixed;
-          bottom: 32px;
-          left: 16px;
-          right: 16px;
-          display: flex;
-          background-color: white;
-          justify-content: center;
-        "
+        class="position-absolute bottom-0"
         v-if="isElligible"
       >
         <div class="row" style="width: 100%; max-width: 1200px">

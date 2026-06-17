@@ -75,7 +75,6 @@
     </template>-->
     <template #bar></template>
     <template #main>
-        <slot name="description" />
         <slot name="content" />
     </template>
     <template #footer></template>
@@ -99,7 +98,7 @@ export default {
   data() {
     return {
       // minimum application setup overrides
-      appName: "Compass Visits",
+      appName: "IC Visits",
       // automatically set year
       currentYear: new Date().getFullYear(),
     };
