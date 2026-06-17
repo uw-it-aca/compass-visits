@@ -57,11 +57,13 @@ class CompassVisits(object):
         """
         url = "{}/visit/omad".format(self.API)
         response = self.dao.postURL(url, visit.json_data())
+
         if response.status != 200:
             raise DataFailureException(url,
                                        response.status,
                                        "Error storing visit:"
                                        "{}".format(response.status))
+        return json.loads(response.data)
 
 
 class CompassVisitModel(models.Model):

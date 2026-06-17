@@ -429,7 +429,6 @@ class VisitDAOTest(CompassVisitsTestCase):
             manager_create_visit_from_request(request_data)
         self.assertIn("Invalid writing_service", str(context.exception))
 
-
     def test_manager_update_visit(self):
         visit = Visit.objects.create(
             student_syskey="000043870",
