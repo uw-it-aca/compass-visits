@@ -28,6 +28,7 @@ setup(
         "django-userservice~=3.2",
         "django-supporttools~=3.6",
         "django-persistent-message~=1.3",
+        "uw-restclients-core",
         "uw-restclients-sws~=2.5",
         "uw-restclients-pws~=2.1",
         "uw-restclients-django-utils~=2.3",
