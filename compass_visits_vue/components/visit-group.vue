@@ -2,7 +2,7 @@
 
 <template>
   <div class="my-3">
-    <div class="row align-items-center pb-2">
+    <div class="row pb-2">
       <h2 class="fs-5 fw-bold ff-open-sans col m-0">{{ groupTitle }}</h2>
       <p class="col-auto small m-0">
         {{ visitList.length }} {{ visitString }}, {{ totalVisitDuration }} min

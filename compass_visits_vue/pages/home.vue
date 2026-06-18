@@ -3,43 +3,24 @@
 <template>
   <DefaultLayout>
     <template #content>
-      <StudentProfile :profile="profile" />
-      <div
-        class="position-absolute bottom-0"
-        v-if="isElligible"
-      >
-        <div
-            style="
-              position: fixed;
-              bottom: 92px;
-              left: 16px;
-              right: 16px;
-              display: flex;
-              justify-content: center;
-            "
-          >
-          <div class="row" style="width: 100%; max-width: 1200px">
-            <button
-              class="btn btn-secondary btn-lg my-2"
-              @click="redirectToSummary"
-            >
-              Summary
-            </button>
-            <button class="btn btn-primary btn-lg my-2" @click="redirectToCreate">
-              Check In
-            </button>
+      <div class="d-flex flex-column align-content-between" style="min-height: calc(100vh - 240px)">
+        <div class="mt-auto pb-2">
+        <StudentProfile :profile="profile" />
+        </div>
+        <div v-if="isElligible" class="row mt-auto mx-0 text-center">
+          <button class="btn btn-secondary btn-lg mb-3" @click="redirectToSummary">Summary</button>
+          <button class="btn btn-primary btn-lg mb-2" @click="redirectToCreate">Check In</button>
+        </div>
+        <div v-else class="text-center">
+          <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-octagon-fill"></i> You are not
+              Instructional Center elligible.
           </div>
+          <p>
+            Please contact Director of the Instructional Center
+            <a href="mailto:therese@uw.edu">therese@uw.edu</a> for assistance.
+          </p>
         </div>
-      </div>
-      <div v-else class="text-center">
-        <div class="alert alert-danger" role="alert">
-          <i class="bi bi-exclamation-octagon-fill"></i> You are not
-          Instructional Center elligible.
-        </div>
-        <p>
-          Please contact Director of the Instructional Center
-          <a href="mailto:therese@uw.edu">therese@uw.edu</a> for assistance.
-        </p>
       </div>
     </template>
   </DefaultLayout>

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+compass_visits/static/
+coverage/
+*.log
+*.lock
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.pdf
+*.zip
+*.tar
+*.gz

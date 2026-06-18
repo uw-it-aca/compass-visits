@@ -3,8 +3,11 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div v-if="showCheckout">
-        <div class="alert alert-success alert-dismissible" role="alert">
+      <div 
+        v-if="showCheckout" 
+        class="d-flex flex-column align-content-between" 
+        style="min-height: calc(100vh - 265px)">
+        <div class="alert alert-success alert-dismissible mb-4" role="alert">
           <i class="bi-check-circle-fill me-1"></i>
           Check-in successful
           <button
@@ -14,41 +17,28 @@
             data-bs-dismiss="alert"
           ></button>
         </div>
-        <div class="text-center">
-          <h2 class="display-6 fw-bold ff-encode-sans my-5 text-center">
+        <div class="mt-auto text-center">
+          <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
             {{ profile.student_name }}
           </h2>
           <visit-details :visit-data="profile.visit" />
-          <div>
+          <div class="mb-2 pb-2">
             <h3 class="fs-6 fw-semibold ff-open-sans mb-1">Time</h3>
             {{ visitDuration }} <br>
             (Total: {{ totalMinutes }} min)
           </div>
         </div>
-        <div
-          style="
-            position: fixed;
-            bottom: 92px;
-            left: 16px;
-            right: 16px;
-            display: flex;
-            background-color: white;
-            justify-content: center;
-          "
-        >
-          <div class="row" style="width: 100%; max-width: 1200px">
-            <button
-              class="btn btn-outline-primary btn-lg my-2"
-              @click="handleSwitchSession"
-            >
-              Switch <Search></Search>
-            </button>
-            <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
-              Check Out
-            </button>
-          </div>
+        <div class="row mt-auto mx-0 text-center">
+          <button
+            class="btn btn-outline-primary btn-lg my-2"
+            @click="handleSwitchSession"
+          >
+            Switch <Search></Search>
+          </button>
+          <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
+            Check Out
+          </button>
         </div>
-        <div style="height: 100px"></div>
       </div>
       <div v-else>
         <div class="alert alert-danger" role="alert">

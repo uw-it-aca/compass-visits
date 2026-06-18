@@ -10,6 +10,8 @@
     "coverage": "vitest run --coverage",
     "eslint": "eslint 'compass_visits_vue/**/*.{js,vue}'",
     "stylelint": "stylelint 'compass_visits_vue/**/*.{vue,scss}'",
+    "prettier:check": "prettier --check '**/*.{js,vue,scss,css,json,md}'",
+    "prettier:write": "prettier --write '**/*.{js,vue,scss,css,json,md}'",
     "lighthouse": "lhci collect"
   },
   "repository": {
@@ -50,6 +52,7 @@
     "jsdom": "^29.1.1",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
+    "prettier": "^3.8.4",
     "sass": "^1.101.0",
     "vite": "^8.0.16",
     "vitest": "^4.1.9"

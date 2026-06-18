@@ -3,38 +3,28 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div class="mt-3">
-        <div class="alert alert-warning" role="alert">
+      <div class="d-flex flex-column align-content-between" style="min-height: calc(100vh - 265px)">
+        <div class="alert alert-warning mb-4" role="alert">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          Your check-in is not yet complete. Please verify with the IC front
-          desk, and refresh the page.
-        </div>
-        <h2 class="display-6 fw-bold ff-encode-sans my-5 text-center">
-          {{ profile.student_name }}
-        </h2>
-        <visit-details :visit-data="visitDetails" />
-        <div
-          style="
-            position: fixed;
-            bottom: 92px;
-            left: 16px;
-            right: 16px;
-            display: flex;
-            background-color: white;
-            justify-content: center;
-          "
-        >
-          <div class="row" style="width: 100%; max-width: 1200px">
-            <button class="btn btn-primary btn-lg my-2" @click="refreshPage">
-              Refresh
-            </button>
-            <button
-              class="btn btn-outline-danger btn-lg my-2"
-              @click="cancelVisit"
-            >
-              Cancel
-            </button>
+            Your check-in is not yet complete. Please verify with the IC front
+            desk, and refresh the page.
           </div>
+        <div class="mt-auto text-center">
+          <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
+            {{ profile.student_name }}
+          </h2>
+          <visit-details :visit-data="visitDetails" />
+        </div>
+        <div class="row mt-auto mx-0 text-center">
+          <button class="btn btn-primary btn-lg mb-3" @click="refreshPage">
+            Refresh
+          </button>
+          <button
+            class="btn btn-outline-danger btn-lg mb-2"
+            @click="cancelVisit"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </template>

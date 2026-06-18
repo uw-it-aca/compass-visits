@@ -2,105 +2,94 @@
 
 <template>
   <DefaultLayout :page-title="pageTitle">
-    <template #title>
-      <div class="row mb-4 align-items-center">
-        <div class="col-1">
-          <a href="/"><i class="bi bi-arrow-left fs-3"></i></a>
-        </div>
-      </div>
-    </template>
     <template #content>
-      <h2 class="fs-6 fw-bold ff-open-sans mb-2">
-        Program Area<span style="color: red">*</span>
-      </h2>
-      <div class="pb-4">
-        <select
-          v-model="selectedProgramArea"
-          class="form-select"
-          aria-label="Select Program Area"
-        >
-          <option value="" disabled selected>Select a program area</option>
-          <option
-            v-for="programArea in visitOptionsStore.visitOptions.program_areas"
-            :key="programArea.id"
-            :value="programArea.id"
+      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)"> 
+        <h2 class="fs-6 fw-bold ff-open-sans mb-2">
+          Program Area<span style="color: red">*</span>
+        </h2>
+        <div class="pb-4">
+          <select
+            v-model="selectedProgramArea"
+            class="form-select"
+            aria-label="Select Program Area"
           >
-            {{ programArea.name }}
-          </option>
-        </select>
-      </div>
-      <h2 class="fs-6 fw-bold ff-open-sans mb-2">
-        Tutoring Option<span style="color: red">*</span>
-      </h2>
-      <div class="pb-4">
-        <select
-          v-model="selectedTutoringOption"
-          class="form-select"
-          aria-label="Select Tutoring Option"
-        >
-          <option value="" disabled selected>Select a tutoring option</option>
-          <option
-            v-for="tutoringOption in visitOptionsStore.visitOptions
-              .tutoring_options"
-            :key="tutoringOption.id"
-            :value="tutoringOption.id"
-          >
-            {{ tutoringOption.name }}
-          </option>
-        </select>
-      </div>
-      <h2 class="fs-6 fw-bold ff-open-sans mb-2">
-        Course or Writing Service<span style="color: red">*</span>
-      </h2>
-      <div class="pb-4">
-        <select
-          v-model="selectedCourseOrWriting"
-          class="form-select"
-          aria-label="Select Course or Writing Service"
-        >
-          <option value="" disabled selected>
-            Select a course or writing service
-          </option>
-          <optgroup label="Courses">
+            <option value="" disabled selected>Select a program area</option>
             <option
-              v-for="course in visitOptionsStore.visitOptions.courses"
-              :key="course.id"
-              :value="course.id"
+              v-for="programArea in visitOptionsStore.visitOptions.program_areas"
+              :key="programArea.id"
+              :value="programArea.id"
             >
-              {{ course.name }}
+              {{ programArea.name }}
             </option>
-          </optgroup>
+          </select>
+        </div>
+        <h2 class="fs-6 fw-bold ff-open-sans mb-2">
+          Tutoring Option<span style="color: red">*</span>
+        </h2>
+        <div class="pb-4">
+          <select
+            v-model="selectedTutoringOption"
+            class="form-select"
+            aria-label="Select Tutoring Option"
+          >
+            <option value="" disabled selected>Select a tutoring option</option>
+            <option
+              v-for="tutoringOption in visitOptionsStore.visitOptions
+                .tutoring_options"
+              :key="tutoringOption.id"
+              :value="tutoringOption.id"
+            >
+              {{ tutoringOption.name }}
+            </option>
+          </select>
+        </div>
+        <h2 class="fs-6 fw-bold ff-open-sans mb-2">
+          Course or Writing Service<span style="color: red">*</span>
+        </h2>
+        <div class="pb-4">
+          <select
+            v-model="selectedCourseOrWriting"
+            class="form-select"
+            aria-label="Select Course or Writing Service"
+          >
+            <option value="" disabled selected>
+              Select a course or writing service
+            </option>
+            <optgroup label="Courses">
+              <option
+                v-for="course in visitOptionsStore.visitOptions.courses"
+                :key="course.id"
+                :value="course.id"
+              >
+                {{ course.name }}
+              </option>
+            </optgroup>
 
-          <optgroup v-if="selectedProgramArea === 7" label="Writing Services">
-            <option
-              v-for="writingService in visitOptionsStore.visitOptions
-                .writing_services"
-              :key="writingService.id"
-              :value="writingService.id"
-            >
-              {{ writingService.name }}
-            </option>
-          </optgroup>
-        </select>
-      </div>
-      <div
-        style="
-          position: fixed;
-          bottom: 92px;
-          left: 16px;
-          right: 16px;
-          display: flex;
-          background-color: white;
-          justify-content: center;
-        "
-      >
-        <div class="row" style="width: 100%; max-width: 1200px">
+            <optgroup v-if="selectedProgramArea === 7" label="Writing Services">
+              <option
+                v-for="writingService in visitOptionsStore.visitOptions
+                  .writing_services"
+                :key="writingService.id"
+                :value="writingService.id"
+              >
+                {{ writingService.name }}
+              </option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="row mt-auto mx-0 text-center">
           <button
-            class="btn btn-primary btn-lg my-2"
+            class="btn btn-primary btn-lg mb-3"
             :disabled="!allAreSelected"
             @click="createVisit"
           >
             Confirm
+          </button>
+          <button
+            class="btn btn-outline-danger btn-lg mb-2"
+            @click="cancelVisit"
+          >
+            Cancel
           </button>
         </div>
       </div>
@@ -162,6 +151,12 @@ export default {
         });
         this.$router.push("/verify");
       }
+    },
+    cancelVisit() {
+      this.visitStore.deleteVisit().then(() => {
+        this.profile = null;
+        this.$router.push("/");
+      });
     },
   },
   watch: {},
