@@ -102,6 +102,7 @@ export default {
     return {
       // minimum application setup overrides
       appName: "IC Visits",
+      appRootUrl: "/",
       // automatically set year
       currentYear: new Date().getFullYear(),
     };
