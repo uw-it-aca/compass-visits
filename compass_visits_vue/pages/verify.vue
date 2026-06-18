@@ -2,11 +2,6 @@
 
 <template>
   <DefaultLayout :page-title="pageTitle">
-    <template #title>
-      <h1 class="col fs-5 fw-medium ff-open-sans text-center">
-        {{ pageTitle }}
-      </h1>
-    </template>
     <template #content>
       <div class="mt-3">
         <div class="alert alert-warning" role="alert">
@@ -14,14 +9,14 @@
           Your check-in is not yet complete. Please verify with the IC front
           desk, and refresh the page.
         </div>
-        <h2 class="display-6 fw-bold ff-encode-sans mb-5 mt-5 text-center">
+        <h2 class="display-6 fw-bold ff-encode-sans my-5 text-center">
           {{ profile.student_name }}
         </h2>
         <visit-details :visit-data="visitDetails" />
         <div
           style="
             position: fixed;
-            bottom: 32px;
+            bottom: 92px;
             left: 16px;
             right: 16px;
             display: flex;

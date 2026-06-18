@@ -1,17 +1,19 @@
 // visit-group.vue
 
 <template>
-  <div class="row align-items-center pt-4 pb-2">
-    <h2 class="fs-5 fw-bold ff-open-sans col m-0">{{ groupTitle }}</h2>
-    <p class="col-auto text-body-secondary m-0">
-      {{ visitList.length }} {{ visitString }}, {{ totalVisitDuration }} min
-    </p>
-  </div>
-  <div v-if="visitList.length === 0" class="text-muted pb-4">
-    No visits in this time period.
-  </div>
-  <div v-for="visit in visitList" :key="visit.id">
-    <visitRow :visit="visit" />
+  <div class="my-3">
+    <div class="row align-items-center pb-2">
+      <h2 class="fs-5 fw-bold ff-open-sans col m-0">{{ groupTitle }}</h2>
+      <p class="col-auto small m-0">
+        {{ visitList.length }} {{ visitString }}, {{ totalVisitDuration }} min
+      </p>
+    </div>
+    <div v-if="visitList.length === 0" class="text-muted pb-4">
+      No visits in this time period.
+    </div>
+    <div v-for="visit in visitList" :key="visit.id">
+      <visitRow :visit="visit" />
+    </div>
   </div>
 </template>
 

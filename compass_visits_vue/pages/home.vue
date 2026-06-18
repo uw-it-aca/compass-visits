@@ -3,32 +3,32 @@
 <template>
   <DefaultLayout>
     <template #content>
-      <div
-        v-if="isElligible"
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: calc(100vh - 180px);
-          padding-bottom: 180px;
-        "
-      >
-        <StudentProfile :profile="profile" />
-      </div>
+      <StudentProfile :profile="profile" />
       <div
         class="position-absolute bottom-0"
         v-if="isElligible"
       >
-        <div class="row" style="width: 100%; max-width: 1200px">
-          <button
-            class="btn btn-secondary btn-lg my-2"
-            @click="redirectToSummary"
+        <div
+            style="
+              position: fixed;
+              bottom: 92px;
+              left: 16px;
+              right: 16px;
+              display: flex;
+              justify-content: center;
+            "
           >
-            Summary
-          </button>
-          <button class="btn btn-primary btn-lg my-2" @click="redirectToCreate">
-            Check In
-          </button>
+          <div class="row" style="width: 100%; max-width: 1200px">
+            <button
+              class="btn btn-secondary btn-lg my-2"
+              @click="redirectToSummary"
+            >
+              Summary
+            </button>
+            <button class="btn btn-primary btn-lg my-2" @click="redirectToCreate">
+              Check In
+            </button>
+          </div>
         </div>
       </div>
       <div v-else class="text-center">

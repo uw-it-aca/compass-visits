@@ -2,16 +2,6 @@
 
 <template>
   <DefaultLayout :page-title="pageTitle">
-    <template #title>
-      <div class="row align-items-center">
-        <div class="col-1">
-          <a href="/"><i class="bi bi-arrow-left fs-3"></i></a>
-        </div>
-        <h1 class="col fs-5 fw-medium ff-open-sans text-center m-0">
-          {{ pageTitle }}
-        </h1>
-      </div>
-    </template>
     <template #content>
       <visit-group :visit-list="visitsThisWeek" group-title="This Week" />
       <visit-group :visit-list="visitsLastWeek" group-title="Last Week" />

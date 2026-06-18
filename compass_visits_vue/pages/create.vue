@@ -7,11 +7,6 @@
         <div class="col-1">
           <a href="/"><i class="bi bi-arrow-left fs-3"></i></a>
         </div>
-        <div class="col">
-          <h1 class="fs-5 fw-medium ff-open-sans text-center m-0">
-            {{ pageTitle }}
-          </h1>
-        </div>
       </div>
     </template>
     <template #content>
@@ -91,7 +86,7 @@
       <div
         style="
           position: fixed;
-          bottom: 32px;
+          bottom: 92px;
           left: 16px;
           right: 16px;
           display: flex;

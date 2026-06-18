@@ -75,7 +75,9 @@
     </template>-->
     <template #bar></template>
     <template #main>
-        <h1>{{ pageTitle }}</h1>
+        <h1 class="fs-5 ff-open-sans m-2 py-1 text-center">
+          {{ pageTitle }}
+        </h1>
         <slot name="content" />
     </template>
     <template #footer></template>

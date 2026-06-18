@@ -2,11 +2,6 @@
 
 <template>
   <DefaultLayout :page-title="pageTitle">
-    <template #title>
-      <h1 class="fs-5 fw-medium ff-open-sans text-center">
-        {{ pageTitle }}
-      </h1>
-    </template>
     <template #content>
       <div v-if="showCheckout">
         <div class="alert alert-success alert-dismissible" role="alert">
@@ -20,20 +15,20 @@
           ></button>
         </div>
         <div class="text-center">
-          <h2 class="fs-2 fw-semibold ff-encode-sans mb-3">
+          <h2 class="display-6 fw-bold ff-encode-sans my-5 text-center">
             {{ profile.student_name }}
           </h2>
           <visit-details :visit-data="profile.visit" />
           <div>
-            <h3 class="fs-6 ff-open-sans mb-2">Time</h3>
-            {{ visitDuration }}
+            <h3 class="fs-6 fw-semibold ff-open-sans mb-1">Time</h3>
+            {{ visitDuration }} <br>
             (Total: {{ totalMinutes }} min)
           </div>
         </div>
         <div
           style="
             position: fixed;
-            bottom: 32px;
+            bottom: 92px;
             left: 16px;
             right: 16px;
             display: flex;
@@ -55,7 +50,7 @@
         </div>
         <div style="height: 100px"></div>
       </div>
-      <div v-else class="text-center">
+      <div v-else>
         <div class="alert alert-danger" role="alert">
           <i class="bi bi-exclamation-octagon-fill"></i> You are not currently
           checked in.
