@@ -16,8 +16,8 @@ class StudentAPITestCase(APILoginTestCase):
         response = self.get_response('student_profile', netid='jinternational')
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data['current_state'], "none")
-        self.assertIsNone(data['visit'])
+        self.assertNotIn('current_state', data)
+        self.assertNotIn('visit', data)
 
     def test_not_verified_visit(self):
         response = self.get_response('student_profile', netid='jnewstudent')
@@ -59,3 +59,17 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(len(data), 0)
+
+    def test_not_ic_eligible(self):
+        response = self.get_response('student_profile', netid='jinternational')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data['ic_elligible'])
+
+    def test_no_compass_response(self):
+        response = self.get_response('student_profile', netid='jerror')
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'],
+                         "Unable to retrieve student information")
