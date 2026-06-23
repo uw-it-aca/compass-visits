@@ -26,7 +26,7 @@ class COMPASS_DAO(DAO):
         return custom_headers
 
 
-class CompassVisits(object):
+class Compass(object):
     """
     This class provides an interface to the compass visits web service.
     """

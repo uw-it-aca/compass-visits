@@ -1,21 +1,21 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.dao.compass import CompassVisits, CompassVisitModel
+from compass_visits.dao.compass import Compass, CompassVisitModel
 from compass_visits.tests import CompassVisitsTestCase
 import datetime
 
 
-class CompassVisitsTestCase(CompassVisitsTestCase):
+class CompassTestCase(CompassVisitsTestCase):
     def test_get_ic_eligibility(self):
-        compass = CompassVisits()
+        compass = Compass()
         eligible = compass.get_ic_eligibility("532353230")
         self.assertTrue(eligible)
         not_eligible = compass.get_ic_eligibility("000000000")
         self.assertFalse(not_eligible)
 
     def test_store_visit(self):
-        compass = CompassVisits()
+        compass = Compass()
         visit = CompassVisitModel(
             student_netid="javerage",
             visit_type="Virtual",
