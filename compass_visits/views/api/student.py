@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import StreamingHttpResponse
+from compass_visits.dao.compass import Compass
 from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           get_total_minutes_by_syskey,
                                           get_student_state)
@@ -33,7 +32,6 @@ class StudentProfileView(RESTDispatchLogin):
         """
 
         netid = UserService().get_user()
-        mock_IC_elligible = True
         try:
             student_profile = get_student_profile(netid)
         except DataFailureException:
@@ -46,13 +44,20 @@ class StudentProfileView(RESTDispatchLogin):
                                         .b64encode(photo_data.getvalue())
                                         .decode('ascii')) \
                 if photo_data else None
-        except DataFailureException as ex:
+        except DataFailureException:
             student_profile['photo'] = None
 
-        student_profile['ic_elligible'] = mock_IC_elligible
+        student_syskey = student_profile.get('student_syskey')
+        ic_elligible = False
+        if student_syskey:
+            try:
+                ic_elligible = Compass().get_ic_eligibility(student_syskey)
+            except DataFailureException:
+                ic_elligible = False
 
-        if mock_IC_elligible:
-            student_syskey = student_profile.get('student_syskey')
+        student_profile['ic_elligible'] = ic_elligible
+
+        if ic_elligible:
             active_visit = get_active_visit_for_student(student_syskey)
             student_profile.update({
                 "total_minutes": get_total_minutes_by_syskey(student_syskey),

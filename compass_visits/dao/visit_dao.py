@@ -5,11 +5,13 @@ from django.db.models import Q
 from django.utils import timezone, dateparse
 from compass_visits.exceptions import ValidationError
 from django.db.models import F, ExpressionWrapper, DurationField, Sum
+from compass_visits.dao.compass import Compass
+from compass_visits.dao.compass import CompassVisitModel
+from compass_visits.dao.pws import get_netid_by_syskey
 from compass_visits.models import (Visit,
                                    ProgramArea,
                                    TutoringOption,
                                    WritingService)
-from compass_visits.dao.sws import get_term_start_date
 
 
 def get_active_visit_for_student(student_syskey):
@@ -110,7 +112,8 @@ def validate_visit_data(request):
         raise ValidationError("Invalid writing_service")
 
 
-def create_visit_from_request(request_data, student_syskey, verified=False):
+def create_visit_from_request(request_data, student_syskey, student_netid,
+                              verified=False):
     """
     Creates a new Visit instance from the provided request data for a given
     student.
@@ -126,7 +129,9 @@ def create_visit_from_request(request_data, student_syskey, verified=False):
                              including 'program_area', 'tutoring_option',
                              and optionally 'writing_service' and 'course'.
         student_syskey (str): The SysKey of the student for whom the visit
-                             is being created.
+                              is being created.
+        student_netid (str): The NetID of the student for whom the visit is
+                             being created.
 
     Returns:
         Visit: The newly created Visit instance.
@@ -146,6 +151,7 @@ def create_visit_from_request(request_data, student_syskey, verified=False):
     validate_visit_data(request_data)
     visit = Visit()
     visit.student_syskey = student_syskey
+    visit.student_netid = student_netid
     visit.program_area = ProgramArea.objects.get(
         id=request_data['program_area'])
     visit.tutoring_option = TutoringOption.objects.get(
@@ -268,6 +274,13 @@ def manager_create_visit_from_request(request_data):
     visit.student_syskey = request_data.get('student_syskey')
     if not visit.student_syskey:
         raise ValidationError("student_syskey is required")
+    try:
+        from restclients_core.exceptions import DataFailureException
+        visit.student_netid = get_netid_by_syskey(visit.student_syskey)
+    except DataFailureException as ex:
+        raise ValidationError("Unable to resolve student_netid") from ex
+    if not visit.student_netid:
+        raise ValidationError("Unable to resolve student_netid")
     if request_data.get('check_in_date'):
         try:
             visit.check_in_date = dateparse.parse_datetime(
@@ -377,26 +390,17 @@ def get_completed_visits_by_syskey(student_syskey):
 
 def get_current_quarter_visits_by_syskey(student_syskey):
     """
-    Retrieve all Visit objects for a student by SysKey that have a check-in
-    date within the current quarter.
+    Retrieve all current-quarter visits for a student by SysKey from Compass.
+
     Args:
         student_syskey (str): The SysKey of the student to retrieve visits for.
+
     Returns:
-        QuerySet: A Django QuerySet containing Visit instances where
-                    'student_syskey' matches the provided SysKey and
-                    'check_in_date'is greater than or equal to the start date
-                    of the current quarter, ordered by 'check_in_date' in
-                    descending order.
+        list: A list of CompassVisitModel objects ordered by check-in date in
+              descending order.
     """
-    current_term_start = get_term_start_date()
-    visits = (Visit.objects
-              .select_related('program_area',
-                              'tutoring_option',
-                              'writing_service')
-              .filter(student_syskey=student_syskey,
-                      check_in_date__gte=current_term_start)
-              .order_by('-check_in_date'))
-    return visits
+    visits = Compass().get_current_quarter_visits(student_syskey)
+    return sorted(visits, key=lambda visit: visit.checkin_date, reverse=True)
 
 
 def checkout_active_verified_visit(student_syskey):
@@ -422,3 +426,28 @@ def checkout_active_verified_visit(student_syskey):
                                          check_out_date=None)\
         .update(check_out_date=timezone.now())
     return updated_count > 0
+
+
+def map_visit_to_compass_model(visit, student_netid):
+    """
+    Map a local Visit instance to a CompassVisitModel payload.
+
+    Args:
+        visit (Visit): Local visit model instance.
+        student_netid (str): Student netid resolved from syskey.
+
+    Returns:
+        CompassVisitModel: Payload model for Compass.store_visit.
+    """
+    course_code = visit.course
+    if not course_code and visit.writing_service:
+        course_code = visit.writing_service.name
+
+    return CompassVisitModel(
+        student_netid=student_netid,
+        visit_type=visit.program_area.name,
+        course_code=course_code,
+        tutoring_option=visit.tutoring_option.name,
+        checkin_date=visit.check_in_date,
+        checkout_date=visit.check_out_date,
+    )

@@ -76,6 +76,7 @@ class Visit(models.Model):
                      for JSON serialization.
     """
     student_syskey = models.CharField(max_length=10, db_index=True)
+    student_netid = models.CharField(max_length=64)
     program_area = models.ForeignKey(ProgramArea, on_delete=models.PROTECT)
     tutoring_option = models.ForeignKey(TutoringOption,
                                         on_delete=models.PROTECT)

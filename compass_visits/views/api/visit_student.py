@@ -42,8 +42,13 @@ class StudentVisitList(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Unable to retrieve student "
                                                "information")
-        visits = get_current_quarter_visits_by_syskey(student_syskey)
-        visit_list = [visit.json_data() for visit in visits]
+        try:
+            visits = get_current_quarter_visits_by_syskey(student_syskey)
+        except DataFailureException:
+            return self.error_response(status=400,
+                                       message="Unable to retrieve student "
+                                               "information")
+        visit_list = [visit.student_json_data() for visit in visits]
         return self.json_response(status=200, content=visit_list)
 
 
@@ -80,6 +85,7 @@ class VisitView(RESTDispatchLogin):
             request_body = json.loads(request.body)
             visit = create_visit_from_request(request_body,
                                               student_syskey,
+                                              student_netid,
                                               verified=switch_visit)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:

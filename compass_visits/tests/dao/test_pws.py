@@ -5,7 +5,8 @@ from compass_visits.tests import CompassVisitsTestCase
 from compass_visits.dao.pws import (get_student_photo,
                                     get_student_profile,
                                     get_regid_by_netid,
-                                    get_syskey_by_netid)
+                                    get_syskey_by_netid,
+                                    get_netid_by_syskey)
 from restclients_core.exceptions import DataFailureException
 
 
@@ -36,3 +37,10 @@ class PWSDAOTest(CompassVisitsTestCase):
         with self.assertRaises(DataFailureException):
             no_syskey = get_syskey_by_netid("nonexistent")
             self.assertIsNone(no_syskey)
+
+    def test_get_netid_by_syskey(self):
+        netid = get_netid_by_syskey("000083856")
+        self.assertEqual(netid, "javerage")
+        with self.assertRaises(DataFailureException):
+            no_netid = get_netid_by_syskey("000000000")
+            self.assertIsNone(no_netid)

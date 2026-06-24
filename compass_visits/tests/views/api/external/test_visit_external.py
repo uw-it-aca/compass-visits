@@ -3,6 +3,7 @@
 
 from compass_visits.tests import APITokenTestCase
 from compass_visits.models import Visit
+from unittest.mock import patch
 
 
 class VisitExternalAPITestCase(APITokenTestCase):
@@ -106,7 +107,9 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertEqual(data['error'], 'Visit must be verified before'
                                         ' checkout')
 
-    def test_manage_visits_post(self):
+    @patch('compass_visits.dao.visit_dao.get_netid_by_syskey')
+    def test_manage_visits_post(self, mock_get_netid):
+        mock_get_netid.return_value = 'j043868'
         new_visit_data = {
             'student_syskey': '000043868',
             'program_area': 1,
@@ -131,7 +134,9 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertIsNone(data['check_out_date'])
         self.assertTrue(data['is_verified'])
 
-    def test_manage_visits_post_validation_error(self):
+    @patch('compass_visits.dao.visit_dao.get_netid_by_syskey')
+    def test_manage_visits_post_validation_error(self, mock_get_netid):
+        mock_get_netid.return_value = 'j043868'
         new_visit_data = {
             'program_area': 1,
             'tutoring_option': 1,
