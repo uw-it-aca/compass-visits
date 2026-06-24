@@ -274,7 +274,11 @@ def manager_create_visit_from_request(request_data):
     visit.student_syskey = request_data.get('student_syskey')
     if not visit.student_syskey:
         raise ValidationError("student_syskey is required")
-    visit.student_netid = get_netid_by_syskey(visit.student_syskey)
+    try:
+        from restclients_core.exceptions import DataFailureException
+        visit.student_netid = get_netid_by_syskey(visit.student_syskey)
+    except DataFailureException as ex:
+        raise ValidationError("Unable to resolve student_netid") from ex
     if not visit.student_netid:
         raise ValidationError("Unable to resolve student_netid")
     if request_data.get('check_in_date'):

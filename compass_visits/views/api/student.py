@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from userservice.user import UserService
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import StreamingHttpResponse
 from compass_visits.dao.compass import Compass
 from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           get_total_minutes_by_syskey,
@@ -46,7 +44,7 @@ class StudentProfileView(RESTDispatchLogin):
                                         .b64encode(photo_data.getvalue())
                                         .decode('ascii')) \
                 if photo_data else None
-        except DataFailureException as ex:
+        except DataFailureException:
             student_profile['photo'] = None
 
         student_syskey = student_profile.get('student_syskey')
