@@ -85,6 +85,7 @@ class VisitView(RESTDispatchLogin):
             request_body = json.loads(request.body)
             visit = create_visit_from_request(request_body,
                                               student_syskey,
+                                              student_netid,
                                               verified=switch_visit)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:

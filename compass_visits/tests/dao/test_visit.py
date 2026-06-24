@@ -37,6 +37,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         student_syskey = "000083851"
         v1 = Visit.objects.create(
             student_syskey=student_syskey,
+            student_netid="j043851",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -44,6 +45,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         )
         v2 = Visit.objects.create(
             student_syskey=student_syskey,
+            student_netid="j043851",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -132,6 +134,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_update_visit(self):
         visit = Visit.objects.create(
             student_syskey="000043856",
+            student_netid="j043856",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -149,6 +152,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_update_unverified_visit(self):
         unverified_visit = Visit.objects.create(
             student_syskey="000043856",
+            student_netid="j043856",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -164,6 +168,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_update_checked_out_visit(self):
         visit = Visit.objects.create(
             student_syskey="000043856",
+            student_netid="j043856",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -181,6 +186,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_bad_update_visit(self):
         unverified_visit = Visit.objects.create(
             student_syskey="000043856",
+            student_netid="j043856",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -201,8 +207,12 @@ class VisitDAOTest(CompassVisitsTestCase):
             "writing_service": 1,
         }
         student_syskey = "000043856"
-        visit = create_visit_from_request(request_data, student_syskey)
+        student_netid = "j043856"
+        visit = create_visit_from_request(request_data,
+                                          student_syskey,
+                                          student_netid)
         self.assertEqual(visit.student_syskey, student_syskey)
+        self.assertEqual(visit.student_netid, student_netid)
         self.assertEqual(visit.program_area.id, request_data['program_area'])
         self.assertEqual(visit.tutoring_option.id,
                          request_data['tutoring_option'])
@@ -216,13 +226,17 @@ class VisitDAOTest(CompassVisitsTestCase):
             "course": "TRAIN 101",
         }
         student_syskey = "000043857"
-        visit = create_visit_from_request(request_data, student_syskey)
+        student_netid = "j043857"
+        visit = create_visit_from_request(request_data,
+                                          student_syskey,
+                                          student_netid)
         self.assertEqual(visit.course, request_data['course'])
         self.assertIsNone(visit.writing_service)
         visit.delete()
 
         visit = create_visit_from_request(request_data,
                                           student_syskey,
+                                          student_netid,
                                           verified=True)
         self.assertTrue(visit.is_verified)
 
@@ -232,6 +246,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         student_syskey = "000043858"
         Visit.objects.create(
             student_syskey=student_syskey,
+            student_netid="j043858",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -243,7 +258,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             "writing_service": 1,
         }
         with self.assertRaises(ValidationError) as context:
-            create_visit_from_request(request_data, student_syskey)
+            create_visit_from_request(request_data,
+                                      student_syskey,
+                                      "j043858")
         self.assertEqual(str(context.exception),
                          "Student already has an active visit")
 
@@ -267,6 +284,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_get_student_state(self):
         active_visit = Visit.objects.create(
             student_syskey="000043859",
+            student_netid="j043859",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -276,6 +294,7 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         pending_visit = Visit.objects.create(
             student_syskey="000043860",
+            student_netid="j043860",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -286,6 +305,7 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         checked_out_visit = Visit.objects.create(
             student_syskey="000043861",
+            student_netid="j043861",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -300,6 +320,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.all().delete()
         Visit.objects.create(
             student_syskey="000043862",
+            student_netid="j043862",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -307,6 +328,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         )
         Visit.objects.create(
             student_syskey="000043863",
+            student_netid="j043863",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -320,6 +342,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.all().delete()
         Visit.objects.create(
             student_syskey="000043864",
+            student_netid="j043864",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -328,6 +351,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         )
         Visit.objects.create(
             student_syskey="000043865",
+            student_netid="j043865",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -343,6 +367,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.all().delete()
         Visit.objects.create(
             student_syskey="000043866",
+            student_netid="j043866",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -351,6 +376,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         )
         Visit.objects.create(
             student_syskey="000043867",
+            student_netid="j043867",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -372,8 +398,11 @@ class VisitDAOTest(CompassVisitsTestCase):
             "verify": True,
             "checkout": True
         }
-        visit = manager_create_visit_from_request(request_data)
+        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+            mock_get_netid.return_value = "j043868"
+            visit = manager_create_visit_from_request(request_data)
         self.assertEqual(visit.student_syskey, request_data['student_syskey'])
+        self.assertEqual(visit.student_netid, "j043868")
         self.assertEqual(visit.program_area.id, request_data['program_area'])
         self.assertEqual(visit.tutoring_option.id,
                          request_data['tutoring_option'])
@@ -400,7 +429,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             "writing_service": 1,
             "checkout": True
         }
-        visit = manager_create_visit_from_request(request_data)
+        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+            mock_get_netid.return_value = "j043869"
+            visit = manager_create_visit_from_request(request_data)
         self.assertTrue(visit.is_verified)
 
         request_data = {
@@ -409,8 +440,10 @@ class VisitDAOTest(CompassVisitsTestCase):
             "tutoring_option": 1,
             "writing_service": 1,
         }
-        with self.assertRaises(ValidationError) as context:
-            manager_create_visit_from_request(request_data)
+        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+            mock_get_netid.return_value = "j043870"
+            with self.assertRaises(ValidationError) as context:
+                manager_create_visit_from_request(request_data)
         self.assertIn("Invalid program_area", str(context.exception))
 
         request_data = {
@@ -419,8 +452,10 @@ class VisitDAOTest(CompassVisitsTestCase):
             "tutoring_option": 99,
             "writing_service": 1,
         }
-        with self.assertRaises(ValidationError) as context:
-            manager_create_visit_from_request(request_data)
+        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+            mock_get_netid.return_value = "j043870"
+            with self.assertRaises(ValidationError) as context:
+                manager_create_visit_from_request(request_data)
         self.assertIn("Invalid tutoring_option", str(context.exception))
 
         request_data = {
@@ -429,13 +464,16 @@ class VisitDAOTest(CompassVisitsTestCase):
             "tutoring_option": 1,
             "writing_service": 99,
         }
-        with self.assertRaises(ValidationError) as context:
-            manager_create_visit_from_request(request_data)
+        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+            mock_get_netid.return_value = "j043870"
+            with self.assertRaises(ValidationError) as context:
+                manager_create_visit_from_request(request_data)
         self.assertIn("Invalid writing_service", str(context.exception))
 
     def test_manager_update_visit(self):
         visit = Visit.objects.create(
             student_syskey="000043870",
+            student_netid="j043870",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -455,6 +493,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_manager_update_visit_invalid_checkout(self):
         visit = Visit.objects.create(
             student_syskey="000043871",
+            student_netid="j043871",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -472,6 +511,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_manager_update_visit_already_checked_out(self):
         visit = Visit.objects.create(
             student_syskey="000043872",
+            student_netid="j043872",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -489,6 +529,7 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_manager_update_visit_already_verified(self):
         visit = Visit.objects.create(
             student_syskey="000043873",
+            student_netid="j043873",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -506,6 +547,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         student_syskey = "000043874"
         active_visit = Visit.objects.create(
             student_syskey=student_syskey,
+            student_netid="j043874",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
