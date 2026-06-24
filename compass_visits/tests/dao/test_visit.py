@@ -398,7 +398,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             "verify": True,
             "checkout": True
         }
-        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+        with patch(
+            "compass_visits.dao.visit_dao.get_netid_by_syskey"
+        ) as mock_get_netid:
             mock_get_netid.return_value = "j043868"
             visit = manager_create_visit_from_request(request_data)
         self.assertEqual(visit.student_syskey, request_data['student_syskey'])
@@ -429,7 +431,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             "writing_service": 1,
             "checkout": True
         }
-        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+        with patch(
+            "compass_visits.dao.visit_dao.get_netid_by_syskey"
+        ) as mock_get_netid:
             mock_get_netid.return_value = "j043869"
             visit = manager_create_visit_from_request(request_data)
         self.assertTrue(visit.is_verified)
@@ -440,7 +444,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             "tutoring_option": 1,
             "writing_service": 1,
         }
-        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+        with patch(
+            "compass_visits.dao.visit_dao.get_netid_by_syskey"
+        ) as mock_get_netid:
             mock_get_netid.return_value = "j043870"
             with self.assertRaises(ValidationError) as context:
                 manager_create_visit_from_request(request_data)
@@ -452,7 +458,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             "tutoring_option": 99,
             "writing_service": 1,
         }
-        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+        with patch(
+            "compass_visits.dao.visit_dao.get_netid_by_syskey"
+        ) as mock_get_netid:
             mock_get_netid.return_value = "j043870"
             with self.assertRaises(ValidationError) as context:
                 manager_create_visit_from_request(request_data)
@@ -464,7 +472,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             "tutoring_option": 1,
             "writing_service": 99,
         }
-        with patch("compass_visits.dao.visit_dao.get_netid_by_syskey") as mock_get_netid:
+        with patch(
+            "compass_visits.dao.visit_dao.get_netid_by_syskey"
+        ) as mock_get_netid:
             mock_get_netid.return_value = "j043870"
             with self.assertRaises(ValidationError) as context:
                 manager_create_visit_from_request(request_data)

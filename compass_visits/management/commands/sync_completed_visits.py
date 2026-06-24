@@ -4,7 +4,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from compass_visits.dao.compass import Compass
-from compass_visits.dao.pws import get_netid_by_syskey
 from compass_visits.dao.visit_dao import map_visit_to_compass_model
 from compass_visits.models import Visit
 
@@ -48,21 +47,25 @@ class Command(BaseCommand):
         for visit in visits_qs:
             total += 1
             try:
-                student_netid = get_netid_by_syskey(visit.student_syskey)
-                compass_visit = map_visit_to_compass_model(visit,
-                                                           student_netid)
+                student_netid = visit.student_netid
+                compass_visit = map_visit_to_compass_model(
+                    visit,
+                    student_netid,
+                )
                 compass.store_visit(compass_visit)
                 visit.delete()
                 synced += 1
             except Exception as ex:
                 failed += 1
                 self.stderr.write(
-                    f"Failed visit id={visit.id} syskey={visit.student_syskey}:"
+                    f"Failed visit id={visit.id} "
+                    f"syskey={visit.student_syskey}:"
                     f" {ex}"
                 )
 
         self.stdout.write(
-            f"Processed={total} Synced={synced} Deleted={synced} Failed={failed}"
+            f"Processed={total} Synced={synced} "
+            f"Deleted={synced} Failed={failed}"
         )
 
         if failed:

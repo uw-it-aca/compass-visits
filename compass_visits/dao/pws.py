@@ -4,8 +4,6 @@
 from uw_pws import PWS
 from restclients_core.exceptions import DataFailureException
 
-
-
 PHOTO_SIZE = "large"
 
 

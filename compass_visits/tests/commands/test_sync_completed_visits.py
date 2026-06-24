@@ -12,8 +12,15 @@ from unittest.mock import patch
 
 class TestSyncCompletedVisits(CompassVisitsTestCase):
     @patch("compass_visits.management.commands.sync_completed_visits.Compass")
-    @patch("compass_visits.management.commands.sync_completed_visits.get_netid_by_syskey")
-    def test_sync_success_deletes_visit(self, mock_get_netid, mock_compass_cls):
+    @patch(
+        "compass_visits.management.commands."
+        "sync_completed_visits.map_visit_to_compass_model"
+    )
+    def test_sync_success_deletes_visit(
+        self,
+        mock_map_visit,
+        mock_compass_cls,
+    ):
         Visit.objects.all().delete()
         visit = Visit.objects.create(
             student_syskey="000043900",
@@ -25,19 +32,22 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
             check_out_date=timezone.now(),
         )
 
-        mock_get_netid.return_value = "javerage"
+        mock_map_visit.return_value = {"visit": "payload"}
         mock_compass = mock_compass_cls.return_value
         mock_compass.store_visit.return_value = {"ok": True}
 
         call_command("sync_completed_visits")
 
         self.assertFalse(Visit.objects.filter(id=visit.id).exists())
-        mock_get_netid.assert_called_once_with("000043900")
+        mock_map_visit.assert_called_once()
         self.assertEqual(mock_compass.store_visit.call_count, 1)
 
     @patch("compass_visits.management.commands.sync_completed_visits.Compass")
-    @patch("compass_visits.management.commands.sync_completed_visits.get_netid_by_syskey")
-    def test_sync_failure_keeps_visit_and_errors(self, mock_get_netid,
+    @patch(
+        "compass_visits.management.commands."
+        "sync_completed_visits.map_visit_to_compass_model"
+    )
+    def test_sync_failure_keeps_visit_and_errors(self, mock_map_visit,
                                                  mock_compass_cls):
         Visit.objects.all().delete()
         visit = Visit.objects.create(
@@ -50,7 +60,7 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
             check_out_date=timezone.now(),
         )
 
-        mock_get_netid.return_value = "javerage"
+        mock_map_visit.return_value = {"visit": "payload"}
         mock_compass = mock_compass_cls.return_value
         mock_compass.store_visit.side_effect = Exception("boom")
 
@@ -60,8 +70,11 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
         self.assertTrue(Visit.objects.filter(id=visit.id).exists())
 
     @patch("compass_visits.management.commands.sync_completed_visits.Compass")
-    @patch("compass_visits.management.commands.sync_completed_visits.get_netid_by_syskey")
-    def test_limit_option(self, mock_get_netid, mock_compass_cls):
+    @patch(
+        "compass_visits.management.commands."
+        "sync_completed_visits.map_visit_to_compass_model"
+    )
+    def test_limit_option(self, mock_map_visit, mock_compass_cls):
         Visit.objects.all().delete()
         Visit.objects.create(
             student_syskey="000043902",
@@ -82,7 +95,7 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
             check_out_date=timezone.now(),
         )
 
-        mock_get_netid.return_value = "javerage"
+        mock_map_visit.return_value = {"visit": "payload"}
         mock_compass = mock_compass_cls.return_value
         mock_compass.store_visit.return_value = {"ok": True}
 

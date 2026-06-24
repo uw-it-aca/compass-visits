@@ -121,7 +121,11 @@ class CompassVisitModel(models.Model):
             "visit_type": self.visit_type,
             "course": self.course_code,
             "tutoring_option": self.tutoring_option,
-            "check_in_date": self.checkin_date.isoformat() if self.checkin_date else None,
-            "check_out_date": self.checkout_date.isoformat() if self.checkout_date else None,
+            "check_in_date": (
+                self.checkin_date.isoformat() if self.checkin_date else None
+            ),
+            "check_out_date": (
+                self.checkout_date.isoformat() if self.checkout_date else None
+            ),
             "active_minutes": active_minutes,
         }

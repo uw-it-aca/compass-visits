@@ -129,9 +129,9 @@ def create_visit_from_request(request_data, student_syskey, student_netid,
                              including 'program_area', 'tutoring_option',
                              and optionally 'writing_service' and 'course'.
         student_syskey (str): The SysKey of the student for whom the visit
-                     is being created.
+                              is being created.
         student_netid (str): The NetID of the student for whom the visit is
-                     being created.
+                             being created.
 
     Returns:
         Visit: The newly created Visit instance.
