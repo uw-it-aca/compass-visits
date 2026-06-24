@@ -4,7 +4,6 @@
 from uw_pws import PWS
 from restclients_core.exceptions import DataFailureException
 
-from compass_visits.dao.compass import Compass
 
 
 PHOTO_SIZE = "large"
