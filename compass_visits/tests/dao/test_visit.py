@@ -1,10 +1,13 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import datetime
 from django.utils import timezone
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
+from compass_visits.dao.compass import CompassVisitModel
 from compass_visits.tests import CompassVisitsTestCase
+from unittest.mock import patch
 from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           get_completed_visits_by_syskey,
                                           get_visits_pending_checkout,
@@ -14,6 +17,7 @@ from compass_visits.dao.visit_dao import (get_active_visit_for_student,
                                           create_visit_from_request,
                                           get_total_minutes_by_syskey,
                                           get_student_state,
+                                          get_current_quarter_visits_by_syskey,
                                           manager_create_visit_from_request,
                                           manager_update_visit,
                                           checkout_active_verified_visit)
@@ -518,3 +522,34 @@ class VisitDAOTest(CompassVisitsTestCase):
         except Exception as e:
             self.fail(f"checkout_active_verified_visit raised an exception "
                       f"unexpectedly: {e}")
+
+    @patch('compass_visits.dao.visit_dao.Compass.get_current_quarter_visits')
+    def test_get_current_quarter_visits_by_syskey(self, mock_get_visits):
+        visit_early = CompassVisitModel(
+            student_netid="javerage",
+            visit_type="Drop In",
+            course_code="MATH 101",
+            tutoring_option="Individual",
+            checkin_date=datetime.datetime(2024, 8, 1, 10, 0,
+                                           tzinfo=datetime.timezone.utc),
+            checkout_date=datetime.datetime(2024, 8, 1, 10, 30,
+                                            tzinfo=datetime.timezone.utc),
+        )
+        visit_late = CompassVisitModel(
+            student_netid="javerage",
+            visit_type="Drop In",
+            course_code="CHEM 101",
+            tutoring_option="Group",
+            checkin_date=datetime.datetime(2024, 8, 1, 12, 0,
+                                           tzinfo=datetime.timezone.utc),
+            checkout_date=datetime.datetime(2024, 8, 1, 12, 45,
+                                            tzinfo=datetime.timezone.utc),
+        )
+        mock_get_visits.return_value = [visit_early, visit_late]
+
+        visits = get_current_quarter_visits_by_syskey("000083856")
+
+        mock_get_visits.assert_called_once_with("000083856")
+        self.assertEqual([v.course_code for v in visits],
+                         ["CHEM 101", "MATH 101"])
+        self.assertIn("checkin_date", visits[0].json_data())

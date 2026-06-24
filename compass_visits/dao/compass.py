@@ -8,6 +8,7 @@ import json
 from restclients_core.exceptions import DataFailureException
 from restclients_core import models
 import datetime
+from django.utils.dateparse import parse_datetime
 
 
 class COMPASS_DAO(DAO):
@@ -65,6 +66,27 @@ class Compass(object):
                                        "{}".format(response.status))
         return json.loads(response.data)
 
+    def get_current_quarter_visits(self, syskey):
+        """
+        Returns a list of visits for the given syskey in the current quarter.
+        """
+        url = "{}/visit/external_student/{}".format(self.API, syskey)
+        response = self.dao.getURL(url)
+        if response.status != 200:
+            raise DataFailureException(url,
+                                       response.status,
+                                       "Error getting visits for syskey "
+                                       "{}: {}".format(syskey,
+                                                       response.status))
+        data = json.loads(response.data)
+        visits = []
+        for visit in data:
+            visit['checkin_date'] = parse_datetime(visit['checkin_date'])
+            if visit.get('checkout_date'):
+                visit['checkout_date'] = parse_datetime(visit['checkout_date'])
+            visits.append(CompassVisitModel(**visit))
+        return visits
+
 
 class CompassVisitModel(models.Model):
     """
@@ -86,4 +108,20 @@ class CompassVisitModel(models.Model):
             "tutoring_option": self.tutoring_option,
             "checkin_date": self.checkin_date.isoformat(),
             "checkout_date": self.checkout_date.isoformat()
+        }
+
+    def student_json_data(self):
+        active_minutes = 0
+        if self.checkout_date and self.checkin_date:
+            active_minutes = int((self.checkout_date - self.checkin_date)
+                                 .total_seconds() / 60)
+
+        return {
+            "student_netid": self.student_netid,
+            "visit_type": self.visit_type,
+            "course": self.course_code,
+            "tutoring_option": self.tutoring_option,
+            "check_in_date": self.checkin_date.isoformat(),
+            "check_out_date": self.checkout_date.isoformat(),
+            "active_minutes": active_minutes,
         }
