@@ -1,0 +1,184 @@
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+resources:
+  limits:
+    cpu: 250m
+    memory: 768Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+targetAverageUtilization: 100
+
+ingress:
+  enabled: true
+  tls:
+    compass:
+      secretName: test.checkin.compass.uw.edu-ingress-cert
+      hosts:
+        - test.checkin.compass.uw.edu
+  hosts:
+    compass:
+      host: test.checkin.compass.uw.edu
+      paths:
+        - "/"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/client-body-buffer-size: "16K"
+    nginx.ingress.kubernetes.io/proxy-body-size: "20M"
+
+lifecycle:
+  enabled: true
+  preStop:
+    enabled: true
+affinity:
+  podsSpanNodes: true
+readiness:
+  enabled: true
+securityPolicy:
+  enabled: true
+
+externalService:
+  enabled: true
+  name: compass-visits-db-service
+  type: ClusterIP
+  serviceAddress: 172.18.1.4
+  servicePort: 5432
+database:
+  engine: postgres
+  name: compass-visits-test
+  hostname: compass-visits-db-service
+  secretName: visits-test.compass.uw.edu-sql-secrets
+
+repo: compass-visits
+instance: test
+namespace:
+  enabled: true
+
+memcached:
+  enabled: true
+  replicaCount: 1
+  updateStrategy:
+    type: RollingUpdate
+
+gcsCredentials:
+  mounted: true
+  secretName: visits-test.compass.uw.edu-gcs-credentials
+
+certs:
+  mounted: true
+  certPath: /certs/compass.uw.edu-ic.cert
+  keyPath: /certs/compass.uw.edu-ic.key
+  secretName: visits-test.compass.uw.edu-ic-certs
+
+environmentVariables:
+  - name: ENV
+    value: test
+
+  - name: SWS_ENV
+    value: PROD
+  - name: SWS_TIMEOUT
+    value: "10"
+
+  - name: PWS_ENV
+    value: PROD
+  - name: PWS_TIMEOUT
+    value: "10"
+
+  - name: GWS_ENV
+    value: PROD
+  - name: GWS_TIMEOUT
+    value: "5"
+
+  - name: AUTH
+    value: SAML
+  - name: SAML_ENTITY_ID
+    value: https://test.checkin.compass.uw.edu/saml2
+
+  - name: CLUSTER_CNAME
+    value: test.checkin.compass.uw.edu
+
+externalSecrets:
+  enabled: true
+  secrets:
+    - name: visits-test.compass.uw.edu-secrets
+      externalKey: compass-visits/test/secrets
+      data:
+        - name: django-secret
+          property: django-secret
+        - name: group-id-support
+          property: group-id-support
+        - name: google-analytics-key
+          property: google-analytics-key
+    - name: visits-test.compass.uw.edu-sql-secrets
+      externalKey: compass-visits/shared/sql-secrets
+      data:
+        - name: username
+          property: username
+        - name: password
+          property: password
+    - name: visits-test.compass.uw.edu-gcs-credentials
+      externalKey: compass-visits/shared/gcs-credentials
+      data:
+        - name: credentials.json
+          property: credentials.json
+    - name: visits-test.compass.uw.edu-ic-certs
+      externalKey: compass-visits/test/ic-certs
+      data:
+        - name: compass.uw.edu-ic.cert
+          property: compass.uw.edu-ic.cert
+        - name: compass.uw.edu-ic.key
+          property: compass.uw.edu-ic.key
+    - name: visits-test.compass.uw.edu-sp-cert
+      externalKey: compass-visits/test/ic-certs
+      data:
+        - name: visits-test.compass.uw.edu-ic.cert
+          property: visits-test.compass.uw.edu-ic.cert
+    - name: visits-test.compass.uw.edu-uw-idp-cert
+      externalKey: idp-cert
+      data:
+        - name: uw-idp-cert
+          property: cert
+
+environmentVariablesSecrets:
+  djangoSecret:
+    name: DJANGO_SECRET
+    secretName: visits-test.compass.uw.edu-secrets
+    secretKey: django-secret
+  adminGroup:
+    name: ADMIN_GROUP
+    secretName: visits-test.compass.uw.edu-secrets
+    secretKey: group-id-admin
+  supportGroup:
+    name: SUPPORT_GROUP
+    secretName: visits-test.compass.uw.edu-secrets
+    secretKey: group-id-support
+  googleAnalyticsKey:
+    name: GOOGLE_ANALYTICS_KEY
+    secretName: visits-test.compass.uw.edu-secrets
+    secretKey: google-analytics-key
+  samlSPCert:
+    name: SP_CERT
+    secretName: visits-test.compass.uw.edu-sp-cert
+    secretKey: visits-test.compass.uw.edu-ic.cert
+  samlIDPCert:
+    name: IDP_CERT
+    secretName: visits-test.compass.uw.edu-uw-idp-cert
+    secretKey: uw-idp-cert
+
+
+daemon:
+  enabled: true
+  daemons:
+    - name: sync-completed-visits
+      replicaCount: 1
+      command: ["/scripts/management_daemon.sh"]
+      args: ["--delay", "5", "sync_completed_visits"]
+      resources:
+        limits:
+          cpu: 500m
+          memory: 256Mi
+        requests:
+          cpu: 25m
+          memory: 64Mi
