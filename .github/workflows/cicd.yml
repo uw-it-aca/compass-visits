@@ -132,65 +132,65 @@ jobs:
           coveralls
         continue-on-error: true
 
-#      - name: Push Image to Repository
-#        if: github.event_name == 'push'
-#        uses: uw-it-aca/actions/gcr-push@main
-#        with:
-#          image_tag: ${{ needs.context.outputs.image_tag }}
-#          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
-#
-#  deploy:
-#    if: github.event_name == 'push'
-#
-#    needs: [context, build]
-#
-#    outputs:
-#      context: ${{ steps.context.outputs.context }}
-#
-#    runs-on: ubuntu-24.04
-#
-#    steps:
-#      - name: Checkout Repo
-#        uses: actions/checkout@v4
-#
-#      - name: Deployment Pipeline
-#        if: >-
-#          contains(fromJSON('["main", "master", "develop", "qa"]'),
-#            needs.context.outputs.git_repo_branch)
-#        uses: uw-it-aca/actions/cicd-deploy@main
-#        with:
-#          release_name: ${{ env.RELEASE_NAME }}
-#          commit_hash: ${{ needs.context.outputs.commit_hash }}
-#          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
-#          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-#
-#      - name: Deploy Evaluation Branch
-#        if: needs.context.outputs.git_repo_branch == 'feature/eval-me'
-#        uses: uw-it-aca/actions/cicd-deploy@main
-#        with:
-#          release_name: ${{ env.RELEASE_NAME }}
-#          commit_hash: ${{ needs.context.outputs.commit_hash }}
-#          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
-#          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-#          app_instance: eval
-#
-#      - name: 'Surface context from executed build step'
-#        id: context
-#        shell: bash
-#        run: echo "context=$(< ${CONTEXT_FILENAME})" >> $GITHUB_OUTPUT
-#
-#  housekeeping:
-#    if: github.event_name == 'push'
-#
-#    needs: [context, build, deploy]
-#
-#    runs-on: ubuntu-24.04
-#
-#    steps:
-#      - name: House Keeping
-#        uses: uw-it-aca/actions/cicd-housekeeping@main
-#        with:
-#          release_name: ${{ env.RELEASE_NAME }}
-#          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-#          registry_password: ${{ secrets.GCP_JSON_KEY }}
-#          context: ${{ needs.deploy.outputs.context }}
+      - name: Push Image to Repository
+        if: github.event_name == 'push'
+        uses: uw-it-aca/actions/gcr-push@main
+        with:
+          image_tag: ${{ needs.context.outputs.image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+
+  deploy:
+    if: github.event_name == 'push'
+
+    needs: [context, build]
+
+    outputs:
+      context: ${{ steps.context.outputs.context }}
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Deployment Pipeline
+        if: >-
+          contains(fromJSON('["main", "master", "develop", "qa"]'),
+            needs.context.outputs.git_repo_branch)
+        uses: uw-it-aca/actions/cicd-deploy@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          commit_hash: ${{ needs.context.outputs.commit_hash }}
+          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+
+      - name: Deploy Evaluation Branch
+        if: needs.context.outputs.git_repo_branch == 'feature/eval-me'
+        uses: uw-it-aca/actions/cicd-deploy@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          commit_hash: ${{ needs.context.outputs.commit_hash }}
+          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+          app_instance: eval
+
+      - name: Surface context from executed build step
+        id: context
+        shell: bash
+        run: echo "context=$(< ${CONTEXT_FILENAME})" >> $GITHUB_OUTPUT
+
+  housekeeping:
+    if: github.event_name == 'push'
+
+    needs: [context, build, deploy]
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: House Keeping
+        uses: uw-it-aca/actions/cicd-housekeeping@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+          registry_password: ${{ secrets.GCP_JSON_KEY }}
+          context: ${{ needs.deploy.outputs.context }}
