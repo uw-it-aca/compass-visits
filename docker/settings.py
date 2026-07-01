@@ -83,6 +83,9 @@ if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
     VITE_MANIFEST_PATH = os.path.join(
         os.sep, 'static', '.vite', 'manifest.json')
     EXTERNAL_API_TOKEN = os.getenv('EXTERNAL_API_TOKEN')
+    SUPPORT_GROUP = os.getenv('SUPPORT_GROUP')
+    ADMIN_GROUP = os.getenv('ADMIN_GROUP')
+    COMPASS_AUTH_TOKEN = os.getenv('COMPASS_AUTH_TOKEN')
 
 if os.getenv('ENV') == 'prod':
     ALLOW_USER_OVERRIDE_FOR_WRITE = False
