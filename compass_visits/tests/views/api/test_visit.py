@@ -3,6 +3,7 @@
 
 from compass_visits.tests import APILoginTestCase
 from compass_visits.models import Visit
+from restclients_core.exceptions import DataFailureException
 from unittest.mock import patch
 
 
@@ -140,3 +141,20 @@ class VisitAPITestCase(APILoginTestCase):
         new_visit = Visit.objects.get(id=data['id'])
         self.assertEqual(new_visit.is_verified, True)
         self.assertEqual(new_visit.check_out_date, None)
+
+    @patch('compass_visits.views.api.visit_student.get_syskey_by_netid')
+    @patch('userservice.user.UserService.get_override_user')
+    def test_post_visit_data_failure(self,
+                                     mock_get_override_user,
+                                     mock_get_syskey):
+        mock_get_override_user.return_value = None
+        mock_get_syskey.side_effect = DataFailureException(
+            '/api/v1/person/newuser/full.json', 500, 'PWS error')
+        response = self.post_response('visit',
+                                      netid='newuser',
+                                      data={"program_area": 1})
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'],
+                         "Unable to retrieve student information")

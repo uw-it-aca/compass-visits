@@ -95,6 +95,10 @@ class VisitView(RESTDispatchLogin):
         except json.JSONDecodeError:
             return self.error_response(status=400,
                                        message="Invalid JSON format")
+        except DataFailureException:
+            return self.error_response(status=400,
+                                       message="Unable to retrieve student "
+                                               "information")
 
 
 class VisitDetailView(RESTDispatchLogin):
