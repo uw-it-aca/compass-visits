@@ -1,6 +1,7 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from unittest.mock import patch
 from compass_visits.tests import CompassVisitsTestCase
 from compass_visits.dao.pws import (get_student_photo,
                                     get_student_profile,
@@ -44,3 +45,21 @@ class PWSDAOTest(CompassVisitsTestCase):
         with self.assertRaises(DataFailureException):
             no_netid = get_netid_by_syskey("000000000")
             self.assertIsNone(no_netid)
+
+    def test_get_student_photo_none_person(self):
+        with patch("compass_visits.dao.pws.PWS") as mock_pws:
+            mock_pws.return_value.get_person_by_netid.return_value = None
+            result = get_student_photo("someone")
+            self.assertIsNone(result)
+
+    def test_get_syskey_by_netid_none_person(self):
+        with patch("compass_visits.dao.pws.PWS") as mock_pws:
+            mock_pws.return_value.get_person_by_netid.return_value = None
+            result = get_syskey_by_netid("someone")
+            self.assertIsNone(result)
+
+    def test_get_regid_by_netid_none_person(self):
+        with patch("compass_visits.dao.pws.PWS") as mock_pws:
+            mock_pws.return_value.get_person_by_netid.return_value = None
+            result = get_regid_by_netid("someone")
+            self.assertIsNone(result)
