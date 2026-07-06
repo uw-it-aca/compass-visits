@@ -142,6 +142,20 @@ class VisitAPITestCase(APILoginTestCase):
         self.assertEqual(new_visit.is_verified, True)
         self.assertEqual(new_visit.check_out_date, None)
 
+    def test_post_visit_course_too_long(self):
+        response = self.post_response('visit',
+                                      netid='newuser',
+                                      data={
+                                          "program_area": 1,
+                                          "tutoring_option": 1,
+                                          "course": "A" * 256,
+                                      })
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'],
+                         "course exceeds max length of 255")
+
     @patch('compass_visits.views.api.visit_student.get_syskey_by_netid')
     @patch('userservice.user.UserService.get_override_user')
     def test_post_visit_data_failure(self,

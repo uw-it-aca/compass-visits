@@ -9,9 +9,6 @@ from compass_visits.dao.auth import is_admin_user
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
-import pprint
 
 
 class SAMLAdminSite(admin.AdminSite):

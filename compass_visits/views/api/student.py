@@ -55,6 +55,8 @@ class StudentProfileView(RESTDispatchLogin):
             except DataFailureException:
                 ic_elligible = False
 
+        # TODO: Preserve legacy response key for compatibility; rename in next
+        # major API version.
         student_profile['ic_elligible'] = ic_elligible
 
         if ic_elligible:

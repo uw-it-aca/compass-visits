@@ -131,6 +131,16 @@ class VisitDAOTest(CompassVisitsTestCase):
             validate_visit_data(invalid_writing_service)
         self.assertIn("Invalid writing_service", str(context.exception))
 
+        long_course = {
+            "program_area": 1,
+            "tutoring_option": 1,
+            "course": "A" * 256,
+        }
+        with self.assertRaises(Exception) as context:
+            validate_visit_data(long_course)
+        self.assertIn("course exceeds max length of 255",
+                      str(context.exception))
+
     def test_update_visit(self):
         visit = Visit.objects.create(
             student_syskey="000043856",
@@ -239,6 +249,18 @@ class VisitDAOTest(CompassVisitsTestCase):
                                           student_netid,
                                           verified=True)
         self.assertTrue(visit.is_verified)
+
+        request_data = {
+            "program_area": 1,
+            "tutoring_option": 1,
+            "course": "A" * 256,
+        }
+        with self.assertRaises(ValidationError) as context:
+            create_visit_from_request(request_data,
+                                      "000049999",
+                                      "j049999")
+        self.assertEqual(str(context.exception),
+                         "course exceeds max length of 255")
 
     def test_create_from_request_with_active_visit(self):
         Visit.objects.all().delete()  # Clear existing visits
@@ -479,6 +501,21 @@ class VisitDAOTest(CompassVisitsTestCase):
             with self.assertRaises(ValidationError) as context:
                 manager_create_visit_from_request(request_data)
         self.assertIn("Invalid writing_service", str(context.exception))
+
+        request_data = {
+            "student_syskey": "000043871",
+            "program_area": 1,
+            "tutoring_option": 1,
+            "course": "A" * 256,
+        }
+        with patch(
+            "compass_visits.dao.visit_dao.get_netid_by_syskey"
+        ) as mock_get_netid:
+            mock_get_netid.return_value = "j043871"
+            with self.assertRaises(ValidationError) as context:
+                manager_create_visit_from_request(request_data)
+        self.assertEqual(str(context.exception),
+                         "course exceeds max length of 255")
 
     def test_manager_update_visit(self):
         visit = Visit.objects.create(
