@@ -107,7 +107,9 @@ class CompassVisitModel(models.Model):
             "course_code": self.course_code,
             "tutoring_option": self.tutoring_option,
             "checkin_date": self.checkin_date.isoformat(),
-            "checkout_date": self.checkout_date.isoformat()
+            "checkout_date": (
+                self.checkout_date.isoformat() if self.checkout_date else None
+            )
         }
 
     def student_json_data(self):
