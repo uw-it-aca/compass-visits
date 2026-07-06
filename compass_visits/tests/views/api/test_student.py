@@ -48,6 +48,20 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertIn('total_minutes', data)
         self.assertEqual(data['total_minutes'], 225.0)
 
+    @patch('compass_visits.views.api.student.get_student_profile')
+    def test_profile_photo_none_without_uwregid(self, mock_get_profile):
+        mock_get_profile.return_value = {
+            'netid': 'javerage',
+            'student_name': 'Jamesy McJamesy',
+            'student_number': '1033334',
+            'student_syskey': '000083856'
+        }
+        response = self.get_response('student_profile', netid='javerage')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn('photo', data)
+        self.assertIsNone(data['photo'])
+
     def test_get_student_visits(self):
         response = self.get_response('student_visits', netid='javerage')
         self.assertEqual(response.status_code, 200)

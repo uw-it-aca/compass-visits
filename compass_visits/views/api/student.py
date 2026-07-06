@@ -39,7 +39,7 @@ class StudentProfileView(RESTDispatchLogin):
                                        message="Unable to retrieve student "
                                                "information")
         try:
-            photo_data = get_student_photo(netid)
+            photo_data = get_student_photo(student_profile.get('uwregid'))
             student_profile['photo'] = (base64
                                         .b64encode(photo_data.getvalue())
                                         .decode('ascii')) \

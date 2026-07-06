@@ -16,11 +16,13 @@ class PWSDAOTest(CompassVisitsTestCase):
         profile = get_student_profile("javerage")
         self.assertIsNotNone(profile)
         self.assertEqual(profile["netid"], "javerage")
+        self.assertEqual(
+            profile["uwregid"], "9136CCB8F66711D5BE060004AC494FFE")
         self.assertEqual(profile["student_name"], "Jamesy McJamesy")
         self.assertEqual(profile["student_number"], "1033334")
 
     def test_get_student_photo(self):
-        photo = get_student_photo("javerage")
+        photo = get_student_photo("9136CCB8F66711D5BE060004AC494FFE")
         self.assertIsNotNone(photo)
         no_photo = get_student_photo("nonexistent")
         self.assertIsNone(no_photo)
@@ -48,8 +50,16 @@ class PWSDAOTest(CompassVisitsTestCase):
 
     def test_get_student_photo_none_person(self):
         with patch("compass_visits.dao.pws.PWS") as mock_pws:
-            mock_pws.return_value.get_person_by_netid.return_value = None
+            mock_pws.return_value.get_idcard_photo.side_effect = (
+                DataFailureException(
+                    '/student/v5/photo/someone', 404, 'Not Found'))
             result = get_student_photo("someone")
+            self.assertIsNone(result)
+
+    def test_get_student_photo_no_uwregid(self):
+        with patch("compass_visits.dao.pws.PWS") as mock_pws:
+            result = get_student_photo(None)
+            mock_pws.assert_not_called()
             self.assertIsNone(result)
 
     def test_get_syskey_by_netid_none_person(self):
