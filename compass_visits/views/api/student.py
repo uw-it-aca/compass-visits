@@ -38,6 +38,10 @@ class StudentProfileView(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Unable to retrieve student "
                                                "information")
+        if student_profile is None:
+            return self.error_response(status=400,
+                                       message="Unable to retrieve student "
+                                               "information")
         try:
             photo_data = get_student_photo(student_profile.get('uwregid'))
             student_profile['photo'] = (base64

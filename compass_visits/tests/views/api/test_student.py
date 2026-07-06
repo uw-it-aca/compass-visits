@@ -62,6 +62,16 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertIn('photo', data)
         self.assertIsNone(data['photo'])
 
+    @patch('compass_visits.views.api.student.get_student_profile')
+    def test_student_profile_none(self, mock_get_profile):
+        mock_get_profile.return_value = None
+        response = self.get_response('student_profile', netid='javerage')
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'],
+                         "Unable to retrieve student information")
+
     def test_get_student_visits(self):
         response = self.get_response('student_visits', netid='javerage')
         self.assertEqual(response.status_code, 200)

@@ -164,6 +164,46 @@ class VisitExternalAPITestCase(APITokenTestCase):
         with self.assertRaises(Visit.DoesNotExist):
             Visit.objects.get(id=3)
 
+    def test_manage_visits_delete_visit_not_found(self):
+        response = self.delete_response('manage_visit',
+                                        url_args={'visit_id': 999},
+                                        token='Token testtoken'
+                                        )
+        self.assertEqual(response.status_code, 404)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Visit not found')
+
+    def test_manage_visits_delete_bad_token(self):
+        response = self.delete_response('manage_visit',
+                                        url_args={'visit_id': 3},
+                                        token='Token badtoken'
+                                        )
+        self.assertEqual(response.status_code, 403)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid API token')
+
+    def test_manage_visits_delete_no_token(self):
+        response = self.delete_response('manage_visit',
+                                        url_args={'visit_id': 3},
+                                        token=None
+                                        )
+        self.assertEqual(response.status_code, 403)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'API token is required')
+
+    def test_manage_visits_delete_bad_token_format(self):
+        response = self.delete_response('manage_visit',
+                                        url_args={'visit_id': 3},
+                                        token='badformat'
+                                        )
+        self.assertEqual(response.status_code, 403)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid API token format')
+
     @patch('compass_visits.dao.visit_dao.get_netid_by_syskey')
     def test_manage_visits_post_course_too_long(self, mock_get_netid):
         mock_get_netid.return_value = 'j043868'
