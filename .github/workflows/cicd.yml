@@ -79,11 +79,9 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: package-lock.json
 
       - name: Install JavaScript Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run JavaScript Tests
         run: npm test -- --run
