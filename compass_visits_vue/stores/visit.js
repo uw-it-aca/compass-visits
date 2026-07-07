@@ -12,6 +12,8 @@ export const useVisitStore = defineStore("visit", {
     return {
       getStudentProfile,
       studentProfile: {},
+      studentProfileError: null,
+      studentProfileLoading: false,
       studentVisit: {},
       studentVisitList: {},
     };
@@ -41,11 +43,23 @@ export const useVisitStore = defineStore("visit", {
       if (
         !Object.prototype.hasOwnProperty.call(this.studentProfile, "request")
       ) {
+        this.studentProfileError = null;
+        this.studentProfileLoading = true;
         this.studentProfile = {
-          request: this.getStudentProfile().then((response) => {
-            this.studentProfile.data = response;
-            this.studentVisit = response.visit || {};
-          }),
+          request: this.getStudentProfile()
+            .then((response) => {
+              this.studentProfile.data = response || {};
+              this.studentVisit = response?.visit || {};
+            })
+            .catch((error) => {
+              this.studentProfile.data = null;
+              this.studentVisit = {};
+              this.studentProfileError = error;
+              throw error;
+            })
+            .finally(() => {
+              this.studentProfileLoading = false;
+            }),
         };
       }
       return this.studentProfile.request;
@@ -64,6 +78,7 @@ export const useVisitStore = defineStore("visit", {
     },
     refreshStudentProfile() {
       this.studentProfile = {};
+      this.studentProfileError = null;
       return this.fetchStudentProfile();
     },
     handleCheckout() {

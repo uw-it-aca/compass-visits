@@ -6,8 +6,12 @@
       {{ pageTitle }}
     </template>
     <template #content>
+      <div v-if="profileError" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-octagon-fill"></i>
+        {{ profileError }}
+      </div>
       <StudentProfile :profile="profile" />
-      <div v-if="isElligible">
+      <div v-if="isElligible && !profileError">
         <button class="btn btn-primary"  @click="redirectToCreate">
           Check In
         </button>
@@ -46,6 +50,7 @@ export default {
     return {
       pageTitle: "Home",
       profile: null,
+      profileError: null,
       isElligible: false,
       persMsg: window.persistent_msgs || [],
     };
@@ -69,11 +74,21 @@ export default {
     loadStudentProfile() {
       this.visitStore.fetchStudentProfile().then(() => {
         this.profile = this.visitStore.studentProfile.data;
+        this.profileError = null;
+      }).catch((error) => {
+        this.profile = null;
+        this.profileError =
+          error?.data?.error || "Unable to load your profile. Please try again.";
       });
     },
   },
   watch: {
     profile(newValue) {
+      if (!newValue || typeof newValue !== "object") {
+        this.isElligible = false;
+        return;
+      }
+
       if ("current_state" in newValue) {
         if (newValue.current_state === "pending_verification") {
           this.redirectToVerify();
@@ -81,7 +96,7 @@ export default {
           this.redirectToCheckout();
         }
       }
-      this.isElligible = newValue.ic_elligible;
+      this.isElligible = Boolean(newValue.ic_elligible);
     },
   },
 };

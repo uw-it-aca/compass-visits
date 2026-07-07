@@ -38,8 +38,12 @@ class StudentProfileView(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Unable to retrieve student "
                                                "information")
+        if student_profile is None:
+            return self.error_response(status=400,
+                                       message="Unable to retrieve student "
+                                               "information")
         try:
-            photo_data = get_student_photo(netid)
+            photo_data = get_student_photo(student_profile.get('uwregid'))
             student_profile['photo'] = (base64
                                         .b64encode(photo_data.getvalue())
                                         .decode('ascii')) \
@@ -55,6 +59,8 @@ class StudentProfileView(RESTDispatchLogin):
             except DataFailureException:
                 ic_elligible = False
 
+        # TODO: Preserve legacy response key for compatibility; rename in next
+        # major API version.
         student_profile['ic_elligible'] = ic_elligible
 
         if ic_elligible:

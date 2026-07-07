@@ -48,3 +48,19 @@ class CompassTestCase(CompassVisitsTestCase):
         compass = Compass()
         with self.assertRaises(DataFailureException):
             compass.get_current_quarter_visits("000000000")
+
+    def test_visit_json_data_with_none_checkout_date(self):
+        checkin = datetime.datetime(2026, 7, 6, 12, 30, 0)
+        visit = CompassVisitModel(
+            student_netid="javerage",
+            visit_type="Virtual",
+            course_code="STAT 101",
+            tutoring_option="Individual",
+            checkin_date=checkin,
+            checkout_date=None,
+        )
+
+        data = visit.json_data()
+
+        self.assertEqual(data["checkin_date"], checkin.isoformat())
+        self.assertIsNone(data["checkout_date"])

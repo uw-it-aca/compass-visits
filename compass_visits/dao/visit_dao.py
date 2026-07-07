@@ -3,6 +3,7 @@
 
 from django.db.models import Q
 from django.utils import timezone, dateparse
+from restclients_core.exceptions import DataFailureException
 from compass_visits.exceptions import ValidationError
 from django.db.models import F, ExpressionWrapper, DurationField, Sum
 from compass_visits.dao.compass import Compass
@@ -99,6 +100,8 @@ def validate_visit_data(request):
     if writing_service and course:
         raise ValidationError("Only one of writing_service or"
                               " course can be provided")
+    if course and len(course) > 255:
+        raise ValidationError("course exceeds max length of 255")
 
     if not ProgramArea.objects.filter(id=program_area,
                                       allow_usage=True).exists():
@@ -275,7 +278,6 @@ def manager_create_visit_from_request(request_data):
     if not visit.student_syskey:
         raise ValidationError("student_syskey is required")
     try:
-        from restclients_core.exceptions import DataFailureException
         visit.student_netid = get_netid_by_syskey(visit.student_syskey)
     except DataFailureException as ex:
         raise ValidationError("Unable to resolve student_netid") from ex

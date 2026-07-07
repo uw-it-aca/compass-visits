@@ -95,6 +95,10 @@ class VisitView(RESTDispatchLogin):
         except json.JSONDecodeError:
             return self.error_response(status=400,
                                        message="Invalid JSON format")
+        except DataFailureException:
+            return self.error_response(status=400,
+                                       message="Unable to retrieve student "
+                                               "information")
 
 
 class VisitDetailView(RESTDispatchLogin):
@@ -123,7 +127,9 @@ class VisitDetailView(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Invalid JSON format")
         try:
-            visit = Visit.objects.get(id=visit_id)
+            visit = Visit.objects.select_related(
+                'program_area', 'tutoring_option', 'writing_service').get(
+                    id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_syskey)
             student_update_visit(visit, request_body)

@@ -43,3 +43,11 @@ class VisitModelTest(CompassVisitsTestCase):
         json_data = self.sample_visit.json_data()
         self.assertIn('active_minutes', json_data)
         self.assertEqual(json_data['active_minutes'], 30)
+
+    def test_visit_str(self):
+        self.assertEqual(
+            str(self.sample_visit),
+            f"Visit {self.sample_visit.id} - "
+            f"{self.sample_visit.student_syskey} - "
+            f"{self.sample_visit.check_in_date}"
+        )

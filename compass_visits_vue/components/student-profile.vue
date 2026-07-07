@@ -2,9 +2,14 @@
 
 <template>
   <div v-if="showProfile">
-    <img :src="`data:image/png;base64,${visitStore.studentProfile.data.photo}`" alt="Profile Image" />
-    <h2>{{ visitStore.studentProfile.data.student_name }}</h2>
-    <p>{{ visitStore.studentProfile.data.student_number }}</p>
+    <img
+      v-if="profileData.photo"
+      :src="`data:image/png;base64,${profileData.photo}`"
+      alt="Profile Image"
+    />
+    <div v-else class="profile-photo-placeholder" aria-hidden="true"></div>
+    <h2>{{ profileData.student_name }}</h2>
+    <p>{{ profileData.student_number }}</p>
     <p>Total Hours: {{ totalHours.toFixed(2) }}</p>
   </div>
 </template>
@@ -23,8 +28,11 @@ export default {
     this.visitStore.fetchStudentProfile();
   },
   computed: {
+    profileData() {
+      return this.visitStore.studentProfile.data || {};
+    },
     showProfile() {
-      return this.visitStore.studentProfile.data !== undefined;
+      return Boolean(this.visitStore.studentProfile.data);
     },
     totalHours() {
       if (this.visitStore.studentProfile.data) {
@@ -36,3 +44,12 @@ export default {
   methods: {},
 };
 </script>
+
+<style scoped>
+.profile-photo-placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #d8dee6;
+}
+</style>

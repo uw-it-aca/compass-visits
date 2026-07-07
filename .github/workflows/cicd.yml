@@ -75,6 +75,17 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install JavaScript Dependencies
+        run: npm install
+
+      - name: Run JavaScript Tests
+        run: npm test -- --run
+
       - name: Run Python Linters
         uses: uw-it-aca/actions/python-linters@main
         with:

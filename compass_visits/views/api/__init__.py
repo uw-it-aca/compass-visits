@@ -40,7 +40,9 @@ class RESTDispatch(View):
             return RESTDispatch().error_response(400)
 
     @staticmethod
-    def error_response(status, message='', content={}):
+    def error_response(status, message='', content=None):
+        if content is None:
+            content = {}
         content['error'] = str(message)
         return HttpResponse(json.dumps(content),
                             status=status,
