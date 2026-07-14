@@ -3,23 +3,23 @@
 <template>
   <DefaultLayout>
     <template #content>
-      <div class="d-flex flex-column" style="min-height: calc(100vh - 240px)">
-        <div class="mt-auto pb-2">
-          <StudentProfile :profile="profile" />
-        </div>
-        <div v-if="isElligible" class="row mt-auto mx-0 text-center">
-          <button class="btn btn-secondary btn-lg mb-3" @click="redirectToSummary">Summary</button>
-          <button class="btn btn-primary btn-lg mb-2" @click="redirectToCreate">Check In</button>
-        </div>
-        <div v-else class="text-center">
-          <div class="alert alert-danger" role="alert">
-            <i class="bi bi-exclamation-octagon-fill"></i> You are not
-              Instructional Center elligible.
-          </div>
-          <p>
-            Please contact Director of the Instructional Center
-            <a href="mailto:therese@uw.edu">therese@uw.edu</a> for assistance.
-          </p>
+      <div v-if="profileError" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-octagon-fill"></i>
+        {{ profileError }}
+      </div>
+      <StudentProfile :profile="profile" />
+      <div v-if="isElligible && !profileError">
+        <button class="btn btn-primary"  @click="redirectToCreate">
+          Check In
+        </button>
+        <button class="btn btn-secondary" @click="redirectToSummary">
+          Visit Summary
+        </button>
+      </div>
+      <div v-else>
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-exclamation-octagon-fill"></i> You are not
+          Instructional Center elligible.
         </div>
       </div>
     </template>
@@ -42,6 +42,7 @@ export default {
     return {
       pageTitle: "Home",
       profile: null,
+      profileError: null,
       isElligible: false,
       persMsg: window.persistent_msgs || [],
     };
@@ -51,25 +52,35 @@ export default {
   },
   methods: {
     redirectToVerify() {
-      this.$router.push("/verify");
+      this.$router.push({ name: "verify" });
     },
     redirectToCheckout() {
-      this.$router.push("/checkout");
+      this.$router.push({ name: "checkout" });
     },
     redirectToCreate() {
-      this.$router.push("/create");
+      this.$router.push({ name: "create" });
     },
     redirectToSummary() {
-      this.$router.push("/summary");
+      this.$router.push({ name: "summary" });
     },
     loadStudentProfile() {
       this.visitStore.fetchStudentProfile().then(() => {
         this.profile = this.visitStore.studentProfile.data;
+        this.profileError = null;
+      }).catch((error) => {
+        this.profile = null;
+        this.profileError =
+          error?.data?.error || "Unable to load your profile. Please try again.";
       });
     },
   },
   watch: {
     profile(newValue) {
+      if (!newValue || typeof newValue !== "object") {
+        this.isElligible = false;
+        return;
+      }
+
       if ("current_state" in newValue) {
         if (newValue.current_state === "pending_verification") {
           this.redirectToVerify();
@@ -77,7 +88,7 @@ export default {
           this.redirectToCheckout();
         }
       }
-      this.isElligible = newValue.ic_elligible;
+      this.isElligible = Boolean(newValue.ic_elligible);
     },
   },
 };

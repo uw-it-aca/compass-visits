@@ -80,7 +80,9 @@ class ManageVisitsView(RESTDispatchToken):
             return self.error_response(status=400,
                                        message="Invalid JSON format")
         try:
-            visit = Visit.objects.get(id=visit_id)
+            visit = Visit.objects.select_related(
+                'program_area', 'tutoring_option', 'writing_service').get(
+                    id=visit_id)
             manager_update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:

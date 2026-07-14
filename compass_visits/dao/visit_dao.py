@@ -3,8 +3,12 @@
 
 from django.db.models import Q
 from django.utils import timezone, dateparse
+from restclients_core.exceptions import DataFailureException
 from compass_visits.exceptions import ValidationError
 from django.db.models import F, ExpressionWrapper, DurationField, Sum
+from compass_visits.dao.compass import Compass
+from compass_visits.dao.compass import CompassVisitModel
+from compass_visits.dao.pws import get_netid_by_syskey
 from compass_visits.models import (Visit,
                                    ProgramArea,
                                    TutoringOption,
@@ -96,6 +100,8 @@ def validate_visit_data(request):
     if writing_service and course:
         raise ValidationError("Only one of writing_service or"
                               " course can be provided")
+    if course and len(course) > 255:
+        raise ValidationError("course exceeds max length of 255")
 
     if not ProgramArea.objects.filter(id=program_area,
                                       allow_usage=True).exists():
@@ -109,7 +115,8 @@ def validate_visit_data(request):
         raise ValidationError("Invalid writing_service")
 
 
-def create_visit_from_request(request_data, student_syskey):
+def create_visit_from_request(request_data, student_syskey, student_netid,
+                              verified=False):
     """
     Creates a new Visit instance from the provided request data for a given
     student.
@@ -125,7 +132,9 @@ def create_visit_from_request(request_data, student_syskey):
                              including 'program_area', 'tutoring_option',
                              and optionally 'writing_service' and 'course'.
         student_syskey (str): The SysKey of the student for whom the visit
-                             is being created.
+                              is being created.
+        student_netid (str): The NetID of the student for whom the visit is
+                             being created.
 
     Returns:
         Visit: The newly created Visit instance.
@@ -145,6 +154,7 @@ def create_visit_from_request(request_data, student_syskey):
     validate_visit_data(request_data)
     visit = Visit()
     visit.student_syskey = student_syskey
+    visit.student_netid = student_netid
     visit.program_area = ProgramArea.objects.get(
         id=request_data['program_area'])
     visit.tutoring_option = TutoringOption.objects.get(
@@ -153,6 +163,7 @@ def create_visit_from_request(request_data, student_syskey):
         visit.writing_service = WritingService.objects.get(
             id=request_data['writing_service'])
     visit.course = request_data.get('course')
+    visit.is_verified = verified
     visit.save()
     return visit
 
@@ -266,19 +277,32 @@ def manager_create_visit_from_request(request_data):
     visit.student_syskey = request_data.get('student_syskey')
     if not visit.student_syskey:
         raise ValidationError("student_syskey is required")
+    try:
+        visit.student_netid = get_netid_by_syskey(visit.student_syskey)
+    except DataFailureException as ex:
+        raise ValidationError("Unable to resolve student_netid") from ex
+    if not visit.student_netid:
+        raise ValidationError("Unable to resolve student_netid")
     if request_data.get('check_in_date'):
         try:
             visit.check_in_date = dateparse.parse_datetime(
                 request_data['check_in_date'])
         except (ValueError, TypeError):
             raise ValidationError("Invalid check_in_date format")
-    visit.program_area = ProgramArea.objects.get(
-        id=request_data['program_area'])
-    visit.tutoring_option = TutoringOption.objects.get(
-        id=request_data['tutoring_option'])
-    if request_data.get('writing_service'):
-        visit.writing_service = WritingService.objects.get(
-            id=request_data['writing_service'])
+    try:
+        visit.program_area = ProgramArea.objects.get(
+            id=request_data['program_area'])
+        visit.tutoring_option = TutoringOption.objects.get(
+            id=request_data['tutoring_option'])
+        if request_data.get('writing_service'):
+            visit.writing_service = WritingService.objects.get(
+                id=request_data['writing_service'])
+    except ProgramArea.DoesNotExist:
+        raise ValidationError("Invalid program_area")
+    except TutoringOption.DoesNotExist:
+        raise ValidationError("Invalid tutoring_option")
+    except WritingService.DoesNotExist:
+        raise ValidationError("Invalid writing_service")
     if request_data.get('verify', False):
         visit.is_verified = True
     if request_data.get('checkout', False):
@@ -363,4 +387,69 @@ def get_completed_visits_by_syskey(student_syskey):
         'program_area', 'tutoring_option', 'writing_service'
     ).filter(student_syskey=student_syskey, is_verified=True,
              check_out_date__isnull=False)
-            .order_by('-check_in_date'))
+        .order_by('-check_in_date'))
+
+
+def get_current_quarter_visits_by_syskey(student_syskey):
+    """
+    Retrieve all current-quarter visits for a student by SysKey from Compass.
+
+    Args:
+        student_syskey (str): The SysKey of the student to retrieve visits for.
+
+    Returns:
+        list: A list of CompassVisitModel objects ordered by check-in date in
+              descending order.
+    """
+    visits = Compass().get_current_quarter_visits(student_syskey)
+    return sorted(visits, key=lambda visit: visit.checkin_date, reverse=True)
+
+
+def checkout_active_verified_visit(student_syskey):
+    """
+    Checks out the active verified visit for a student by setting the
+    check_out_date to the current time.
+
+    This function looks for an active visit that is verified (is_verified=True)
+    and has no check_out_date. If such a visit exists, it updates the
+    check_out_date to the current time. If no such visit exists, it does
+    nothing.
+
+    Args:
+        student_syskey (str): The SysKey of the student whose visit should be
+            checked out.
+    Returns:
+        bool: True if a visit was checked out, False if no active verified
+            visit was found.
+    """
+
+    updated_count = Visit.objects.filter(student_syskey=student_syskey,
+                                         is_verified=True,
+                                         check_out_date=None)\
+        .update(check_out_date=timezone.now())
+    return updated_count > 0
+
+
+def map_visit_to_compass_model(visit, student_netid):
+    """
+    Map a local Visit instance to a CompassVisitModel payload.
+
+    Args:
+        visit (Visit): Local visit model instance.
+        student_netid (str): Student netid resolved from syskey.
+
+    Returns:
+        CompassVisitModel: Payload model for Compass.store_visit.
+    """
+    course_code = visit.course
+    if not course_code and visit.writing_service:
+        course_code = visit.writing_service.name
+
+    return CompassVisitModel(
+        student_netid=student_netid,
+        visit_type=visit.program_area.name,
+        course_code=course_code,
+        tutoring_option=visit.tutoring_option.name,
+        checkin_date=visit.check_in_date,
+        checkout_date=visit.check_out_date,
+    )

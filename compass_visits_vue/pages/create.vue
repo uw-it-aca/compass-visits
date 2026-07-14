@@ -3,7 +3,7 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)"> 
+      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)">
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Program Area<span style="color: red">*</span>
         </h2>
@@ -111,12 +111,19 @@ export default {
     visitOptionsStore.fetchVisitOptions();
     return { visitOptionsStore, visitStore };
   },
+  props: {
+    switch: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      pageTitle: "Create Visit",
       selectedProgramArea: "",
       selectedTutoringOption: "",
       selectedCourseOrWriting: "",
+      createError: null,
+      isSubmitting: false,
     };
   },
   computed: {
@@ -137,19 +144,36 @@ export default {
         (service) => service.id === this.selectedCourseOrWriting
       );
     },
+    pageTitle() {
+      return this.switch ? "Switch Session" : "Create Visit";
+    },
   },
   methods: {
-    createVisit() {
+    async createVisit() {
       if (this.allAreSelected) {
-        this.visitStore.handleCreateVisit({
-          program_area: this.selectedProgramArea,
-          tutoring_option: this.selectedTutoringOption,
-          course: this.selectedCourse ? this.selectedCourse.id : null,
-          writing_service: this.selectedWritingService
-            ? this.selectedWritingService.id
-            : null,
-        });
-        this.$router.push("/verify");
+        this.createError = null;
+        this.isSubmitting = true;
+        try {
+          await this.visitStore.handleCreateVisit({
+            program_area: this.selectedProgramArea,
+            tutoring_option: this.selectedTutoringOption,
+            course: this.selectedCourse ? this.selectedCourse.id : null,
+            writing_service: this.selectedWritingService
+              ? this.selectedWritingService.id
+              : null,
+          });
+          if (this.switch) {
+            this.$router.push({ name: "checkout" });
+          } else {
+            this.$router.push({ name: "verify" });
+          }
+        } catch (error) {
+          this.createError =
+            error?.data?.error ||
+            "Unable to create your visit. Please review your selections and try again.";
+        } finally {
+          this.isSubmitting = false;
+        }
       }
     },
     cancelVisit() {

@@ -76,6 +76,7 @@ class Visit(models.Model):
                      for JSON serialization.
     """
     student_syskey = models.CharField(max_length=10, db_index=True)
+    student_netid = models.CharField(max_length=64)
     program_area = models.ForeignKey(ProgramArea, on_delete=models.PROTECT)
     tutoring_option = models.ForeignKey(TutoringOption,
                                         on_delete=models.PROTECT)
@@ -86,6 +87,9 @@ class Visit(models.Model):
     check_in_date = models.DateTimeField(default=timezone.now, db_index=True)
     check_out_date = models.DateTimeField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Visit {self.id} - {self.student_syskey} - {self.check_in_date}"
 
     def json_data(self):
         json_data = {

@@ -14,7 +14,7 @@
             {{ profile.student_name }}
           </h2>
           <visit-details :visit-data="visitDetails" />
-        </div> 
+        </div>
         <div class="row mt-auto mx-0 text-center">
           <button class="btn btn-primary btn-lg mb-3" @click="refreshPage">
             Refresh
@@ -50,8 +50,18 @@ export default {
     };
   },
   created() {
-    this.visitStore.fetchStudentProfile().then(() => {
+    this.visitStore.refreshStudentProfile().then(() => {
       this.profile = this.visitStore.studentProfile.data;
+      if (
+        this.profile &&
+        this.profile.visit &&
+        this.profile.visit.is_verified
+      ) {
+        this.redirectToCheckout();
+      }
+      if (!this.profile.visit) {
+        this.redirectToHome();
+      }
     });
   },
   computed: {
@@ -63,16 +73,23 @@ export default {
     refreshPage() {
       this.visitStore.refreshStudentProfile().then(() => {
         this.profile = this.visitStore.studentProfile.data;
-        this.$router.push("/checkout");
+        if (this.profile.visit.is_verified) {
+          this.redirectToCheckout();
+        }
       });
     },
     cancelVisit() {
       this.visitStore.deleteVisit().then(() => {
         this.profile = null;
-        this.$router.push("/");
+        this.redirectToHome();
       });
     },
+    redirectToCheckout() {
+      this.$router.push({ name: "checkout" });
+    },
+    redirectToHome() {
+      this.$router.push({ name: "home" });
+    },
   },
-  watch: {},
 };
 </script>

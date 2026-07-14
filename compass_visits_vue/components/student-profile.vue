@@ -1,18 +1,16 @@
 // student-profile.vue
 
 <template>
-  <div v-if="showProfile" class="text-center">
+  <div v-if="showProfile">
     <img
-      :src="`data:image/png;base64,${visitStore.studentProfile.data.photo}`"
-      :alt="visitStore.studentProfile.data.student_name + ' profile picture'"
-      class="img-profile rounded-circle mb-4"
+      v-if="profileData.photo"
+      :src="`data:image/png;base64,${profileData.photo}`"
+      alt="Profile Image"
     />
-    <h2 class="fs-2 fw-semibold ff-encode-sans">
-      {{ visitStore.studentProfile.data.student_name }}
-    </h2>
-    <p class="pb-3">student ID: {{ visitStore.studentProfile.data.student_number }}</p>
-    <p class="m-0">Total Hours:</p>
-    <p class="fs-3 fw-bold m-0">{{ totalHours.toFixed(2) }}</p>
+    <div v-else class="profile-photo-placeholder" aria-hidden="true"></div>
+    <h2>{{ profileData.student_name }}</h2>
+    <p>{{ profileData.student_number }}</p>
+    <p>Total Hours: {{ totalHours.toFixed(2) }}</p>
   </div>
 </template>
 
@@ -30,8 +28,11 @@ export default {
     this.visitStore.fetchStudentProfile();
   },
   computed: {
+    profileData() {
+      return this.visitStore.studentProfile.data || {};
+    },
     showProfile() {
-      return this.visitStore.studentProfile.data !== undefined;
+      return Boolean(this.visitStore.studentProfile.data);
     },
     totalHours() {
       if (this.visitStore.studentProfile.data) {
@@ -43,3 +44,12 @@ export default {
   methods: {},
 };
 </script>
+
+<style scoped>
+.profile-photo-placeholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #d8dee6;
+}
+</style>

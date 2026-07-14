@@ -9,9 +9,6 @@ from compass_visits.dao.auth import is_admin_user
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
-import pprint
 
 
 class SAMLAdminSite(admin.AdminSite):
@@ -51,7 +48,7 @@ class SAMLAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
 
 
 class VisitAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
-    list_display = ('student_syskey', 'program_area__name',
+    list_display = ('id', 'student_syskey', 'program_area__name',
                     'tutoring_option__name',
                     'writing_service__name', 'course', 'check_in_date',
                     'check_out_date', 'is_verified')

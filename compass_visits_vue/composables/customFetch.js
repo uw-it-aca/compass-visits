@@ -59,7 +59,9 @@ export async function useCustomFetch(url, options = {}) {
       }
     }
   } catch (error) {
-    error.data = parseError(error.message);
+    if (!error.data) {
+      error.data = parseError(error.message);
+    }
     throw error;
   }
 }
