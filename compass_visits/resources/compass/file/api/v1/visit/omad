@@ -1,0 +1,8 @@
+  {
+      "student_netid": "javerage",
+      "visit_type": "Virtual",
+      "course_code": "STAT 101",
+      "tutoring_option": "Individual",
+      "checkin_date": "2023-06-30T14:00:00Z",
+      "checkout_date": "2023-06-30T15:00:00Z"
+  }

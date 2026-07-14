@@ -68,12 +68,23 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: '3.10'
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install JavaScript Dependencies
+        run: npm install
+
+      - name: Run JavaScript Tests
+        run: npm test -- --run
 
       - name: Run Python Linters
         uses: uw-it-aca/actions/python-linters@main
@@ -82,10 +93,10 @@ jobs:
           exclude_paths: 'migrations'
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Cache Docker layers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-$(echo ${{ hashFiles('Dockerfile') }} | head -c 16)
@@ -93,7 +104,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build App Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: app-container
@@ -104,7 +115,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Test Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           target: app-test-container
           tags: app-test-container
@@ -130,66 +141,67 @@ jobs:
           python -m pip install --upgrade pip coverage coveralls==3.3.1
           coverage combine
           coveralls
+        continue-on-error: true
 
-#      - name: Push Image to Repository
-#        if: github.event_name == 'push'
-#        uses: uw-it-aca/actions/gcr-push@main
-#        with:
-#          image_tag: ${{ needs.context.outputs.image_tag }}
-#          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
-#
-#  deploy:
-#    if: github.event_name == 'push'
-#
-#    needs: [context, build]
-#
-#    outputs:
-#      context: ${{ steps.context.outputs.context }}
-#
-#    runs-on: ubuntu-22.04
-#
-#    steps:
-#      - name: Checkout Repo
-#        uses: actions/checkout@v4
-#
-#      - name: Deployment Pipeline
-#        if: >-
-#          contains(fromJSON('["main", "master", "develop", "qa"]'),
-#            needs.context.outputs.git_repo_branch)
-#        uses: uw-it-aca/actions/cicd-deploy@main
-#        with:
-#          release_name: ${{ env.RELEASE_NAME }}
-#          commit_hash: ${{ needs.context.outputs.commit_hash }}
-#          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
-#          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-#
-#      - name: Deploy Evaluation Branch
-#        if: needs.context.outputs.git_repo_branch == 'feature/eval-me'
-#        uses: uw-it-aca/actions/cicd-deploy@main
-#        with:
-#          release_name: ${{ env.RELEASE_NAME }}
-#          commit_hash: ${{ needs.context.outputs.commit_hash }}
-#          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
-#          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-#          app_instance: eval
-#
-#      - name: 'Surface context from executed build step'
-#        id: context
-#        shell: bash
-#        run: echo "context=$(< ${CONTEXT_FILENAME})" >> $GITHUB_OUTPUT
-#
-#  housekeeping:
-#    if: github.event_name == 'push'
-#
-#    needs: [context, build, deploy]
-#
-#    runs-on: ubuntu-22.04
-#
-#    steps:
-#      - name: House Keeping
-#        uses: uw-it-aca/actions/cicd-housekeeping@main
-#        with:
-#          release_name: ${{ env.RELEASE_NAME }}
-#          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
-#          registry_password: ${{ secrets.GCP_JSON_KEY }}
-#          context: ${{ needs.deploy.outputs.context }}
+      - name: Push Image to Repository
+        if: github.event_name == 'push'
+        uses: uw-it-aca/actions/gcr-push@main
+        with:
+          image_tag: ${{ needs.context.outputs.image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+
+  deploy:
+    if: github.event_name == 'push'
+
+    needs: [context, build]
+
+    outputs:
+      context: ${{ steps.context.outputs.context }}
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v6
+
+      - name: Deployment Pipeline
+        if: >-
+          contains(fromJSON('["main", "master", "develop", "qa"]'),
+            needs.context.outputs.git_repo_branch)
+        uses: uw-it-aca/actions/cicd-deploy@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          commit_hash: ${{ needs.context.outputs.commit_hash }}
+          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+
+      - name: Deploy Evaluation Branch
+        if: needs.context.outputs.git_repo_branch == 'feature/eval-me'
+        uses: uw-it-aca/actions/cicd-deploy@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          commit_hash: ${{ needs.context.outputs.commit_hash }}
+          git_repo_branch: ${{ needs.context.outputs.git_repo_branch }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+          app_instance: eval
+
+      - name: Surface context from executed build step
+        id: context
+        shell: bash
+        run: echo "context=$(< ${CONTEXT_FILENAME})" >> $GITHUB_OUTPUT
+
+  housekeeping:
+    if: github.event_name == 'push'
+
+    needs: [context, build, deploy]
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: House Keeping
+        uses: uw-it-aca/actions/cicd-housekeeping@main
+        with:
+          release_name: ${{ env.RELEASE_NAME }}
+          gh_auth_token: ${{ secrets.GH_AUTH_TOKEN }}
+          registry_password: ${{ secrets.GCP_JSON_KEY }}
+          context: ${{ needs.deploy.outputs.context }}

@@ -6,7 +6,10 @@
       {{ pageTitle }}
     </template>
     <template #content>
-      <p>Create Visit Page</p>
+      <div v-if="createError" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-octagon-fill"></i>
+        {{ createError }}
+      </div>
       <h3>Program Area<span style="color: red">*</span></h3>
       <select
         v-model="selectedProgramArea"
@@ -70,10 +73,10 @@
       </select>
       <button
         class="btn btn-primary mt-3"
-        :disabled="!allAreSelected"
+        :disabled="!allAreSelected || isSubmitting"
         @click="createVisit"
       >
-        Create Visit
+        {{ isSubmitting ? "Submitting..." : pageTitle }}
       </button>
     </template>
   </DefaultLayout>
@@ -93,12 +96,19 @@ export default {
     visitOptionsStore.fetchVisitOptions();
     return { visitOptionsStore, visitStore };
   },
+  props: {
+    switch: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      pageTitle: "Create Visit",
       selectedProgramArea: "",
       selectedTutoringOption: "",
       selectedCourseOrWriting: "",
+      createError: null,
+      isSubmitting: false,
     };
   },
   computed: {
@@ -119,19 +129,36 @@ export default {
         (service) => service.id === this.selectedCourseOrWriting
       );
     },
+    pageTitle() {
+      return this.switch ? "Switch Session" : "Create Visit";
+    },
   },
   methods: {
-    createVisit() {
+    async createVisit() {
       if (this.allAreSelected) {
-        this.visitStore.handleCreateVisit({
-          program_area: this.selectedProgramArea,
-          tutoring_option: this.selectedTutoringOption,
-          course: this.selectedCourse ? this.selectedCourse.id : null,
-          writing_service: this.selectedWritingService
-            ? this.selectedWritingService.id
-            : null,
-        });
-        this.$router.push("/verify");
+        this.createError = null;
+        this.isSubmitting = true;
+        try {
+          await this.visitStore.handleCreateVisit({
+            program_area: this.selectedProgramArea,
+            tutoring_option: this.selectedTutoringOption,
+            course: this.selectedCourse ? this.selectedCourse.id : null,
+            writing_service: this.selectedWritingService
+              ? this.selectedWritingService.id
+              : null,
+          });
+          if (this.switch) {
+            this.$router.push({ name: "checkout" });
+          } else {
+            this.$router.push({ name: "verify" });
+          }
+        } catch (error) {
+          this.createError =
+            error?.data?.error ||
+            "Unable to create your visit. Please review your selections and try again.";
+        } finally {
+          this.isSubmitting = false;
+        }
       }
     },
   },

@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from compass_visits.models import ProgramArea, TutoringOption, WritingService
+from compass_visits.dao.sws import get_class_list
+from restclients_core.exceptions import DataFailureException
 
 
-def get_visit_options():
+def get_visit_options(student_regid):
     """
     Retrieves available visit options for program areas, tutoring, and
     writing services.
@@ -27,18 +29,10 @@ def get_visit_options():
                             .values('id', 'name'))
     writing_services = list(WritingService.objects.filter(allow_usage=True)
                             .values('id', 'name'))
-
-    # TODO: Add SWS client and include student's course list in the response
-    courses = [
-        {
-            "id": "CSE 142",
-            "name": "CSE 142"
-        },
-        {
-            "id": "MATH 124",
-            "name": "MATH 124"
-        }
-    ]
+    try:
+        courses = get_class_list(student_regid)
+    except DataFailureException:
+        courses = []
     return {
         'program_areas': program_areas,
         'tutoring_options': tutoring_options,

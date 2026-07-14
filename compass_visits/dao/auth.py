@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
 from userservice.user import UserService
 from compass_visits.exceptions import OverrideNotPermitted
+from compass_visits.dao.pws import DataFailureException, get_syskey_by_netid
 from uw_saml.utils import is_member_of_group
 
 
@@ -24,18 +25,22 @@ def valid_user_override():
         raise OverrideNotPermitted()
 
 
-def can_write_visit(visit_netid):
+def can_write_visit(visit_syskey):
     """
     Checks if the currently authenticated user matches the provided visit
-    NetID.
+    system key.
 
     Args:
-        visit_netid (str): The NetID of the visit owner.
+        visit_syskey (str): The system key of the visit owner.
 
     Raises:
         PermissionDenied: If the current user does not match the visit owner.
     """
-    if UserService().get_user() != visit_netid:
+    try:
+        syskey = get_syskey_by_netid(UserService().get_user())
+    except DataFailureException:
+        raise PermissionDenied("Unable to retrieve user information")
+    if syskey != visit_syskey:
         raise PermissionDenied("User does not have permission to modify "
                                "this visit")
 

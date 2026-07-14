@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.conf import settings
-from django.urls import reverse
 
 
 def google_analytics(request):

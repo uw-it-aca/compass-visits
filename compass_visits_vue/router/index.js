@@ -13,27 +13,28 @@ import Summary from "@/pages/summary.vue";
 const routes = [
   {
     path: "/",
-    name: "Home",
+    name: "home",
     component: Home,
   },
   {
     path: "/create",
-    name: "Create",
+    name: "create",
     component: Create,
+    props: (route) => ({ ...route.params, switch: route.query.switch === "true" }),
   },
   {
     path: "/verify",
-    name: "Verify",
+    name: "verify",
     component: Verify,
   },
   {
     path: "/checkout",
-    name: "Checkout",
+    name: "checkout",
     component: Checkout,
   },
   {
     path: "/summary",
-    name: "Visit Summary",
+    name: "summary",
     component: Summary,
   },
 

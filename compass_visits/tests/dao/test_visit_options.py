@@ -3,17 +3,21 @@
 
 from compass_visits.tests import CompassVisitsTestCase
 from compass_visits.dao.visit_options import get_visit_options
+from compass_visits.dao.pws import get_regid_by_netid
 
 
 class VisitOptionsTestCase(CompassVisitsTestCase):
     def test_get_visit_options(self):
-        options = get_visit_options()
+        regid = get_regid_by_netid("javerage")
+        options = get_visit_options(regid)
         self.assertIn('program_areas', options)
         self.assertIn('tutoring_options', options)
         self.assertIn('writing_services', options)
+        self.assertIn('courses', options)
         self.assertIsInstance(options['program_areas'], list)
         self.assertIsInstance(options['tutoring_options'], list)
         self.assertIsInstance(options['writing_services'], list)
+        self.assertIsInstance(options['courses'], list)
 
         self.assertEqual(len(options['program_areas']), 8)
         self.assertEqual(options['program_areas'][0]['name'],
@@ -28,3 +32,11 @@ class VisitOptionsTestCase(CompassVisitsTestCase):
         self.assertEqual(options['writing_services'][0]['name'],
                          'Application')
         self.assertEqual(options['writing_services'][0]['id'], 1)
+
+        self.assertEqual(len(options['courses']), 3)
+        self.assertEqual(options['courses'][0], {"id": "TRAIN 100",
+                                                 "name": "TRAIN 100"})
+        self.assertEqual(options['courses'][1], {"id": "TRAIN 101",
+                                                 "name": "TRAIN 101"})
+        self.assertEqual(options['courses'][2], {"id": "PHYS 121",
+                                                 "name": "PHYS 121"})

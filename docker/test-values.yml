@@ -1,0 +1,183 @@
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+resources:
+  limits:
+    cpu: 250m
+    memory: 768Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+targetAverageUtilization: 100
+
+ingress:
+  enabled: true
+  tls:
+    compass:
+      secretName: test-checkin.compass.uw.edu-ingress-cert
+      hosts:
+        - test-checkin.compass.uw.edu
+  hosts:
+    compass:
+      host: test-checkin.compass.uw.edu
+      paths:
+        - "/"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/client-body-buffer-size: "16K"
+    nginx.ingress.kubernetes.io/proxy-body-size: "20M"
+
+lifecycle:
+  enabled: true
+  preStop:
+    enabled: true
+affinity:
+  podsSpanNodes: true
+readiness:
+  enabled: true
+securityPolicy:
+  enabled: true
+
+externalService:
+  enabled: true
+  name: compass-checkin-db-service
+  type: ClusterIP
+  serviceAddress: 172.18.1.4
+  servicePort: 5432
+database:
+  engine: postgres
+  name: compass-checkin-test
+  hostname: compass-checkin-db-service
+  secretName: test-checkin.compass.uw.edu-sql-secrets
+
+repo: compass-visits
+instance: test
+namespace:
+  enabled: true
+
+memcached:
+  enabled: true
+  replicaCount: 1
+  updateStrategy:
+    type: RollingUpdate
+
+certs:
+  mounted: true
+  certPath: /certs/compass.uw.edu-ic.cert
+  keyPath: /certs/compass.uw.edu-ic.key
+  secretName: compass.uw.edu-ic-certs
+
+environmentVariables:
+  - name: ENV
+    value: test
+
+  - name: SWS_ENV
+    value: PROD
+  - name: SWS_TIMEOUT
+    value: "10"
+
+  - name: PWS_ENV
+    value: PROD
+  - name: PWS_TIMEOUT
+    value: "10"
+
+  - name: AUTH
+    value: SAML
+  - name: SAML_ENTITY_ID
+    value: https://test-checkin.compass.uw.edu/saml2
+
+  - name: CLUSTER_CNAME
+    value: test-checkin.compass.uw.edu
+
+externalSecrets:
+  enabled: true
+  secrets:
+    - name: test-checkin.compass.uw.edu-secrets
+      externalKey: compass-checkin/test/secrets
+      data:
+        - name: django-secret
+          property: django-secret
+        - name: group-id-support
+          property: group-id-support
+        - name: google-analytics-key
+          property: google-analytics-key
+        - name: external-api-token
+          property: external-api-token
+        - name: compass-auth-token
+          property: compass-auth-token
+    - name: test-checkin.compass.uw.edu-sql-secrets
+      externalKey: compass-checkin/shared/sql-secrets
+      data:
+        - name: username
+          property: username
+        - name: password
+          property: password
+    - name: compass.uw.edu-ic-certs
+      externalKey: compass/prod/ic-certs
+      data:
+        - name: compass.uw.edu-ic.cert
+          property: compass.uw.edu-ic.cert
+        - name: compass.uw.edu-ic.key
+          property: compass.uw.edu-ic.key
+    - name: test-checkin.compass.uw.edu-sp-cert
+      externalKey: compass-checkin/test/ic-certs
+      data:
+        - name: test-checkin.compass.uw.edu-ic.cert
+          property: test-checkin.compass.uw.edu-ic.cert
+    - name: test-checkin.compass.uw.edu-uw-idp-cert
+      externalKey: idp-cert
+      data:
+        - name: uw-idp-cert
+          property: cert
+
+environmentVariablesSecrets:
+  djangoSecret:
+    name: DJANGO_SECRET
+    secretName: test-checkin.compass.uw.edu-secrets
+    secretKey: django-secret
+  adminGroup:
+    name: ADMIN_GROUP
+    secretName: test-checkin.compass.uw.edu-secrets
+    secretKey: group-id-support
+  supportGroup:
+    name: SUPPORT_GROUP
+    secretName: test-checkin.compass.uw.edu-secrets
+    secretKey: group-id-support
+  googleAnalyticsKey:
+    name: GOOGLE_ANALYTICS_KEY
+    secretName: test-checkin.compass.uw.edu-secrets
+    secretKey: google-analytics-key
+  samlSPCert:
+    name: SP_CERT
+    secretName: test-checkin.compass.uw.edu-sp-cert
+    secretKey: test-checkin.compass.uw.edu-ic.cert
+  samlIDPCert:
+    name: IDP_CERT
+    secretName: test-checkin.compass.uw.edu-uw-idp-cert
+    secretKey: uw-idp-cert
+  externalAPIToken:
+    name: EXTERNAL_API_TOKEN
+    secretName: test-checkin.compass.uw.edu-secrets
+    secretKey: external-api-token
+  compassAPIToken:
+    name: COMPASS_AUTH_TOKEN
+    secretName: test-checkin.compass.uw.edu-secrets
+    secretKey: compass-auth-token
+
+
+daemon:
+  # Disable until we deploy the visits branch to compass
+  enabled: false
+  daemons:
+    - name: sync-completed-visits
+      replicaCount: 1
+      command: ["/scripts/management_daemon.sh"]
+      args: ["--delay", "5", "sync_completed_visits"]
+      resources:
+        limits:
+          cpu: 500m
+          memory: 256Mi
+        requests:
+          cpu: 25m
+          memory: 64Mi

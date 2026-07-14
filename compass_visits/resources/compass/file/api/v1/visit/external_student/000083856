@@ -1,0 +1,26 @@
+[
+  {
+    "student_netid": "javerage",
+    "visit_type": "Drop In",
+    "course_code": "MATH 101",
+    "tutoring_option": "Individual",
+    "checkin_date": "2024-08-01T10:00:00Z",
+    "checkout_date": "2024-08-01T10:30:00Z"
+  },
+  {
+    "student_netid": "javerage",
+    "visit_type": "Drop In",
+    "course_code": "CHEM 101",
+    "tutoring_option": "Group",
+    "checkin_date": "2024-08-01T12:00:00Z",
+    "checkout_date": "2024-08-01T12:45:00Z"
+  },
+  {
+    "student_netid": "javerage",
+    "visit_type": "Virtual",
+    "course_code": "STAT 101",
+    "tutoring_option": "Individual",
+    "checkin_date": "2024-07-20T14:00:00Z",
+    "checkout_date": "2024-07-20T15:00:00Z"
+  }
+]

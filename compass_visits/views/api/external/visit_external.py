@@ -7,7 +7,7 @@ from compass_visits.views.api import RESTDispatchToken
 from compass_visits.exceptions import ValidationError
 from compass_visits.dao.visit_dao import (get_visits_pending_verification,
                                           get_visits_pending_checkout,
-                                          get_completed_visits_by_netid,
+                                          get_completed_visits_by_syskey,
                                           manager_update_visit,
                                           manager_create_visit_from_request)
 
@@ -38,20 +38,20 @@ class VisitAdminListView(RESTDispatchToken):
 
 
 class CompassStudentVisitsView(RESTDispatchToken):
-    def get(self, request, student_netid, *args, **kwargs):
+    def get(self, request, student_syskey, *args, **kwargs):
         """
         Handles GET requests to retrieve completed visits for a given student.
 
         Args:
             request: The HTTP request object.
-            student_netid (str): The NetID of the student whose visits are
+            student_syskey (str): The SysKey of the student whose visits are
                 being requested.
 
         Returns:
             JsonResponse: A JSON response containing a list of completed
                 visits for the specified student.
         """
-        visits = get_completed_visits_by_netid(student_netid)
+        visits = get_completed_visits_by_syskey(student_syskey)
         visit_list = [visit.json_data() for visit in visits]
         return self.json_response(status=200, content=visit_list)
 
@@ -80,7 +80,9 @@ class ManageVisitsView(RESTDispatchToken):
             return self.error_response(status=400,
                                        message="Invalid JSON format")
         try:
-            visit = Visit.objects.get(id=visit_id)
+            visit = Visit.objects.select_related(
+                'program_area', 'tutoring_option', 'writing_service').get(
+                    id=visit_id)
             manager_update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())
         except Visit.DoesNotExist:

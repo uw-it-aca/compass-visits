@@ -3,6 +3,9 @@
 
 from compass_visits.views.api import RESTDispatchLogin
 from compass_visits.dao.visit_options import get_visit_options
+from compass_visits.dao.pws import get_regid_by_netid
+from userservice.user import UserService
+from restclients_core.exceptions import DataFailureException
 
 
 class VisitOptions(RESTDispatchLogin):
@@ -21,5 +24,10 @@ class VisitOptions(RESTDispatchLogin):
         A JSON response with status 200 containing the visit options.
     """
     def get(self, request, *args, **kwargs):
-        options = get_visit_options()
-        return self.json_response(status=200, content=options)
+        try:
+            netid = UserService().get_user()
+            regid = get_regid_by_netid(netid)
+            options = get_visit_options(regid)
+            return self.json_response(status=200, content=options)
+        except DataFailureException as e:
+            return self.json_response(status=500, content={'error': str(e)})

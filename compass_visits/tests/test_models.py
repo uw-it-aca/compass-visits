@@ -10,7 +10,8 @@ class VisitModelTest(CompassVisitsTestCase):
 
     def setUp(self):
         self.sample_visit = Visit.objects.create(
-            student_netid="asmith",
+            student_syskey="012345678",
+            student_netid="jteststudent",
             program_area_id=1,
             tutoring_option_id=1,
             writing_service_id=1,
@@ -20,8 +21,8 @@ class VisitModelTest(CompassVisitsTestCase):
     def test_json_data(self):
         json_data = self.sample_visit.json_data()
         self.assertEqual(json_data['id'], self.sample_visit.id)
-        self.assertEqual(json_data['student_netid'],
-                         self.sample_visit.student_netid)
+        self.assertEqual(json_data['student_syskey'],
+                         self.sample_visit.student_syskey)
         self.assertEqual(json_data['program_area'],
                          self.sample_visit.program_area.name)
         self.assertEqual(json_data['tutoring_option'],
@@ -42,3 +43,11 @@ class VisitModelTest(CompassVisitsTestCase):
         json_data = self.sample_visit.json_data()
         self.assertIn('active_minutes', json_data)
         self.assertEqual(json_data['active_minutes'], 30)
+
+    def test_visit_str(self):
+        self.assertEqual(
+            str(self.sample_visit),
+            f"Visit {self.sample_visit.id} - "
+            f"{self.sample_visit.student_syskey} - "
+            f"{self.sample_visit.check_in_date}"
+        )
