@@ -3,7 +3,7 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div class="d-flex flex-column align-content-between" style="min-height: calc(100vh - 265px)">
+      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)">
         <div class="alert alert-warning mb-4" role="alert">
           <i class="bi bi-exclamation-triangle-fill"></i>
             Your check-in is not yet complete. Please verify with the IC front
@@ -14,7 +14,7 @@
             {{ profile.student_name }}
           </h2>
           <visit-details :visit-data="visitDetails" />
-        </div>
+        </div> 
         <div class="row mt-auto mx-0 text-center">
           <button class="btn btn-primary btn-lg mb-3" @click="refreshPage">
             Refresh
@@ -27,7 +27,7 @@
           </button>
         </div>
       </div>
-    </template>
+    </template>m
   </DefaultLayout>
 </template>
 

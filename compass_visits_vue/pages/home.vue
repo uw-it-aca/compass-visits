@@ -3,9 +3,9 @@
 <template>
   <DefaultLayout>
     <template #content>
-      <div class="d-flex flex-column align-content-between" style="min-height: calc(100vh - 240px)">
+      <div class="d-flex flex-column" style="min-height: calc(100vh - 240px)">
         <div class="mt-auto pb-2">
-        <StudentProfile :profile="profile" />
+          <StudentProfile :profile="profile" />
         </div>
         <div v-if="isElligible" class="row mt-auto mx-0 text-center">
           <button class="btn btn-secondary btn-lg mb-3" @click="redirectToSummary">Summary</button>

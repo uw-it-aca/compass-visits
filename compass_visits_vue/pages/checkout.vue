@@ -5,7 +5,7 @@
     <template #content>
       <div 
         v-if="showCheckout" 
-        class="d-flex flex-column align-content-between" 
+        class="d-flex flex-column" 
         style="min-height: calc(100vh - 265px)">
         <div class="alert alert-success alert-dismissible mb-4" role="alert">
           <i class="bi-check-circle-fill me-1"></i>
