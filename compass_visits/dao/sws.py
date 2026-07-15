@@ -1,9 +1,8 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from datetime import timedelta
 
-from uw_sws.term import get_current_term, get_next_term, get_previous_term
+from uw_sws.term import get_current_term
 from uw_sws.registration import get_schedule_by_regid_and_term
 import datetime
 from zoneinfo import ZoneInfo

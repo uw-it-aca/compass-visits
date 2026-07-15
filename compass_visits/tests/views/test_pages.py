@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from compass_visits.tests import APILoginTestCase
-from compass_visits.views.pages import PageView
 from persistent_message.models import Message
 import datetime
 
@@ -19,7 +18,7 @@ class PageViewTestCase(APILoginTestCase):
         self.assertEqual(context['user_override'], 'javerage')
 
     def test_message_context(self):
-        message = Message.objects.create(
+        Message.objects.create(
             content="This is a test message.",
             created=datetime.datetime.now(),
             level=Message.SUCCESS_LEVEL

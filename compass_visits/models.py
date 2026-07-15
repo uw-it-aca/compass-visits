@@ -89,7 +89,9 @@ class Visit(models.Model):
     is_verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Visit {self.id} - {self.student_syskey} - {self.check_in_date}"
+        return (
+            f"Visit {self.id} - {self.student_syskey} - {self.check_in_date}"
+        )
 
     def json_data(self):
         json_data = {

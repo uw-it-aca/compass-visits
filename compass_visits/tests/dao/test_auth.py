@@ -1,9 +1,8 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.utils import timezone
 from django.core.exceptions import PermissionDenied
-from compass_visits.exceptions import ValidationError, OverrideNotPermitted
+from compass_visits.exceptions import OverrideNotPermitted
 from compass_visits.tests import CompassVisitsTestCase
 from compass_visits.dao.auth import (valid_user_override,
                                      can_write_visit,
