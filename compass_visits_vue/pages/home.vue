@@ -1,7 +1,7 @@
 // home.vue
 
 <template>
-  <DefaultLayout>
+  <DefaultLayout :page-title="pageTitle" hide-title>
     <template #content>
       <div class="d-flex flex-column" style="min-height: calc(100vh - 240px)">
         <div class="mt-auto pb-2">
@@ -40,11 +40,15 @@ export default {
   },
   data() {
     return {
-      pageTitle: "Home",
       profile: null,
       isElligible: false,
       persMsg: window.persistent_msgs || [],
     };
+  },
+  computed: {
+    pageTitle() {
+      return this.profile?.student_name || "Home";
+    },
   },
   created() {
     this.loadStudentProfile();

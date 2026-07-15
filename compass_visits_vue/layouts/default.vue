@@ -75,7 +75,7 @@
     </template>-->
     <template #bar></template>
     <template #main>
-      <h1 class="fs-5 ff-open-sans m-2 py-1 text-center">
+      <h1 :class="['fs-5 ff-open-sans m-2 py-1 text-center', { 'visually-hidden': hideTitle }]">
         {{ pageTitle }}
       </h1>
       <slot name="content" />
@@ -97,6 +97,10 @@ export default {
       type: String,
       required: true,
     },
+    hideTitle: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -110,6 +114,11 @@ export default {
   created: function () {
     // constructs page title in the following format "Page Title - AppName"
     document.title = this.pageTitle + " - " + this.appName;
+  },
+  watch: {
+    pageTitle(newVal) {
+      document.title = newVal + " - " + this.appName;
+    },
   },
 };
 </script>
