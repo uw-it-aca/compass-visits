@@ -2,21 +2,32 @@
 
 <template>
   <DefaultLayout :page-title="pageTitle">
-    <template #title>
-      {{ pageTitle }}
-    </template>
     <template #content>
-      <p>Verification Required</p>
-      <div class="alert alert-warning" role="alert">
-        <i class="bi bi-exclamation-triangle-fill"></i>
-        Your check-in is not yet complete. Please verify with the IC front desk,
-        and refresh the page to see the most up-to-date status.
+      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)">
+        <div class="alert alert-warning mb-4" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+            Your check-in is not yet complete. Please verify with the IC front
+            desk, and refresh the page.
+          </div>
+        <div class="mt-auto text-center">
+          <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
+            {{ profile.student_name }}
+          </h2>
+          <visit-details :visit-data="visitDetails" />
+        </div>
+        <div class="row mt-auto mx-0 text-center">
+          <button class="btn btn-primary btn-lg mb-3" @click="refreshPage">
+            Refresh
+          </button>
+          <button
+            class="btn btn-outline-danger btn-lg mb-2"
+            @click="cancelVisit"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-      <visit-details :visit-data="visitDetails" />
-      <br />
-      <button class="btn btn-primary" @click="refreshPage">Refresh</button>
-      <button class="btn btn-danger" @click="cancelVisit">Cancel</button>
-    </template>
+    </template>m
   </DefaultLayout>
 </template>
 
@@ -34,7 +45,7 @@ export default {
   },
   data() {
     return {
-      pageTitle: "Verify Visit",
+      pageTitle: "Verification Required",
       profile: null,
     };
   },

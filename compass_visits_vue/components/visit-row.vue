@@ -1,11 +1,18 @@
 // visit-row.vue
 
 <template>
-  <div>
-    <i class="bi bi-calendar-check"></i>
-    {{ visitTitle }} ({{ visit.active_minutes }} min)
-    <br />
-    <small>{{ dateString }}</small>
+  <div class="row">
+    <div class="col-auto">
+      <i class="bi bi-calendar-check"></i>
+      <br />
+      <span class="border-start pb-4 ms-2"></span>
+    </div>
+
+    <div class="col pb-4">
+      {{ visitTitle }} ({{ visit.active_minutes }} min)
+      <br />
+      <small class="text-body-secondary">{{ dateString }}</small>
+    </div>
   </div>
 </template>
 

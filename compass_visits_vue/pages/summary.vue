@@ -2,14 +2,10 @@
 
 <template>
   <DefaultLayout :page-title="pageTitle">
-    <template #title>
-      {{ pageTitle }}
-    </template>
     <template #content>
-    <visit-group :visit-list="visitsThisWeek" group-title="This Week" />
-    <visit-group :visit-list="visitsLastWeek" group-title="Last Week" />
-    <visit-group :visit-list="remainingVisits" group-title="This Quarter" />
-
+      <visit-group :visit-list="visitsThisWeek" group-title="This Week" />
+      <visit-group :visit-list="visitsLastWeek" group-title="Last Week" />
+      <visit-group :visit-list="remainingVisits" group-title="This Quarter" />
     </template>
   </DefaultLayout>
 </template>

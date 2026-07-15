@@ -149,5 +149,8 @@ __diff_output__/
 # coverage
 coverage
 
+# prettier
+.prettiercache
+
 # lighthouse
 .lighthouseci
