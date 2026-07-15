@@ -91,6 +91,13 @@ jobs:
         with:
           app_name: ${DJANGO_APP}
           exclude_paths: 'migrations'
+      - name: Run Additional Linters
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ruff
+          ruff check . --exclude migrations,resources,static
+        continue-on-error: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -142,6 +149,13 @@ jobs:
           coverage combine
           coveralls
         continue-on-error: true
+
+      - name: Run vulnerability scan
+        id: vuln-scan
+        uses: uw-it-aca/actions/container-vuln-scan@main
+        with:
+          image_tag: ${{ needs.context.outputs.image_tag }}
+          severity: 'HIGH,CRITICAL'
 
       - name: Push Image to Repository
         if: github.event_name == 'push'
