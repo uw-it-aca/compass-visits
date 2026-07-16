@@ -4,6 +4,10 @@
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+#test lint failure
+import json
+import datetime
+foo = "bar"
 
 
 class Command(BaseCommand):
