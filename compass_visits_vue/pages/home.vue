@@ -22,10 +22,10 @@
     </template>
 
     <template v-if="profile && isElligible" #action>
-      <button class="btn btn-secondary btn-lg mb-3" @click="redirectToSummary">
+      <button class="btn btn-secondary btn-lg" @click="redirectToSummary">
         Summary
       </button>
-      <button class="btn btn-primary btn-lg mb-2" @click="redirectToCreate">
+      <button class="btn btn-primary btn-lg" @click="redirectToCreate">
         Check In
       </button>
     </template>

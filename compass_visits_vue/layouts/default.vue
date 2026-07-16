@@ -24,7 +24,7 @@
     <slot name="content" />
   </div>
 
-  <div v-if="$slots.action" class="fixed-bottom border border-danger">
+  <div v-if="$slots.action" class="fixed-bottom border border-danger d-flex flex-column row-gap-2 mb-0 p-2">
     <slot name="action" />
   </div>
 </template>
@@ -85,3 +85,9 @@
     },
   };
 </script>
+
+<style scoped>
+:deep(.text-white) {
+  color: var(--bs-body-color) !important;
+}
+</style>

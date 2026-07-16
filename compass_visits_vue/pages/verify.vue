@@ -18,10 +18,10 @@
       </div>
     </template>
     <template #action>
-      <button class="btn btn-primary btn-lg mb-3" @click="refreshPage">
+      <button class="btn btn-primary btn-lg" @click="refreshPage">
         Refresh
       </button>
-      <button class="btn btn-outline-danger btn-lg mb-2" @click="cancelVisit">
+      <button class="btn btn-outline-danger btn-lg" @click="cancelVisit">
         Cancel
       </button>
     </template>

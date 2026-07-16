@@ -83,13 +83,13 @@
 
     <template #action>
       <button
-        class="btn btn-primary btn-lg mb-3"
+        class="btn btn-primary btn-lg"
         :disabled="!allAreSelected"
         @click="createVisit"
       >
         Confirm
       </button>
-      <button class="btn btn-outline-danger btn-lg mb-2" @click="cancelVisit">
+      <button class="btn btn-outline-danger btn-lg" @click="cancelVisit">
         Cancel
       </button>
     </template>

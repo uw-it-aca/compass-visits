@@ -40,12 +40,12 @@
 
     <template v-if="showCheckout" #action>
       <button
-        class="btn btn-outline-primary btn-lg my-2"
+        class="btn btn-outline-primary btn-lg"
         @click="handleSwitchSession"
       >
         Switch Session
       </button>
-      <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
+      <button class="btn btn-danger btn-lg" @click="handleCheckout">
         Check Out
       </button>
     </template>
