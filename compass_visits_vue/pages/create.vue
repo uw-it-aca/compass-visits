@@ -15,7 +15,8 @@
           >
             <option value="" disabled selected>Select a program area</option>
             <option
-              v-for="programArea in visitOptionsStore.visitOptions.program_areas"
+              v-for="programArea in visitOptionsStore.visitOptions
+                .program_areas"
               :key="programArea.id"
               :value="programArea.id"
             >
@@ -77,112 +78,110 @@
             </optgroup>
           </select>
         </div>
-        <div class="row mt-auto mx-0 text-center">
-          <button
-            class="btn btn-primary btn-lg mb-3"
-            :disabled="!allAreSelected"
-            @click="createVisit"
-          >
-            Confirm
-          </button>
-          <button
-            class="btn btn-outline-danger btn-lg mb-2"
-            @click="cancelVisit"
-          >
-            Cancel
-          </button>
-        </div>
       </div>
+    </template>
+
+    <template #action>
+      <button
+        class="btn btn-primary btn-lg mb-3"
+        :disabled="!allAreSelected"
+        @click="createVisit"
+      >
+        Confirm
+      </button>
+      <button class="btn btn-outline-danger btn-lg mb-2" @click="cancelVisit">
+        Cancel
+      </button>
     </template>
   </DefaultLayout>
 </template>
 
 <script>
-import DefaultLayout from "@/layouts/default.vue";
-import { useVisitOptionsStore } from "../stores/visit-options";
-import { useVisitStore } from "@/stores/visit";
+  import DefaultLayout from "@/layouts/default.vue";
+  import { useVisitOptionsStore } from "../stores/visit-options";
+  import { useVisitStore } from "@/stores/visit";
 
-export default {
-  name: "Create",
-  components: { DefaultLayout },
-  setup() {
-    const visitOptionsStore = useVisitOptionsStore();
-    const visitStore = useVisitStore();
-    visitOptionsStore.fetchVisitOptions();
-    return { visitOptionsStore, visitStore };
-  },
-  props: {
-    switch: {
-      type: Boolean,
-      default: false,
+  export default {
+    name: "Create",
+    components: { DefaultLayout },
+    setup() {
+      const visitOptionsStore = useVisitOptionsStore();
+      const visitStore = useVisitStore();
+      visitOptionsStore.fetchVisitOptions();
+      return { visitOptionsStore, visitStore };
     },
-  },
-  data() {
-    return {
-      selectedProgramArea: "",
-      selectedTutoringOption: "",
-      selectedCourseOrWriting: "",
-      createError: null,
-      isSubmitting: false,
-    };
-  },
-  computed: {
-    allAreSelected() {
-      return (
-        this.selectedProgramArea &&
-        this.selectedTutoringOption &&
-        this.selectedCourseOrWriting
-      );
+    props: {
+      switch: {
+        type: Boolean,
+        default: false,
+      },
     },
-    selectedCourse() {
-      return this.visitOptionsStore.visitOptions.courses.find(
-        (course) => course.id === this.selectedCourseOrWriting
-      );
+    data() {
+      return {
+        selectedProgramArea: "",
+        selectedTutoringOption: "",
+        selectedCourseOrWriting: "",
+        createError: null,
+        isSubmitting: false,
+      };
     },
-    selectedWritingService() {
-      return this.visitOptionsStore.visitOptions.writing_services.find(
-        (service) => service.id === this.selectedCourseOrWriting
-      );
+    computed: {
+      allAreSelected() {
+        return (
+          this.selectedProgramArea &&
+          this.selectedTutoringOption &&
+          this.selectedCourseOrWriting
+        );
+      },
+      selectedCourse() {
+        return this.visitOptionsStore.visitOptions.courses.find(
+          (course) => course.id === this.selectedCourseOrWriting,
+        );
+      },
+      selectedWritingService() {
+        return this.visitOptionsStore.visitOptions.writing_services.find(
+          (service) => service.id === this.selectedCourseOrWriting,
+        );
+      },
+      pageTitle() {
+        return this.switch ? "Switch Session" : "Create Visit";
+      },
     },
-    pageTitle() {
-      return this.switch ? "Switch Session" : "Create Visit";
-    },
-  },
-  methods: {
-    async createVisit() {
-      if (this.allAreSelected) {
-        this.createError = null;
-        this.isSubmitting = true;
-        try {
-          await this.visitStore.handleCreateVisit({
-            program_area: this.selectedProgramArea,
-            tutoring_option: this.selectedTutoringOption,
-            course: this.selectedCourse ? this.selectedCourse.id : null,
-            writing_service: this.selectedWritingService
-              ? this.selectedWritingService.id
-              : null,
-          });
-          if (this.switch) {
-            this.$router.push({ name: "checkout" });
-          } else {
-            this.$router.push({ name: "verify" });
+    methods: {
+      async createVisit() {
+        if (this.allAreSelected) {
+          this.createError = null;
+          this.isSubmitting = true;
+          try {
+            await this.visitStore.handleCreateVisit({
+              program_area: this.selectedProgramArea,
+              tutoring_option: this.selectedTutoringOption,
+              course: this.selectedCourse ? this.selectedCourse.id : null,
+              writing_service: this.selectedWritingService
+                ? this.selectedWritingService.id
+                : null,
+            });
+            if (this.switch) {
+              this.$router.push({ name: "checkout" });
+            } else {
+              this.$router.push({ name: "verify" });
+            }
+          } catch (error) {
+            this.createError =
+              error?.data?.error ||
+              "Unable to create your visit. Please review your selections and try again.";
+          } finally {
+            this.isSubmitting = false;
           }
-        } catch (error) {
-          this.createError =
-            error?.data?.error ||
-            "Unable to create your visit. Please review your selections and try again.";
-        } finally {
-          this.isSubmitting = false;
         }
-      }
+      },
+      cancelVisit() {
+        this.visitStore.deleteVisit().then(() => {
+          this.profile = null;
+          this.$router.push("/");
+        });
+      },
     },
-    cancelVisit() {
-      this.visitStore.deleteVisit().then(() => {
-        this.profile = null;
-        this.$router.push("/");
-      });
-    },
-  },
-  watch: {},
-};
+    watch: {},
+  };
 </script>

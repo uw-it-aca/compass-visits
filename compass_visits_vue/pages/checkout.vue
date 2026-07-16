@@ -3,10 +3,11 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div 
-        v-if="showCheckout" 
-        class="d-flex flex-column" 
-        style="min-height: calc(100vh - 265px)">
+      <div
+        v-if="showCheckout"
+        class="d-flex flex-column"
+        style="min-height: calc(100vh - 265px)"
+      >
         <div class="alert alert-success alert-dismissible mb-4" role="alert">
           <i class="bi-check-circle-fill me-1"></i>
           Check-in successful
@@ -24,20 +25,9 @@
           <visit-details :visit-data="profile.visit" />
           <div class="mb-2 pb-2">
             <h3 class="fs-6 fw-semibold ff-open-sans mb-1">Time</h3>
-            {{ visitDuration }} <br>
+            {{ visitDuration }} <br />
             (Total: {{ totalMinutes }} min)
           </div>
-        </div>
-        <div class="row mt-auto mx-0 text-center">
-          <button
-            class="btn btn-outline-primary btn-lg my-2"
-            @click="handleSwitchSession"
-          >
-            Switch <Search></Search>
-          </button>
-          <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
-            Check Out
-          </button>
         </div>
       </div>
       <div v-else>
@@ -47,60 +37,72 @@
         </div>
       </div>
     </template>
+
+    <template v-if="showCheckout" #action>
+      <button
+        class="btn btn-outline-primary btn-lg my-2"
+        @click="handleSwitchSession"
+      >
+        Switch Session
+      </button>
+      <button class="btn btn-danger btn-lg my-2" @click="handleCheckout">
+        Check Out
+      </button>
+    </template>
   </DefaultLayout>
 </template>
 
 <script>
-import DefaultLayout from "@/layouts/default.vue";
-import { useVisitStore } from "@/stores/visit";
-import VisitDetails from "@/components/visit-details.vue";
+  import DefaultLayout from "@/layouts/default.vue";
+  import { useVisitStore } from "@/stores/visit";
+  import VisitDetails from "@/components/visit-details.vue";
 
-export default {
-  name: "Checkout",
-  components: { DefaultLayout, VisitDetails },
-  setup() {
-    const visitStore = useVisitStore();
-    return { visitStore };
-  },
-  data() {
-    return {
-      pageTitle: "Visit Verfied",
-      profile: null,
-    };
-  },
-  created() {
-    this.visitStore.fetchStudentProfile().then(() => {
-      this.profile = this.visitStore.studentProfile.data;
-      if(this.profile.visit && !this.profile.visit.is_verified) {
-        this.$router.push({ name: "verify" });
-      }
-      if(!this.profile.visit) {
-        this.$router.push({ name: "home" });
-      }
-    });
-  },
-  computed: {
-    showCheckout() {
-      return this.profile && this.profile.current_state === "active";
+  export default {
+    name: "Checkout",
+    components: { DefaultLayout, VisitDetails },
+    setup() {
+      const visitStore = useVisitStore();
+      return { visitStore };
     },
-    visitDuration() {
-      return this.visitStore.visitDurationString;
+    data() {
+      return {
+        pageTitle: "Visit Verfied",
+        profile: null,
+      };
     },
-    totalMinutes() {
-      return this.visitStore.totalMinutes;
-    },
-  },
-  methods: {
-    handleCheckout() {
-      this.visitStore.handleCheckout().then(() => {
-        this.$router.push({ name: "home" });
+    created() {
+      this.visitStore.fetchStudentProfile().then(() => {
+        this.profile = this.visitStore.studentProfile.data;
+        if (this.profile.visit && !this.profile.visit.is_verified) {
+          this.$router.push({ name: "verify" });
+        }
+        if (!this.profile.visit) {
+          this.$router.push({ name: "home" });
+        }
       });
     },
-    handleSwitchSession() {
-      this.profile = null;
-      this.visitStore.studentProfile = null;
-      this.$router.push({ name: "create", query: { switch: true } });
+    computed: {
+      showCheckout() {
+        return this.profile && this.profile.current_state === "active";
+      },
+      visitDuration() {
+        return this.visitStore.visitDurationString;
+      },
+      totalMinutes() {
+        return this.visitStore.totalMinutes;
+      },
     },
-  },
-};
+    methods: {
+      handleCheckout() {
+        this.visitStore.handleCheckout().then(() => {
+          this.$router.push({ name: "home" });
+        });
+      },
+      handleSwitchSession() {
+        this.profile = null;
+        this.visitStore.studentProfile = null;
+        this.$router.push({ name: "create", query: { switch: true } });
+      },
+    },
+  };
 </script>
