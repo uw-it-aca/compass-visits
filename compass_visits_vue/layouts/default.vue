@@ -49,7 +49,7 @@
   <div
     v-if="$slots.action"
     class="fixed-bottom bg-body d-flex flex-column row-gap-2 mb-0 p-3"
-    style="box-shadow: 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.075)"
+    style="box-shadow: 0 -0.25rem 0.4rem rgba(0, 0, 0, 0.15)"
   >
     <slot name="action" />
   </div>
@@ -119,6 +119,10 @@
 <style scoped>
   :deep(.text-white) {
     color: var(--bs-body-color) !important;
+  }
+
+  .pb-action {
+    padding-bottom: 8rem;
   }
 </style>
 

@@ -3,7 +3,7 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)">
+      <div class="d-flex flex-column">
         <div class="alert alert-warning mb-4" role="alert">
           <i class="bi bi-exclamation-triangle-fill"></i>
           Your check-in is not yet complete. Please verify with the IC front

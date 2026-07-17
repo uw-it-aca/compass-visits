@@ -3,7 +3,7 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)">
+      <div class="d-flex flex-column">
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Program Area<span style="color: red">*</span>
         </h2>
