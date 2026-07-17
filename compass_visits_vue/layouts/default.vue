@@ -10,6 +10,22 @@
       class="text-dark"
     ></SProfile>
     <SColorMode color-class="text-body" class="ms-3"></SColorMode>
+    <BButton v-b-toggle.offcanvas-border>Toggle Offcanvas</BButton>
+    <BOffcanvas
+      id="offcanvas-border"
+      title="Offcanvas"
+      class="bg-primary"
+      placement="bottom-start"
+    >
+      <div class="px-3 py-2">
+        <p>
+          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+          consectetur ac, vestibulum at eros.
+        </p>
+        <BImg src="https://picsum.photos/500/500/?image=54" fluid thumbnail />
+      </div>
+    </BOffcanvas>
   </div>
 
   <h1
@@ -24,18 +40,24 @@
     <slot name="content" />
   </div>
 
-  <div v-if="$slots.action" class="fixed-bottom border border-danger d-flex flex-column row-gap-2 mb-0 p-2">
+  <div
+    v-if="$slots.action"
+    class="fixed-bottom border-danger d-flex flex-column row-gap-2 mb-0 border p-2"
+  >
     <slot name="action" />
   </div>
 </template>
 
 <script>
+  import { ref } from "vue";
   import { SProfile, SColorMode } from "solstice-vue";
   import { useVisitStore } from "@/stores/visit";
+  import { BButton, BOffcanvas, vBToggle } from "bootstrap-vue-next";
 
   export default {
     name: "DefaultLayout",
-    components: { SProfile, SColorMode },
+    components: { SProfile, SColorMode, BButton, BOffcanvas },
+    directives: { 'b-toggle': vBToggle },
     props: {
       pageTitle: {
         type: String,
@@ -48,6 +70,7 @@
     },
     setup() {
       const visitStore = useVisitStore();
+
       return { visitStore };
     },
     data() {
@@ -87,7 +110,7 @@
 </script>
 
 <style scoped>
-:deep(.text-white) {
-  color: var(--bs-body-color) !important;
-}
+  :deep(.text-white) {
+    color: var(--bs-body-color) !important;
+  }
 </style>
