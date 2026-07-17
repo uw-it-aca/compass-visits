@@ -10,10 +10,10 @@
       class="text-dark"
     ></SProfile>
     <SColorMode color-class="text-body" class="ms-3"></SColorMode>
-    <BButton v-b-toggle.offcanvas-border>About Compass Visits</BButton>
+    <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
     <BOffcanvas
       id="offcanvas-border"
-      title="Compass Visits"
+      :title="appName"
       class="bg-body rounded-top-5"
       placement="bottom-start"
       shadow="lg"
@@ -26,9 +26,9 @@
         </p>
         <p>&copy; Copyright 2026 Univeristy of Washington</p>
         <ul>
-            <li>Accessiblity</li>
-            <li>Privacy Policy</li>
-            <li>Terms</li>
+          <li>Accessiblity</li>
+          <li>Privacy Policy</li>
+          <li>Terms</li>
         </ul>
       </div>
     </BOffcanvas>
@@ -56,7 +56,6 @@
 </template>
 
 <script>
-  import { ref } from "vue";
   import { SProfile, SColorMode } from "solstice-vue";
   import { useVisitStore } from "@/stores/visit";
   import { BButton, BOffcanvas, vBToggle } from "bootstrap-vue-next";
@@ -64,7 +63,7 @@
   export default {
     name: "DefaultLayout",
     components: { SProfile, SColorMode, BButton, BOffcanvas },
-    directives: { 'b-toggle': vBToggle },
+    directives: { "b-toggle": vBToggle },
     props: {
       pageTitle: {
         type: String,
@@ -77,7 +76,6 @@
     },
     setup() {
       const visitStore = useVisitStore();
-
       return { visitStore };
     },
     data() {
