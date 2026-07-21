@@ -1,57 +1,61 @@
 <template>
-  <div class="p-3">
-    <SProfile
-      :variant="'flyout'"
-      :user-netid="userNetid"
-      :user-official-name="userOfficial"
-      :user-preferred-name="userPreferred"
-      :profile-url="'https://identity.uw.edu'"
-      :signout-url="signOutUrl"
-      class="text-dark"
-    ></SProfile>
-    <SColorMode color-class="text-body" class="ms-3"></SColorMode>
-    <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
-    <BOffcanvas
-      id="offcanvas-border"
-      :title="appName"
-      class="bg-body rounded-top-5"
-      placement="bottom-start"
-      shadow="lg"
+  <div class="container">
+    <div class="p-3">
+      <SProfile
+        :variant="'flyout'"
+        :user-netid="userNetid"
+        :user-official-name="userOfficial"
+        :user-preferred-name="userPreferred"
+        :profile-url="'https://identity.uw.edu'"
+        :signout-url="signOutUrl"
+        class="text-dark"
+      ></SProfile>
+      <SColorMode color-class="text-body" class="ms-3"></SColorMode>
+      <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
+      <BOffcanvas
+        id="offcanvas-border"
+        :title="appName"
+        class="bg-body rounded-top-5"
+        placement="bottom-start"
+        shadow="lg"
+      >
+        <div class="p-0">
+          <p>
+            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
+            ac consectetur ac, vestibulum at eros.
+          </p>
+          <p>&copy; Copyright 2026 Univeristy of Washington</p>
+          <ul>
+            <li>Accessiblity</li>
+            <li>Privacy Policy</li>
+            <li>Terms</li>
+          </ul>
+        </div>
+      </BOffcanvas>
+    </div>
+
+    <h1
+      :class="[
+        'fs-5 ff-open-sans m-2 py-1 text-center',
+        { 'visually-hidden': hideTitle },
+      ]"
     >
-      <div class="p-0">
-        <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p>
-        <p>&copy; Copyright 2026 Univeristy of Washington</p>
-        <ul>
-          <li>Accessiblity</li>
-          <li>Privacy Policy</li>
-          <li>Terms</li>
-        </ul>
+      {{ pageTitle }}
+    </h1>
+    <div class="p-3">
+      <slot name="content" />
+    </div>
+
+    <div
+      v-if="$slots.action"
+      class="fixed-bottom bg-body "
+      style="box-shadow: 0 -0.25rem 0.4rem rgba(0, 0, 0, 0.15)"
+    >
+      <div class="container d-flex flex-column row-gap-2 mb-0 p-3">
+        <slot name="action" />
       </div>
-    </BOffcanvas>
-  </div>
-
-  <h1
-    :class="[
-      'fs-5 ff-open-sans m-2 py-1 text-center',
-      { 'visually-hidden': hideTitle },
-    ]"
-  >
-    {{ pageTitle }}
-  </h1>
-  <div class="p-3">
-    <slot name="content" />
-  </div>
-
-  <div
-    v-if="$slots.action"
-    class="fixed-bottom bg-body d-flex flex-column row-gap-2 mb-0 p-3"
-    style="box-shadow: 0 -0.25rem 0.4rem rgba(0, 0, 0, 0.15)"
-  >
-    <slot name="action" />
+    </div>
   </div>
 </template>
 
