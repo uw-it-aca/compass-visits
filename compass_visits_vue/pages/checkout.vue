@@ -100,7 +100,8 @@
       },
       handleSwitchSession() {
         this.profile = null;
-        this.visitStore.studentProfile = null;
+        // Reset to empty object (not null) so fetchStudentProfile can re-fetch
+        this.visitStore.studentProfile = {};
         this.$router.push({ name: "create", query: { switch: true } });
       },
     },

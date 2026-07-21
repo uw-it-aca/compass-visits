@@ -12,27 +12,6 @@
       ></SProfile>
       <SColorMode color-class="text-body" class="ms-3"></SColorMode>
       <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
-      <BOffcanvas
-        id="offcanvas-border"
-        :title="appName"
-        class="bg-body rounded-top-5"
-        placement="bottom-start"
-        shadow="lg"
-      >
-        <div class="p-0">
-          <p>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-            dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta
-            ac consectetur ac, vestibulum at eros.
-          </p>
-          <p>&copy; Copyright 2026 Univeristy of Washington</p>
-          <ul>
-            <li>Accessiblity</li>
-            <li>Privacy Policy</li>
-            <li>Terms</li>
-          </ul>
-        </div>
-      </BOffcanvas>
     </div>
 
     <h1
@@ -49,14 +28,35 @@
 
     <div
       v-if="$slots.action"
-      class="fixed-bottom bg-body "
+      class="fixed-bottom bg-body"
       style="box-shadow: 0 -0.25rem 0.4rem rgba(0, 0, 0, 0.15)"
     >
-      <div class="container d-flex flex-column row-gap-2 mb-0 p-3">
+      <div class="d-flex flex-column row-gap-2 container mb-0 p-3">
         <slot name="action" />
       </div>
     </div>
   </div>
+  <BOffcanvas
+    id="offcanvas-border"
+    class="bg-body rounded-top w-100"
+    placement="bottom-start"
+    shadow="lg"
+  >
+    <div class="container">
+      <h2>{{ appName }}</h2>
+      <p>
+        Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
+        dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
+        consectetur ac, vestibulum at eros.
+      </p>
+      <p>&copy; Copyright 2026 Univeristy of Washington</p>
+      <ul>
+        <li>Accessiblity</li>
+        <li>Privacy Policy</li>
+        <li>Terms</li>
+      </ul>
+    </div>
+  </BOffcanvas>
 </template>
 
 <script>
