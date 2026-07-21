@@ -8,75 +8,65 @@
           Program Area<span style="color: red">*</span>
         </h2>
         <div class="pb-4">
-          <select
+          <BFormSelect
             v-model="selectedProgramArea"
-            class="form-select"
+            :options="visitOptionsStore.visitOptions.program_areas"
+            text-field="name"
+            value-field="id"
             aria-label="Select Program Area"
           >
-            <option value="" disabled selected>Select a program area</option>
-            <option
-              v-for="programArea in visitOptionsStore.visitOptions
-                .program_areas"
-              :key="programArea.id"
-              :value="programArea.id"
-            >
-              {{ programArea.name }}
-            </option>
-          </select>
+            <template #first>
+              <BFormSelectOption value="" disabled>
+                Select a program area
+              </BFormSelectOption>
+            </template>
+          </BFormSelect>
         </div>
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Tutoring Option<span style="color: red">*</span>
         </h2>
         <div class="pb-4">
-          <select
+          <BFormSelect
             v-model="selectedTutoringOption"
-            class="form-select"
+            :options="visitOptionsStore.visitOptions.tutoring_options"
+            text-field="name"
+            value-field="id"
             aria-label="Select Tutoring Option"
           >
-            <option value="" disabled selected>Select a tutoring option</option>
-            <option
-              v-for="tutoringOption in visitOptionsStore.visitOptions
-                .tutoring_options"
-              :key="tutoringOption.id"
-              :value="tutoringOption.id"
-            >
-              {{ tutoringOption.name }}
-            </option>
-          </select>
+            <template #first>
+              <BFormSelectOption value="" disabled>
+                Select a tutoring option
+              </BFormSelectOption>
+            </template>
+          </BFormSelect>
         </div>
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Course or Writing Service<span style="color: red">*</span>
         </h2>
         <div class="pb-4">
-          <select
+          <BFormSelect
             v-model="selectedCourseOrWriting"
-            class="form-select"
             aria-label="Select Course or Writing Service"
           >
-            <option value="" disabled selected>
-              Select a course or writing service
-            </option>
-            <optgroup label="Courses">
-              <option
-                v-for="course in visitOptionsStore.visitOptions.courses"
-                :key="course.id"
-                :value="course.id"
-              >
-                {{ course.name }}
-              </option>
-            </optgroup>
-
-            <optgroup v-if="selectedProgramArea === 7" label="Writing Services">
-              <option
-                v-for="writingService in visitOptionsStore.visitOptions
-                  .writing_services"
-                :key="writingService.id"
-                :value="writingService.id"
-              >
-                {{ writingService.name }}
-              </option>
-            </optgroup>
-          </select>
+            <template #first>
+              <BFormSelectOption value="" disabled>
+                Select a course or writing service
+              </BFormSelectOption>
+            </template>
+            <BFormSelectOptionGroup
+              :options="visitOptionsStore.visitOptions.courses"
+              label="Courses"
+              text-field="name"
+              value-field="id"
+            />
+            <BFormSelectOptionGroup
+              v-if="selectedProgramArea === 7"
+              :options="visitOptionsStore.visitOptions.writing_services"
+              label="Writing Services"
+              text-field="name"
+              value-field="id"
+            />
+          </BFormSelect>
         </div>
       </div>
     </template>
@@ -100,10 +90,20 @@
   import DefaultLayout from "@/layouts/default.vue";
   import { useVisitOptionsStore } from "../stores/visit-options";
   import { useVisitStore } from "@/stores/visit";
+  import {
+    BFormSelect,
+    BFormSelectOption,
+    BFormSelectOptionGroup,
+  } from "bootstrap-vue-next";
 
   export default {
     name: "Create",
-    components: { DefaultLayout },
+    components: {
+      DefaultLayout,
+      BFormSelect,
+      BFormSelectOption,
+      BFormSelectOptionGroup,
+    },
     setup() {
       const visitOptionsStore = useVisitOptionsStore();
       const visitStore = useVisitStore();
