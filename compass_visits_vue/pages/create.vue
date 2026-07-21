@@ -72,16 +72,17 @@
     </template>
 
     <template #action>
-      <button
-        class="btn btn-primary btn-lg"
+      <BButton
+        variant="primary"
+        size="lg"
         :disabled="!allAreSelected"
         @click="createVisit"
       >
         Confirm
-      </button>
-      <button class="btn btn-outline-danger btn-lg" @click="cancelVisit">
+      </BButton>
+      <BButton variant="outline-danger" size="lg" @click="cancelVisit">
         Cancel
-      </button>
+      </BButton>
     </template>
   </DefaultLayout>
 </template>
@@ -91,6 +92,7 @@
   import { useVisitOptionsStore } from "../stores/visit-options";
   import { useVisitStore } from "@/stores/visit";
   import {
+    BButton,
     BFormSelect,
     BFormSelectOption,
     BFormSelectOptionGroup,
@@ -100,6 +102,7 @@
     name: "Create",
     components: {
       DefaultLayout,
+      BButton,
       BFormSelect,
       BFormSelectOption,
       BFormSelectOptionGroup,

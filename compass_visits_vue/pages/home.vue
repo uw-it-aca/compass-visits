@@ -22,12 +22,12 @@
     </template>
 
     <template v-if="profile && isElligible" #action>
-      <button class="btn btn-secondary btn-lg" @click="redirectToSummary">
+      <BButton variant="secondary" size="lg" @click="redirectToSummary">
         Summary
-      </button>
-      <button class="btn btn-primary btn-lg" @click="redirectToCreate">
+      </BButton>
+      <BButton variant="primary" size="lg" @click="redirectToCreate">
         Check In
-      </button>
+      </BButton>
     </template>
   </DefaultLayout>
 </template>
@@ -36,10 +36,11 @@
   import DefaultLayout from "@/layouts/default.vue";
   import StudentProfile from "@/components/student-profile.vue";
   import { useVisitStore } from "@/stores/visit";
+  import { BButton } from "bootstrap-vue-next";
 
   export default {
     name: "PagesHome",
-    components: { DefaultLayout, StudentProfile },
+    components: { DefaultLayout, BButton, StudentProfile },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };

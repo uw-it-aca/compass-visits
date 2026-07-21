@@ -39,15 +39,16 @@
     </template>
 
     <template v-if="showCheckout" #action>
-      <button
-        class="btn btn-outline-primary btn-lg"
+      <BButton
+        variant="outline-primary"
+        size="lg"
         @click="handleSwitchSession"
       >
         Switch Session
-      </button>
-      <button class="btn btn-danger btn-lg" @click="handleCheckout">
+      </BButton>
+      <BButton variant="danger" size="lg" @click="handleCheckout">
         Check Out
-      </button>
+      </BButton>
     </template>
   </DefaultLayout>
 </template>
@@ -56,10 +57,11 @@
   import DefaultLayout from "@/layouts/default.vue";
   import { useVisitStore } from "@/stores/visit";
   import VisitDetails from "@/components/visit-details.vue";
+  import { BButton } from "bootstrap-vue-next";
 
   export default {
     name: "Checkout",
-    components: { DefaultLayout, VisitDetails },
+    components: { DefaultLayout, BButton, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };

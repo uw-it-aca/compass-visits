@@ -18,12 +18,12 @@
       </div>
     </template>
     <template #action>
-      <button class="btn btn-primary btn-lg" @click="refreshPage">
+      <BButton variant="primary" size="lg" @click="refreshPage">
         Refresh
-      </button>
-      <button class="btn btn-outline-danger btn-lg" @click="cancelVisit">
+      </BButton>
+      <BButton variant="outline-danger" size="lg" @click="cancelVisit">
         Cancel
-      </button>
+      </BButton>
     </template>
   </DefaultLayout>
 </template>
@@ -32,10 +32,11 @@
   import DefaultLayout from "@/layouts/default.vue";
   import VisitDetails from "../components/visit-details.vue";
   import { useVisitStore } from "@/stores/visit";
+  import { BButton } from "bootstrap-vue-next";
 
   export default {
     name: "Verify",
-    components: { DefaultLayout, VisitDetails },
+    components: { DefaultLayout, BButton, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };
