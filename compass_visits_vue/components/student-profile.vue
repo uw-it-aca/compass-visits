@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { useVisitStore } from "../stores/visit";
+import { useVisitStore } from "@/stores/visit";
 
 export default {
   name: "StudentProfile",

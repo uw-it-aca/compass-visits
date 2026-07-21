@@ -89,7 +89,7 @@
 
 <script>
   import DefaultLayout from "@/layouts/default.vue";
-  import { useVisitOptionsStore } from "../stores/visit-options";
+  import { useVisitOptionsStore } from "@/stores/visit-options";
   import { useVisitStore } from "@/stores/visit";
   import {
     BButton,

@@ -4,11 +4,12 @@
   <DefaultLayout :page-title="pageTitle">
     <template #content>
       <div class="d-flex flex-column">
-        <div class="alert alert-warning mb-4" role="alert">
+        <BAlert :model-value="true" variant="warning" class="mb-4">
           <i class="bi bi-exclamation-triangle-fill"></i>
           Your check-in is not yet complete. Please verify with the IC front
           desk, and refresh the page.
-        </div>
+        </BAlert>
+
         <div class="mt-auto text-center">
           <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
             {{ profile.student_name }}
@@ -30,13 +31,13 @@
 
 <script>
   import DefaultLayout from "@/layouts/default.vue";
-  import VisitDetails from "../components/visit-details.vue";
+  import VisitDetails from "@/components/visit-details.vue";
   import { useVisitStore } from "@/stores/visit";
-  import { BButton } from "bootstrap-vue-next";
+  import { BAlert, BButton } from "bootstrap-vue-next";
 
   export default {
     name: "Verify",
-    components: { DefaultLayout, BButton, VisitDetails },
+    components: { DefaultLayout, BAlert, BButton, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };

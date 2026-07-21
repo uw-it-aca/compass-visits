@@ -3,21 +3,12 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div
-        v-if="showCheckout"
-        class="d-flex flex-column"
-        style="min-height: calc(100vh - 265px)"
-      >
-        <div class="alert alert-success alert-dismissible mb-4" role="alert">
+      <div v-if="showCheckout" class="d-flex flex-column">
+        <BAlert :model-value="true" variant="success" dismissible class="mb-4">
           <i class="bi-check-circle-fill me-1"></i>
           Check-in successful
-          <button
-            type="button"
-            class="btn-close"
-            aria-label="Close"
-            data-bs-dismiss="alert"
-          ></button>
-        </div>
+        </BAlert>
+
         <div class="mt-auto text-center">
           <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
             {{ profile.student_name }}
@@ -39,11 +30,7 @@
     </template>
 
     <template v-if="showCheckout" #action>
-      <BButton
-        variant="outline-primary"
-        size="lg"
-        @click="handleSwitchSession"
-      >
+      <BButton variant="outline-primary" size="lg" @click="handleSwitchSession">
         Switch Session
       </BButton>
       <BButton variant="danger" size="lg" @click="handleCheckout">
@@ -57,11 +44,11 @@
   import DefaultLayout from "@/layouts/default.vue";
   import { useVisitStore } from "@/stores/visit";
   import VisitDetails from "@/components/visit-details.vue";
-  import { BButton } from "bootstrap-vue-next";
+  import { BAlert, BButton } from "bootstrap-vue-next";
 
   export default {
     name: "Checkout",
-    components: { DefaultLayout, BButton, VisitDetails },
+    components: { DefaultLayout, BAlert, BButton, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };
