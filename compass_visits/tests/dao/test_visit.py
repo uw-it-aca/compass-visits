@@ -35,7 +35,7 @@ class VisitDAOTest(CompassVisitsTestCase):
 
     def test_get_active_multiple_visits_for_student(self):
         student_syskey = "000083851"
-        v1 = Visit.objects.create(
+        Visit.objects.create(
             student_syskey=student_syskey,
             student_netid="j043851",
             program_area_id=1,
@@ -64,8 +64,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             validate_visit_data(valid_request)
-        except Exception as e:
-            self.fail(f"validate_visit_data raised an "
+        except Exception:
+            self.fail("validate_visit_data raised an "
                       "exception unexpectedly: {e}")
 
         missing_program_area = {

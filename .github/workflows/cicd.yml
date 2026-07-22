@@ -87,9 +87,9 @@ jobs:
         run: npm test -- --run
 
       - name: Run Python Linters
-        uses: uw-it-aca/actions/python-linters@main
+        uses: uw-it-aca/actions/python-linters@task/add-ruff-linter
         with:
-          app_name: ${DJANGO_APP}
+          app_name: ${{ env.DJANGO_APP }}
           exclude_paths: 'migrations'
 
       - name: Set up Docker Buildx
@@ -142,6 +142,13 @@ jobs:
           coverage combine
           coveralls
         continue-on-error: true
+
+      - name: Run vulnerability scan
+        id: vuln-scan
+        uses: uw-it-aca/actions/container-vuln-scan@main
+        with:
+          image_tag: ${{ needs.context.outputs.image_tag }}
+          severity: 'HIGH,CRITICAL'
 
       - name: Push Image to Repository
         if: github.event_name == 'push'

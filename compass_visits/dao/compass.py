@@ -7,7 +7,6 @@ import os
 import json
 from restclients_core.exceptions import DataFailureException
 from restclients_core import models
-import datetime
 from django.utils.dateparse import parse_datetime
 
 
