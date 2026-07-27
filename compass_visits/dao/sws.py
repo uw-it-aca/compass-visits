@@ -2,10 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-from uw_sws.term import get_current_term
-from uw_sws.registration import get_schedule_by_regid_and_term
 import datetime
 from zoneinfo import ZoneInfo
+
+from uw_sws.registration import get_schedule_by_regid_and_term
+from uw_sws.term import get_current_term
 
 
 def get_class_list(regid):
@@ -15,8 +16,7 @@ def get_class_list(regid):
     if schedule and schedule.sections:
         for section in schedule.sections:
             if section.is_primary_section:
-                section_label = "{} {}".format(section.curriculum_abbr,
-                                               section.course_number)
+                section_label = f"{section.curriculum_abbr} {section.course_number}"
                 class_list.append({'id': section_label, 'name': section_label})
     return class_list
 

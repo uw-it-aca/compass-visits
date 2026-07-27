@@ -2,14 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+
+from compass_visits.dao.visit_dao import (
+    get_completed_visits_by_syskey,
+    get_visits_pending_checkout,
+    get_visits_pending_verification,
+    manager_create_visit_from_request,
+    manager_update_visit,
+)
+from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
 from compass_visits.views.api import RESTDispatchToken
-from compass_visits.exceptions import ValidationError
-from compass_visits.dao.visit_dao import (get_visits_pending_verification,
-                                          get_visits_pending_checkout,
-                                          get_completed_visits_by_syskey,
-                                          manager_update_visit,
-                                          manager_create_visit_from_request)
 
 
 class VisitAdminListView(RESTDispatchToken):

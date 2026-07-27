@@ -2,25 +2,29 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import datetime
+from unittest.mock import patch
+
 from django.utils import timezone
+
+from compass_visits.dao.compass import CompassVisitModel
+from compass_visits.dao.visit_dao import (
+    checkout_active_verified_visit,
+    create_visit_from_request,
+    get_active_visit_for_student,
+    get_completed_visits_by_syskey,
+    get_current_quarter_visits_by_syskey,
+    get_student_state,
+    get_total_minutes_by_syskey,
+    get_visits_pending_checkout,
+    get_visits_pending_verification,
+    manager_create_visit_from_request,
+    manager_update_visit,
+    student_update_visit,
+    validate_visit_data,
+)
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
-from compass_visits.dao.compass import CompassVisitModel
 from compass_visits.tests import CompassVisitsTestCase
-from unittest.mock import patch
-from compass_visits.dao.visit_dao import (get_active_visit_for_student,
-                                          get_completed_visits_by_syskey,
-                                          get_visits_pending_checkout,
-                                          get_visits_pending_verification,
-                                          validate_visit_data,
-                                          student_update_visit,
-                                          create_visit_from_request,
-                                          get_total_minutes_by_syskey,
-                                          get_student_state,
-                                          get_current_quarter_visits_by_syskey,
-                                          manager_create_visit_from_request,
-                                          manager_update_visit,
-                                          checkout_active_verified_visit)
 
 
 class VisitDAOTest(CompassVisitsTestCase):
@@ -64,7 +68,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             validate_visit_data(valid_request)
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail("validate_visit_data raised an "
                       "exception unexpectedly: {e}")
 
@@ -155,7 +159,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             student_update_visit(visit, request_data)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"update_visit raised an exception unexpectedly: {e}")
         self.assertIsNotNone(visit.check_out_date)
 
@@ -531,7 +535,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             manager_update_visit(visit, request_data)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"manager_update_visit raised an exception "
                       f"unexpectedly: {e}")
         self.assertTrue(visit.is_verified)
@@ -608,7 +612,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         student_syskey_no_active = "000043875"
         try:
             checkout_active_verified_visit(student_syskey_no_active)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"checkout_active_verified_visit raised an exception "
                       f"unexpectedly: {e}")
 

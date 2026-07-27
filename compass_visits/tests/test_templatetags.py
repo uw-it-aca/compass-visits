@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import re
+
 from django.test import TestCase
-from compass_visits.templatetags.vite import vite_styles, vite_scripts
+
+from compass_visits.templatetags.vite import vite_scripts, vite_styles
 
 
 class ViteTestClass(TestCase):

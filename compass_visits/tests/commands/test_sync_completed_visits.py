@@ -1,13 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from unittest.mock import patch
+
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils import timezone
 
 from compass_visits.models import Visit
 from compass_visits.tests import CompassVisitsTestCase
-from unittest.mock import patch
 
 
 class TestSyncCompletedVisits(CompassVisitsTestCase):

@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TestCase
-from compass_visits.context_processors import google_analytics, django_debug
+
+from compass_visits.context_processors import django_debug, google_analytics
 
 
 class ContextProcessorsTestCase(TestCase):

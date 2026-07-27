@@ -1,18 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.db.models import Q
-from django.utils import timezone, dateparse
+from django.db.models import DurationField, ExpressionWrapper, F, Q, Sum
+from django.utils import dateparse, timezone
 from restclients_core.exceptions import DataFailureException
-from compass_visits.exceptions import ValidationError
-from django.db.models import F, ExpressionWrapper, DurationField, Sum
-from compass_visits.dao.compass import Compass
-from compass_visits.dao.compass import CompassVisitModel
+
+from compass_visits.dao.compass import Compass, CompassVisitModel
 from compass_visits.dao.pws import get_netid_by_syskey
-from compass_visits.models import (Visit,
-                                   ProgramArea,
-                                   TutoringOption,
-                                   WritingService)
+from compass_visits.exceptions import ValidationError
+from compass_visits.models import ProgramArea, TutoringOption, Visit, WritingService
 
 
 def get_active_visit_for_student(student_syskey):

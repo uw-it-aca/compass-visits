@@ -1,7 +1,8 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
-from compass_visits.dao.auth import validate_token
 from functools import wraps
+
+from compass_visits.dao.auth import validate_token
 
 
 def token_required(func):
@@ -30,7 +31,7 @@ def token_required(func):
         token = request.META.get('HTTP_AUTHORIZATION')
         try:
             validate_token(token)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             kwargs['error'] = str(e)
         return func(request, *args, **kwargs)
     return wrapper

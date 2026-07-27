@@ -1,8 +1,8 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from uw_pws import PWS
 from restclients_core.exceptions import DataFailureException, InvalidRegID
+from uw_pws import PWS
 
 PHOTO_SIZE = "large"
 

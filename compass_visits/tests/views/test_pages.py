@@ -1,9 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APILoginTestCase
-from persistent_message.models import Message
 import datetime
+
+from persistent_message.models import Message
+
+from compass_visits.tests import APILoginTestCase
 
 
 class PageViewTestCase(APILoginTestCase):
@@ -20,7 +22,7 @@ class PageViewTestCase(APILoginTestCase):
     def test_message_context(self):
         Message.objects.create(
             content="This is a test message.",
-            created=datetime.datetime.now(),
+            created=datetime.datetime.now(tz=datetime.timezone.utc),
             level=Message.SUCCESS_LEVEL
         )
         response = self.get_response('default_page', netid='javerage')
