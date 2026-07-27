@@ -10,6 +10,8 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+import datetime
+
 
 class SAMLAdminSite(admin.AdminSite):
     site_header = 'Compass admin'
