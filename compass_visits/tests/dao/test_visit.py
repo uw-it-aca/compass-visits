@@ -68,7 +68,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             validate_visit_data(valid_request)
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail("validate_visit_data raised an "
                       "exception unexpectedly: {e}")
 
@@ -159,7 +159,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             student_update_visit(visit, request_data)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"update_visit raised an exception unexpectedly: {e}")
         self.assertIsNotNone(visit.check_out_date)
 
@@ -535,7 +535,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             manager_update_visit(visit, request_data)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"manager_update_visit raised an exception "
                       f"unexpectedly: {e}")
         self.assertTrue(visit.is_verified)
@@ -612,7 +612,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         student_syskey_no_active = "000043875"
         try:
             checkout_active_verified_visit(student_syskey_no_active)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"checkout_active_verified_visit raised an exception "
                       f"unexpectedly: {e}")
 

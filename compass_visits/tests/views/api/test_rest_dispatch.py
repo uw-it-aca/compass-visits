@@ -16,7 +16,7 @@ class RESTDispatchTestCase(TestCase):
 
     def test_bad_json_response(self):
         # Test that a TypeError in json.dumps results in a 400 response
-        content = {"message": set([1, 2, 3])}  # sets are not JSON serializable
+        content = {"message": {1, 2, 3}}  # sets are not JSON serializable
         response = RESTDispatch.json_response(content=content, status=200)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response['Content-Type'], 'application/json')

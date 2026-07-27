@@ -31,7 +31,7 @@ def token_required(func):
         token = request.META.get('HTTP_AUTHORIZATION')
         try:
             validate_token(token)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             kwargs['error'] = str(e)
         return func(request, *args, **kwargs)
     return wrapper

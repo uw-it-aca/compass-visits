@@ -22,7 +22,7 @@ class PageViewTestCase(APILoginTestCase):
     def test_message_context(self):
         Message.objects.create(
             content="This is a test message.",
-            created=datetime.datetime.now(),
+            created=datetime.datetime.now(tz=datetime.timezone.utc),
             level=Message.SUCCESS_LEVEL
         )
         response = self.get_response('default_page', netid='javerage')

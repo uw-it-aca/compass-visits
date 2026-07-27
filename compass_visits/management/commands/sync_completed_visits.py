@@ -55,7 +55,7 @@ class Command(BaseCommand):
                 compass.store_visit(compass_visit)
                 visit.delete()
                 synced += 1
-            except Exception as ex:
+            except Exception as ex:  # noqa: BLE001
                 failed += 1
                 self.stderr.write(
                     f"Failed visit id={visit.id} "

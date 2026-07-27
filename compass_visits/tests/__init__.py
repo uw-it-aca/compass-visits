@@ -1,13 +1,15 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from typing import ClassVar
+
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
 
 class CompassVisitsTestCase(TestCase):
-    fixtures = ['initial_data/program-area.json',
+    fixtures: ClassVar = ['initial_data/program-area.json',
                 'initial_data/tutoring-option.json',
                 'initial_data/writing-service.json',
                 'initial_data/visit.json']

@@ -24,8 +24,8 @@ class CompassTestCase(CompassVisitsTestCase):
             visit_type="Virtual",
             course_code="STAT 101",
             tutoring_option="Individual",
-            checkin_date=datetime.datetime.now(),
-            checkout_date=datetime.datetime.now(),
+            checkin_date=datetime.datetime.now(tz=datetime.timezone.utc),
+            checkout_date=datetime.datetime.now(tz=datetime.timezone.utc),
         )
         response = compass.store_visit(visit)
         self.assertTrue(response)
@@ -52,7 +52,7 @@ class CompassTestCase(CompassVisitsTestCase):
             compass.get_current_quarter_visits("000000000")
 
     def test_visit_json_data_with_none_checkout_date(self):
-        checkin = datetime.datetime(2026, 7, 6, 12, 30, 0)
+        checkin = datetime.datetime(2026, 7, 6, 12, 30, 0, tzinfo=datetime.timezone.utc)
         visit = CompassVisitModel(
             student_netid="javerage",
             visit_type="Virtual",
