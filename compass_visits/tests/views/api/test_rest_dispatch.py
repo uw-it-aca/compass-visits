@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TestCase
+
 from compass_visits.views.api import RESTDispatch
 
 

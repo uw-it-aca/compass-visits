@@ -1,9 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APILoginTestCase
 from unittest.mock import patch
+
 from restclients_core.exceptions import DataFailureException
+
+from compass_visits.tests import APILoginTestCase
 
 
 class StudentAPITestCase(APILoginTestCase):

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+
 from django.apps import AppConfig
 from django.contrib.staticfiles.apps import StaticFilesConfig
 from restclients_core.dao import MockDAO

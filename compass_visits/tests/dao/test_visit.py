@@ -2,25 +2,29 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import datetime
+from unittest.mock import patch
+
 from django.utils import timezone
+
+from compass_visits.dao.compass import CompassVisitModel
+from compass_visits.dao.visit_dao import (
+    checkout_active_verified_visit,
+    create_visit_from_request,
+    get_active_visit_for_student,
+    get_completed_visits_by_syskey,
+    get_current_quarter_visits_by_syskey,
+    get_student_state,
+    get_total_minutes_by_syskey,
+    get_visits_pending_checkout,
+    get_visits_pending_verification,
+    manager_create_visit_from_request,
+    manager_update_visit,
+    student_update_visit,
+    validate_visit_data,
+)
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
-from compass_visits.dao.compass import CompassVisitModel
 from compass_visits.tests import CompassVisitsTestCase
-from unittest.mock import patch
-from compass_visits.dao.visit_dao import (get_active_visit_for_student,
-                                          get_completed_visits_by_syskey,
-                                          get_visits_pending_checkout,
-                                          get_visits_pending_verification,
-                                          validate_visit_data,
-                                          student_update_visit,
-                                          create_visit_from_request,
-                                          get_total_minutes_by_syskey,
-                                          get_student_state,
-                                          get_current_quarter_visits_by_syskey,
-                                          manager_create_visit_from_request,
-                                          manager_update_visit,
-                                          checkout_active_verified_visit)
 
 
 class VisitDAOTest(CompassVisitsTestCase):

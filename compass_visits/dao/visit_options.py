@@ -1,9 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.models import ProgramArea, TutoringOption, WritingService
-from compass_visits.dao.sws import get_class_list
 from restclients_core.exceptions import DataFailureException
+
+from compass_visits.dao.sws import get_class_list
+from compass_visits.models import ProgramArea, TutoringOption, WritingService
 
 
 def get_visit_options(student_regid):

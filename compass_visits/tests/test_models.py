@@ -1,9 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.models import Visit
 from django.utils import timezone
+
+from compass_visits.models import Visit
+from compass_visits.tests import CompassVisitsTestCase
 
 
 class VisitModelTest(CompassVisitsTestCase):

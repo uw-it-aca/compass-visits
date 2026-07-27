@@ -1,9 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APILoginTestCase
-from persistent_message.models import Message
 import datetime
+
+from persistent_message.models import Message
+
+from compass_visits.tests import APILoginTestCase
 
 
 class PageViewTestCase(APILoginTestCase):

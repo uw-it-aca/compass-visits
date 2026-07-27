@@ -1,10 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.sws import get_class_list, get_term_start_date
-from compass_visits.dao.pws import get_regid_by_netid
 import datetime
+
+from compass_visits.dao.pws import get_regid_by_netid
+from compass_visits.dao.sws import get_class_list, get_term_start_date
+from compass_visits.tests import CompassVisitsTestCase
 
 
 class SWSDAOTest(CompassVisitsTestCase):

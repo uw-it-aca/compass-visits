@@ -1,10 +1,12 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+import datetime
+
+from restclients_core.exceptions import DataFailureException
+
 from compass_visits.dao.compass import Compass, CompassVisitModel
 from compass_visits.tests import CompassVisitsTestCase
-from restclients_core.exceptions import DataFailureException
-import datetime
 
 
 class CompassTestCase(CompassVisitsTestCase):

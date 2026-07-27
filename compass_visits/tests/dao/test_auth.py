@@ -1,13 +1,13 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from unittest.mock import patch
+
 from django.core.exceptions import PermissionDenied
+
+from compass_visits.dao.auth import can_write_visit, valid_user_override, validate_token
 from compass_visits.exceptions import OverrideNotPermitted
 from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.auth import (valid_user_override,
-                                     can_write_visit,
-                                     validate_token)
-from unittest.mock import patch
 
 
 class AuthDAOTest(CompassVisitsTestCase):

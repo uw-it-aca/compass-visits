@@ -4,8 +4,8 @@
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from userservice.user import UserService
 from persistent_message.models import Message
+from userservice.user import UserService
 
 
 @method_decorator(login_required, name='dispatch')

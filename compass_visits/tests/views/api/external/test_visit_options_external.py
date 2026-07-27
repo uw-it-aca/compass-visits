@@ -1,8 +1,8 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APITokenTestCase
 from compass_visits.dao.pws import get_regid_by_netid
+from compass_visits.tests import APITokenTestCase
 
 
 class VisitOptionsExternalAPITestCase(APITokenTestCase):
