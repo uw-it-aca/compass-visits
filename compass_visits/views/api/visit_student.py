@@ -52,6 +52,8 @@ class StudentVisitList(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Unable to retrieve student "
                                                "information")
+        for visit in visits:
+            visit.student_netid = student_netid
         visit_list = [visit.student_json_data() for visit in visits]
         return self.json_response(status=200, content=visit_list)
 

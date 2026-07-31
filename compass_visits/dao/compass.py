@@ -56,14 +56,13 @@ class Compass:
         Stores a visit in compass DB
         """
         url = f"{self.API}/visit/omad"
-        response = self.dao.postURL(url, visit.json_data())
+        response = self.dao.postURL(url, body=json.dumps(visit.json_data()))
 
-        if response.status != 200:
+        if response.status != 201:
             raise DataFailureException(url,
                                        response.status,
                                        "Error storing visit:"
                                        f"{response.status}")
-        return json.loads(response.data)
 
     def get_current_quarter_visits(self, syskey):
         """
@@ -79,10 +78,17 @@ class Compass:
         data = json.loads(response.data)
         visits = []
         for visit in data:
-            visit['checkin_date'] = parse_datetime(visit['checkin_date'])
-            if visit.get('checkout_date'):
-                visit['checkout_date'] = parse_datetime(visit['checkout_date'])
-            visits.append(CompassVisitModel(**visit))
+            checkout_raw = visit.get('checkout_date')
+            visits.append(CompassVisitModel(
+                student_netid='',
+                visit_type=visit.get('visit_type') or '',
+                course_code=visit.get('course_code') or '',
+                tutoring_option=visit.get('tutoring_option') or '',
+                checkin_date=parse_datetime(visit.get('checkin_date')),
+                checkout_date=(
+                    parse_datetime(checkout_raw) if checkout_raw else None
+                ),
+            ))
         return visits
 
 
