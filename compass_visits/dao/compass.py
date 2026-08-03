@@ -41,7 +41,7 @@ class Compass:
         """
         Returns IC eligibility for the given syskey.
         """
-        url = f"{self.API}/visit/eligibility/{syskey}"
+        url = f"{self.API}/visit/eligibility/{syskey}/"
         response = self.dao.getURL(url)
         if response.status != 200:
             raise DataFailureException(url,
