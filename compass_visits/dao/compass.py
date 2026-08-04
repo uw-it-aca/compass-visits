@@ -16,7 +16,7 @@ class COMPASS_DAO(DAO):
         return 'compass'
 
     def service_mock_paths(self):
-        path = [abspath(os.path.join(dirname(__file__), "resources"))]
+        path = [abspath(os.path.join(dirname(__file__), "..", "resources"))]
         return path
 
     def _custom_headers(self, method, url, headers, body):
@@ -58,11 +58,12 @@ class Compass:
         url = f"{self.API}/visit/omad"
         response = self.dao.postURL(url, body=json.dumps(visit.json_data()))
 
-        if response.status != 201:
+        if response.status not in (200, 201):
             raise DataFailureException(url,
                                        response.status,
                                        "Error storing visit:"
                                        f"{response.status}")
+        return json.loads(response.data)
 
     def get_current_quarter_visits(self, syskey):
         """
@@ -80,7 +81,7 @@ class Compass:
         for visit in data:
             checkout_raw = visit.get('checkout_date')
             visits.append(CompassVisitModel(
-                student_netid='',
+                student_netid=visit.get('student_netid') or '',
                 visit_type=visit.get('visit_type') or '',
                 course_code=visit.get('course_code') or '',
                 tutoring_option=visit.get('tutoring_option') or '',

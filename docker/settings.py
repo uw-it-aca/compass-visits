@@ -46,14 +46,6 @@ TEMPLATES = [
 SUPPORTTOOLS_PARENT_APP = "Compass Visits"
 SUPPORTTOOLS_PARENT_APP_URL = "/"
 
-# Compass Visits -> Compass restclient settings used by dao/compass.py.
-RESTCLIENTS_COMPASS_DAO_CLASS = os.getenv(
-    'RESTCLIENTS_COMPASS_DAO_CLASS', 'Live')
-RESTCLIENTS_COMPASS_HOST = os.getenv(
-    'RESTCLIENTS_COMPASS_HOST', 'http://compass_app:8000')
-RESTCLIENTS_COMPASS_AUTH_TOKEN = os.getenv(
-    'RESTCLIENTS_COMPASS_AUTH_TOKEN', os.getenv('COMPASS_AUTH_TOKEN', 'testtoken'))
-
 USERSERVICE_OVERRIDE_AUTH_MODULE = "compass_visits.dao.auth.is_admin_user"
 RESTCLIENTS_ADMIN_AUTH_MODULE = "compass_visits.dao.auth.can_proxy_restclients"
 PERSISTENT_MESSAGE_AUTH_MODULE = (
@@ -94,13 +86,11 @@ if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
     EXTERNAL_API_TOKEN = os.getenv('EXTERNAL_API_TOKEN')
     SUPPORT_GROUP = os.getenv('SUPPORT_GROUP')
     ADMIN_GROUP = os.getenv('ADMIN_GROUP')
+    RESTCLIENTS_COMPASS_DAO_CLASS = 'Live'
+    RESTCLIENTS_COMPASS_HOST = os.getenv(
+        'RESTCLIENTS_COMPASS_HOST', "")
     RESTCLIENTS_COMPASS_AUTH_TOKEN = os.getenv(
         'RESTCLIENTS_COMPASS_AUTH_TOKEN', "")
-    RESTCLIENTS_COMPASS_DAO_CLASS = "Live"
-    RESTCLIENTS_COMPASS_HOST = os.getenv(
-    'RESTCLIENTS_COMPASS_HOST', "")
-    RESTCLIENTS_COMPASS_AUTH_TOKEN = os.getenv(
-        'RESTCLIENTS_COMPASS_AUTH_TOKEN', )
 
 if os.getenv('ENV') == 'prod':
     ALLOW_USER_OVERRIDE_FOR_WRITE = False
