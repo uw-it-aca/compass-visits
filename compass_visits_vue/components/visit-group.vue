@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import visitRow from "./visit-row.vue";
+import visitRow from "@/components/visit-row.vue";
 // import pluralize
 import pluralize from "pluralize";
 

@@ -3,186 +3,188 @@
 <template>
   <DefaultLayout :page-title="pageTitle">
     <template #content>
-      <div class="d-flex flex-column" style="min-height: calc(100vh - 265px)">
+      <div class="d-flex flex-column">
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Program Area<span style="color: red">*</span>
         </h2>
         <div class="pb-4">
-          <select
+          <BFormSelect
             v-model="selectedProgramArea"
-            class="form-select"
+            :options="visitOptionsStore.visitOptions.program_areas"
+            text-field="name"
+            value-field="id"
             aria-label="Select Program Area"
           >
-            <option value="" disabled selected>Select a program area</option>
-            <option
-              v-for="programArea in visitOptionsStore.visitOptions.program_areas"
-              :key="programArea.id"
-              :value="programArea.id"
-            >
-              {{ programArea.name }}
-            </option>
-          </select>
+            <template #first>
+              <BFormSelectOption value="" disabled>
+                Select a program area
+              </BFormSelectOption>
+            </template>
+          </BFormSelect>
         </div>
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Tutoring Option<span style="color: red">*</span>
         </h2>
         <div class="pb-4">
-          <select
+          <BFormSelect
             v-model="selectedTutoringOption"
-            class="form-select"
+            :options="visitOptionsStore.visitOptions.tutoring_options"
+            text-field="name"
+            value-field="id"
             aria-label="Select Tutoring Option"
           >
-            <option value="" disabled selected>Select a tutoring option</option>
-            <option
-              v-for="tutoringOption in visitOptionsStore.visitOptions
-                .tutoring_options"
-              :key="tutoringOption.id"
-              :value="tutoringOption.id"
-            >
-              {{ tutoringOption.name }}
-            </option>
-          </select>
+            <template #first>
+              <BFormSelectOption value="" disabled>
+                Select a tutoring option
+              </BFormSelectOption>
+            </template>
+          </BFormSelect>
         </div>
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Course or Writing Service<span style="color: red">*</span>
         </h2>
         <div class="pb-4">
-          <select
+          <BFormSelect
             v-model="selectedCourseOrWriting"
-            class="form-select"
             aria-label="Select Course or Writing Service"
           >
-            <option value="" disabled selected>
-              Select a course or writing service
-            </option>
-            <optgroup label="Courses">
-              <option
-                v-for="course in visitOptionsStore.visitOptions.courses"
-                :key="course.id"
-                :value="course.id"
-              >
-                {{ course.name }}
-              </option>
-            </optgroup>
-
-            <optgroup v-if="selectedProgramArea === 7" label="Writing Services">
-              <option
-                v-for="writingService in visitOptionsStore.visitOptions
-                  .writing_services"
-                :key="writingService.id"
-                :value="writingService.id"
-              >
-                {{ writingService.name }}
-              </option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="row mt-auto mx-0 text-center">
-          <button
-            class="btn btn-primary btn-lg mb-3"
-            :disabled="!allAreSelected"
-            @click="createVisit"
-          >
-            Confirm
-          </button>
-          <button
-            class="btn btn-outline-danger btn-lg mb-2"
-            @click="cancelVisit"
-          >
-            Cancel
-          </button>
+            <template #first>
+              <BFormSelectOption value="" disabled>
+                Select a course or writing service
+              </BFormSelectOption>
+            </template>
+            <BFormSelectOptionGroup
+              :options="visitOptionsStore.visitOptions.courses"
+              label="Courses"
+              text-field="name"
+              value-field="id"
+            />
+            <BFormSelectOptionGroup
+              v-if="selectedProgramArea === 7"
+              :options="visitOptionsStore.visitOptions.writing_services"
+              label="Writing Services"
+              text-field="name"
+              value-field="id"
+            />
+          </BFormSelect>
         </div>
       </div>
+    </template>
+
+    <template #action>
+      <BButton
+        variant="primary"
+        size="lg"
+        :disabled="!allAreSelected"
+        @click="createVisit"
+      >
+        Confirm
+      </BButton>
+      <BButton variant="outline-danger" size="lg" @click="cancelVisit">
+        Cancel
+      </BButton>
     </template>
   </DefaultLayout>
 </template>
 
 <script>
-import DefaultLayout from "@/layouts/default.vue";
-import { useVisitOptionsStore } from "../stores/visit-options";
-import { useVisitStore } from "@/stores/visit";
+  import DefaultLayout from "@/layouts/default.vue";
+  import { useVisitOptionsStore } from "@/stores/visit-options";
+  import { useVisitStore } from "@/stores/visit";
+  import {
+    BButton,
+    BFormSelect,
+    BFormSelectOption,
+    BFormSelectOptionGroup,
+  } from "bootstrap-vue-next";
 
-export default {
-  name: "Create",
-  components: { DefaultLayout },
-  setup() {
-    const visitOptionsStore = useVisitOptionsStore();
-    const visitStore = useVisitStore();
-    visitOptionsStore.fetchVisitOptions();
-    return { visitOptionsStore, visitStore };
-  },
-  props: {
-    switch: {
-      type: Boolean,
-      default: false,
+  export default {
+    name: "Create",
+    components: {
+      DefaultLayout,
+      BButton,
+      BFormSelect,
+      BFormSelectOption,
+      BFormSelectOptionGroup,
     },
-  },
-  data() {
-    return {
-      selectedProgramArea: "",
-      selectedTutoringOption: "",
-      selectedCourseOrWriting: "",
-      createError: null,
-      isSubmitting: false,
-    };
-  },
-  computed: {
-    allAreSelected() {
-      return (
-        this.selectedProgramArea &&
-        this.selectedTutoringOption &&
-        this.selectedCourseOrWriting
-      );
+    setup() {
+      const visitOptionsStore = useVisitOptionsStore();
+      const visitStore = useVisitStore();
+      visitOptionsStore.fetchVisitOptions();
+      return { visitOptionsStore, visitStore };
     },
-    selectedCourse() {
-      return this.visitOptionsStore.visitOptions.courses.find(
-        (course) => course.id === this.selectedCourseOrWriting
-      );
+    props: {
+      switch: {
+        type: Boolean,
+        default: false,
+      },
     },
-    selectedWritingService() {
-      return this.visitOptionsStore.visitOptions.writing_services.find(
-        (service) => service.id === this.selectedCourseOrWriting
-      );
+    data() {
+      return {
+        selectedProgramArea: "",
+        selectedTutoringOption: "",
+        selectedCourseOrWriting: "",
+        createError: null,
+        isSubmitting: false,
+      };
     },
-    pageTitle() {
-      return this.switch ? "Switch Session" : "Create Visit";
+    computed: {
+      allAreSelected() {
+        return (
+          this.selectedProgramArea &&
+          this.selectedTutoringOption &&
+          this.selectedCourseOrWriting
+        );
+      },
+      selectedCourse() {
+        return this.visitOptionsStore.visitOptions.courses.find(
+          (course) => course.id === this.selectedCourseOrWriting,
+        );
+      },
+      selectedWritingService() {
+        return this.visitOptionsStore.visitOptions.writing_services.find(
+          (service) => service.id === this.selectedCourseOrWriting,
+        );
+      },
+      pageTitle() {
+        return this.switch ? "Switch Session" : "Create Visit";
+      },
     },
-  },
-  methods: {
-    async createVisit() {
-      if (this.allAreSelected) {
-        this.createError = null;
-        this.isSubmitting = true;
-        try {
-          await this.visitStore.handleCreateVisit({
-            program_area: this.selectedProgramArea,
-            tutoring_option: this.selectedTutoringOption,
-            course: this.selectedCourse ? this.selectedCourse.id : null,
-            writing_service: this.selectedWritingService
-              ? this.selectedWritingService.id
-              : null,
-          });
-          if (this.switch) {
-            this.$router.push({ name: "checkout" });
-          } else {
-            this.$router.push({ name: "verify" });
+    methods: {
+      async createVisit() {
+        if (this.allAreSelected) {
+          this.createError = null;
+          this.isSubmitting = true;
+          try {
+            await this.visitStore.handleCreateVisit({
+              program_area: this.selectedProgramArea,
+              tutoring_option: this.selectedTutoringOption,
+              course: this.selectedCourse ? this.selectedCourse.id : null,
+              writing_service: this.selectedWritingService
+                ? this.selectedWritingService.id
+                : null,
+            });
+            if (this.switch) {
+              this.$router.push({ name: "checkout" });
+            } else {
+              this.$router.push({ name: "verify" });
+            }
+          } catch (error) {
+            this.createError =
+              error?.data?.error ||
+              "Unable to create your visit. Please review your selections and try again.";
+          } finally {
+            this.isSubmitting = false;
           }
-        } catch (error) {
-          this.createError =
-            error?.data?.error ||
-            "Unable to create your visit. Please review your selections and try again.";
-        } finally {
-          this.isSubmitting = false;
         }
-      }
+      },
+      cancelVisit() {
+        this.visitStore.deleteVisit().then(() => {
+          this.profile = null;
+          this.$router.push("/");
+        });
+      },
     },
-    cancelVisit() {
-      this.visitStore.deleteVisit().then(() => {
-        this.profile = null;
-        this.$router.push("/");
-      });
-    },
-  },
-  watch: {},
-};
+    watch: {},
+  };
 </script>
