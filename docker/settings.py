@@ -1,4 +1,5 @@
 import os
+
 from .base_settings import *
 
 INSTALLED_APPS += [
@@ -85,7 +86,11 @@ if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
     EXTERNAL_API_TOKEN = os.getenv('EXTERNAL_API_TOKEN')
     SUPPORT_GROUP = os.getenv('SUPPORT_GROUP')
     ADMIN_GROUP = os.getenv('ADMIN_GROUP')
-    COMPASS_AUTH_TOKEN = os.getenv('COMPASS_AUTH_TOKEN')
+    RESTCLIENTS_COMPASS_DAO_CLASS = 'Live'
+    RESTCLIENTS_COMPASS_HOST = os.getenv(
+        'RESTCLIENTS_COMPASS_HOST', "")
+    RESTCLIENTS_COMPASS_AUTH_TOKEN = os.getenv(
+        'RESTCLIENTS_COMPASS_AUTH_TOKEN', "")
 
 if os.getenv('ENV') == 'prod':
     ALLOW_USER_OVERRIDE_FOR_WRITE = False

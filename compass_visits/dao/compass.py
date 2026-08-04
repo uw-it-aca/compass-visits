@@ -16,7 +16,7 @@ class COMPASS_DAO(DAO):
         return 'compass'
 
     def service_mock_paths(self):
-        path = [abspath(os.path.join(dirname(__file__), "resources"))]
+        path = [abspath(os.path.join(dirname(__file__), "..", "resources"))]
         return path
 
     def _custom_headers(self, method, url, headers, body):
@@ -41,7 +41,7 @@ class Compass:
         """
         Returns IC eligibility for the given syskey.
         """
-        url = f"{self.API}/visit/eligibility/{syskey}"
+        url = f"{self.API}/visit/eligibility/{syskey}/"
         response = self.dao.getURL(url)
         if response.status != 200:
             raise DataFailureException(url,
@@ -56,9 +56,9 @@ class Compass:
         Stores a visit in compass DB
         """
         url = f"{self.API}/visit/omad"
-        response = self.dao.postURL(url, visit.json_data())
+        response = self.dao.postURL(url, body=json.dumps(visit.json_data()))
 
-        if response.status != 200:
+        if response.status not in (200, 201):
             raise DataFailureException(url,
                                        response.status,
                                        "Error storing visit:"
@@ -79,10 +79,17 @@ class Compass:
         data = json.loads(response.data)
         visits = []
         for visit in data:
-            visit['checkin_date'] = parse_datetime(visit['checkin_date'])
-            if visit.get('checkout_date'):
-                visit['checkout_date'] = parse_datetime(visit['checkout_date'])
-            visits.append(CompassVisitModel(**visit))
+            checkout_raw = visit.get('checkout_date')
+            visits.append(CompassVisitModel(
+                student_netid=visit.get('student_netid') or '',
+                visit_type=visit.get('visit_type') or '',
+                course_code=visit.get('course_code') or '',
+                tutoring_option=visit.get('tutoring_option') or '',
+                checkin_date=parse_datetime(visit.get('checkin_date')),
+                checkout_date=(
+                    parse_datetime(checkout_raw) if checkout_raw else None
+                ),
+            ))
         return visits
 
 

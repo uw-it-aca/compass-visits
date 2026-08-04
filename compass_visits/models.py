@@ -95,6 +95,7 @@ class Visit(models.Model):
         json_data = {
             "id": self.id,
             "student_syskey": self.student_syskey,
+            "student_netid": self.student_netid,
             "program_area": self.program_area.name,
             "tutoring_option": self.tutoring_option.name,
             "writing_service": self.writing_service.name if
