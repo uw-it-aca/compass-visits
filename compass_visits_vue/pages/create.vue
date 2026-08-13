@@ -10,7 +10,7 @@
         <div class="pb-4">
           <BFormSelect
             v-model="selectedProgramArea"
-            :options="visitOptionsStore.visitOptions.program_areas"
+            :options="programAreaOptions"
             text-field="name"
             value-field="id"
             aria-label="Select Program Area"
@@ -50,23 +50,30 @@
           >
             <template #first>
               <BFormSelectOption value="" disabled>
-                Select a course or writing service
+                {{ courseOrWritingPlaceholder }}
               </BFormSelectOption>
             </template>
             <BFormSelectOptionGroup
+              v-if="!noCourseOptions"
               :options="visitOptionsStore.visitOptions.courses"
               label="Courses"
               text-field="name"
               value-field="id"
             />
             <BFormSelectOptionGroup
-              v-if="isWritingProgramArea"
+              v-if="isWritingProgramArea || noCourseOptions"
               :options="visitOptionsStore.visitOptions.writing_services"
               label="Writing Services"
               text-field="name"
               value-field="id"
             />
           </BFormSelect>
+          <p
+            v-if="noCourseOptions && noWritingServiceOptions"
+            class="text-danger mt-2 mb-0"
+          >
+            No writing services are available right now.
+          </p>
         </div>
       </div>
     </template>
@@ -131,20 +138,67 @@
     computed: {
       allAreSelected() {
         return (
+          !this.noWritingServiceOptions &&
           this.selectedProgramArea &&
           this.selectedTutoringOption &&
           this.selectedCourseOrWriting
         );
       },
+      noCourseOptions() {
+        return (this.visitOptionsStore.visitOptions.courses || []).length === 0;
+      },
+      noWritingServiceOptions() {
+        return (
+          this.noCourseOptions &&
+          (this.visitOptionsStore.visitOptions.writing_services || []).length === 0
+        );
+      },
+      writingProgramAreaOption() {
+        const programAreas = this.visitOptionsStore.visitOptions.program_areas || [];
+        const writingById = programAreas.find((area) => String(area.id) === "7");
+        if (writingById) {
+          return writingById;
+        }
+        return programAreas.find((area) =>
+          String(area.name || "").toLowerCase().includes("writing"),
+        );
+      },
+      programAreaOptions() {
+        if (this.noCourseOptions) {
+          return this.writingProgramAreaOption ? [this.writingProgramAreaOption] : [];
+        }
+        return this.visitOptionsStore.visitOptions.program_areas;
+      },
       isWritingProgramArea() {
-        return String(this.selectedProgramArea) === "7";
+        if (this.noCourseOptions) {
+          return true;
+        }
+        if (!this.writingProgramAreaOption) {
+          return false;
+        }
+        return (
+          String(this.selectedProgramArea) ===
+          String(this.writingProgramAreaOption.id)
+        );
+      },
+      courseOrWritingPlaceholder() {
+        if (this.noCourseOptions) {
+          return "Select a writing service";
+        }
+        return "Select a course or writing service";
       },
       selectedCourse() {
+        if (this.noCourseOptions || this.isWritingProgramArea) {
+          return undefined;
+        }
         return (this.visitOptionsStore.visitOptions.courses || []).find(
           (course) => String(course.id) === String(this.selectedCourseOrWriting),
         );
       },
       selectedWritingService() {
+        if (!this.noCourseOptions && !this.isWritingProgramArea) {
+          return undefined;
+        }
         return (this.visitOptionsStore.visitOptions.writing_services || []).find(
           (service) =>
             String(service.id) === String(this.selectedCourseOrWriting),
@@ -189,6 +243,31 @@
         });
       },
     },
-    watch: {},
+    watch: {
+      noCourseOptions: {
+        immediate: true,
+        handler(isNoCourseOptions) {
+          if (!isNoCourseOptions) {
+            return;
+          }
+
+          if (this.writingProgramAreaOption) {
+            this.selectedProgramArea = this.writingProgramAreaOption.id;
+          }
+
+          if (
+            this.selectedCourseOrWriting &&
+            !this.selectedWritingService
+          ) {
+            this.selectedCourseOrWriting = "";
+          }
+        },
+      },
+      selectedProgramArea() {
+        if (this.noCourseOptions && this.writingProgramAreaOption) {
+          this.selectedProgramArea = this.writingProgramAreaOption.id;
+        }
+      },
+    },
   };
 </script>
