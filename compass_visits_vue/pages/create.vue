@@ -60,7 +60,7 @@
               value-field="id"
             />
             <BFormSelectOptionGroup
-              v-if="selectedProgramArea === 7"
+              v-if="isWritingProgramArea"
               :options="visitOptionsStore.visitOptions.writing_services"
               label="Writing Services"
               text-field="name"
@@ -136,14 +136,18 @@
           this.selectedCourseOrWriting
         );
       },
+      isWritingProgramArea() {
+        return String(this.selectedProgramArea) === "7";
+      },
       selectedCourse() {
-        return this.visitOptionsStore.visitOptions.courses.find(
-          (course) => course.id === this.selectedCourseOrWriting,
+        return (this.visitOptionsStore.visitOptions.courses || []).find(
+          (course) => String(course.id) === String(this.selectedCourseOrWriting),
         );
       },
       selectedWritingService() {
-        return this.visitOptionsStore.visitOptions.writing_services.find(
-          (service) => service.id === this.selectedCourseOrWriting,
+        return (this.visitOptionsStore.visitOptions.writing_services || []).find(
+          (service) =>
+            String(service.id) === String(this.selectedCourseOrWriting),
         );
       },
       pageTitle() {
