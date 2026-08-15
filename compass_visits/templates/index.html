@@ -19,7 +19,7 @@
     </script>
   </head>
   <body {% if google_analytics %}data-google-analytics="{{ google_analytics }}"{% endif %}
-        {% if logout_url %}data-logout-url="{{ logout_url }}"{% endif %}
+        data-logout-url="{{ logout_url }}"
         data-django-debug="{{ django_debug|lower }}"
         class="bg-body">
     {% csrf_token %}
