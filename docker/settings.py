@@ -35,6 +35,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 "supporttools.context_processors.supportools_globals",
                 "supporttools.context_processors.has_less_compiled",
+                'compass_visits.context_processors.logout_url',
                 'compass_visits.context_processors.google_analytics',
                 'compass_visits.context_processors.django_debug',
             ],
