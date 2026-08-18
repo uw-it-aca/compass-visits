@@ -16,6 +16,8 @@ def get_student_profile(uwnetid):
         "netid": uwnetid,
         "uwregid": person.uwregid,
         "student_name": person.display_name,
+        "official_name": person.full_name,
+        "preferred_name": person.display_name,
         "student_number": person.student_number,
         "student_syskey": person.student_system_key
     }
