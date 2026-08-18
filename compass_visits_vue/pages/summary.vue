@@ -7,6 +7,11 @@
       <visit-group :visit-list="visitsLastWeek" group-title="Last Week" />
       <visit-group :visit-list="remainingVisits" group-title="This Quarter" />
     </template>
+    <template #action>
+      <BButton variant="primary" size="lg" @click="redirectToHome">
+        Home
+      </BButton>
+    </template>
   </DefaultLayout>
 </template>
 
@@ -14,10 +19,11 @@
   import DefaultLayout from "@/layouts/default.vue";
   import { useVisitStore } from "@/stores/visit";
   import VisitGroup from "@/components/visit-group.vue";
+  import { BButton } from "bootstrap-vue-next";
 
   export default {
     name: "Visit  Summary",
-    components: { DefaultLayout, VisitGroup },
+    components: { DefaultLayout, VisitGroup, BButton },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };
@@ -76,7 +82,11 @@
         });
       },
     },
-    methods: {},
+    methods: {
+      redirectToHome() {
+        this.$router.push({ name: "home" });
+      },
+    },
     watch: {},
   };
 </script>
