@@ -1,13 +1,12 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from restclients_core.exceptions import DataFailureException
 from django.core.cache import cache
+from restclients_core.exceptions import DataFailureException
 
 from compass_visits.dao.compass import Compass
 from compass_visits.dao.sws import get_class_list_from_registrations
 from compass_visits.models import WritingService
-
 
 COMPASS_VISIT_CATALOG_CACHE_KEY = 'compass_visit_catalog'
 COMPASS_VISIT_CATALOG_CACHE_SECONDS = 60 * 60
