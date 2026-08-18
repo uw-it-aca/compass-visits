@@ -114,7 +114,7 @@ class VisitDetailView(RESTDispatchLogin):
 
         Args:
             request: The HTTP request object containing the PATCH data in
-                     JSON format.
+                JSON format.
             visit_id (int): The ID of the Visit to update.
 
         Returns:
@@ -133,8 +133,7 @@ class VisitDetailView(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Invalid JSON format")
         try:
-            visit = Visit.objects.select_related(
-                'program_area', 'tutoring_option', 'writing_service').get(
+            visit = Visit.objects.select_related('writing_service').get(
                     id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_syskey)

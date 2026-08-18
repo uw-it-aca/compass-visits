@@ -18,8 +18,8 @@ describe("Create page option handling", () => {
   beforeEach(() => {
     visitOptionsStoreMock = {
       visitOptions: {
-        program_areas: [{ id: 7, name: "Writing Assistance" }],
-        tutoring_options: [{ id: 1, name: "Drop In" }],
+        program_areas: [{ slug: "ic-writing-assistance", name: "Writing Assistance" }],
+        tutoring_options: [{ slug: "drop-in", name: "Drop In" }],
         courses: [],
         writing_services: [{ id: 1, name: "Application" }],
       },
@@ -38,9 +38,9 @@ describe("Create page option handling", () => {
 
     expect(visitOptionsStoreMock.fetchVisitOptions).toHaveBeenCalledTimes(1);
     expect(wrapper.vm.noCourseOptions).toBe(true);
-    expect(wrapper.vm.selectedProgramArea).toBe(7);
+    expect(wrapper.vm.selectedProgramArea).toBe("ic-writing-assistance");
     expect(wrapper.vm.programAreaOptions).toEqual([
-      { id: 7, name: "Writing Assistance" },
+      { slug: "ic-writing-assistance", name: "Writing Assistance" },
     ]);
     expect(wrapper.vm.courseOrWritingPlaceholder).toBe("Select a writing service");
   });
@@ -73,8 +73,8 @@ describe("Create page option handling", () => {
       },
     });
 
-    wrapper.vm.selectedProgramArea = "7";
-    wrapper.vm.selectedTutoringOption = 1;
+    wrapper.vm.selectedProgramArea = "ic-writing-assistance";
+    wrapper.vm.selectedTutoringOption = "drop-in";
     wrapper.vm.selectedCourseOrWriting = "1";
 
     expect(wrapper.vm.isWritingProgramArea).toBe(true);
@@ -87,8 +87,8 @@ describe("Create page option handling", () => {
     await wrapper.vm.createVisit();
 
     expect(visitStoreMock.handleCreateVisit).toHaveBeenCalledWith({
-      program_area: "7",
-      tutoring_option: 1,
+      program_area: "ic-writing-assistance",
+      tutoring_option: "drop-in",
       course: null,
       writing_service: 1,
     });
@@ -121,8 +121,8 @@ describe("Create page option handling", () => {
     visitOptionsStoreMock.visitOptions = {
       ...visitOptionsStoreMock.visitOptions,
       program_areas: [
-        { id: 2, name: "General Tutoring" },
-        { id: 7, name: "Writing Assistance" },
+        { slug: "ic-drop-in-tutoring", name: "General Tutoring" },
+        { slug: "ic-writing-assistance", name: "Writing Assistance" },
       ],
       courses: [{ id: 22, name: "MATH 101" }],
       writing_services: [{ id: 1, name: "Application" }],
@@ -137,8 +137,8 @@ describe("Create page option handling", () => {
       },
     });
 
-    wrapper.vm.selectedProgramArea = 2;
-    wrapper.vm.selectedTutoringOption = 1;
+    wrapper.vm.selectedProgramArea = "ic-drop-in-tutoring";
+    wrapper.vm.selectedTutoringOption = "drop-in";
     wrapper.vm.selectedCourseOrWriting = 22;
 
     expect(wrapper.vm.noCourseOptions).toBe(false);
@@ -149,8 +149,8 @@ describe("Create page option handling", () => {
     await wrapper.vm.createVisit();
 
     expect(visitStoreMock.handleCreateVisit).toHaveBeenCalledWith({
-      program_area: 2,
-      tutoring_option: 1,
+      program_area: "ic-drop-in-tutoring",
+      tutoring_option: "drop-in",
       course: 22,
       writing_service: null,
     });

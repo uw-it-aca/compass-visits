@@ -101,8 +101,8 @@ class VisitAPITestCase(APILoginTestCase):
     def test_post_visit(self, mock_get_override_user):
         mock_get_override_user.return_value = None
         new_visit_data = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         response = self.post_response('visit',
@@ -111,8 +111,8 @@ class VisitAPITestCase(APILoginTestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
 
-        self.assertEqual(data['program_area'], 'Biology/Natural Sci')
-        self.assertEqual(data['tutoring_option'], 'Drop In')
+        self.assertEqual(data['program_area'], 'ic-drop-in-tutoring')
+        self.assertEqual(data['tutoring_option'], 'drop-in')
         self.assertEqual(data['writing_service'], 'Application')
 
         with self.settings(ALLOW_USER_OVERRIDE_FOR_WRITE=False):
@@ -124,8 +124,8 @@ class VisitAPITestCase(APILoginTestCase):
 
     def test_already_active_visit(self):
         new_visit_data = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         old_visit = Visit.objects.get(id=12)
@@ -137,8 +137,8 @@ class VisitAPITestCase(APILoginTestCase):
         data = response.json()
         old_visit.refresh_from_db()
         self.assertIsNotNone(old_visit.check_out_date)
-        self.assertEqual(data['program_area'], 'Biology/Natural Sci')
-        self.assertEqual(data['tutoring_option'], 'Drop In')
+        self.assertEqual(data['program_area'], 'ic-drop-in-tutoring')
+        self.assertEqual(data['tutoring_option'], 'drop-in')
         self.assertEqual(data['writing_service'], 'Application')
         new_visit = Visit.objects.get(id=data['id'])
         self.assertEqual(new_visit.is_verified, True)
@@ -148,8 +148,8 @@ class VisitAPITestCase(APILoginTestCase):
         response = self.post_response('visit',
                                       netid='newuser',
                                       data={
-                                          "program_area": 1,
-                                          "tutoring_option": 1,
+                                          "program_area": "ic-drop-in-tutoring",
+                                          "tutoring_option": "drop-in",
                                           "course": "A" * 256,
                                       })
         self.assertEqual(response.status_code, 400)

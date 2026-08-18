@@ -173,13 +173,13 @@ environmentVariablesSecrets:
 
 
 daemon:
-  # Disable until we deploy the visits branch to compass
-  enabled: false
+  # Poll frequently while keeping idle API and CPU usage low.
+  enabled: true
   daemons:
     - name: sync-completed-visits
       replicaCount: 1
       command: ["/scripts/management_daemon.sh"]
-      args: ["--delay", "5", "sync_completed_visits"]
+      args: ["--delay", "15", "sync_completed_visits"]
       resources:
         limits:
           cpu: 500m

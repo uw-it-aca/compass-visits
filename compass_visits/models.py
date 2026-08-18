@@ -5,38 +5,6 @@ from django.db import models
 from django.utils import timezone
 
 
-class ProgramArea(models.Model):
-    """
-    Represents a program area within the system.
-
-    Attributes:
-        name (CharField): The name of the program area.
-        allow_usage (BooleanField): Indicates whether the program area is
-        allowed for usage. Defaults to True.
-    """
-    name = models.CharField(max_length=255)
-    allow_usage = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
-
-
-class TutoringOption(models.Model):
-    """
-    Represents an option for tutoring services.
-
-    Attributes:
-        name (CharField): The name of the tutoring option.
-        allow_usage (BooleanField): Indicates whether the tutoring option is
-        allowed for usage. Defaults to True.
-    """
-    name = models.CharField(max_length=255)
-    allow_usage = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.name
-
-
 class WritingService(models.Model):
     """
     Represents a writing service that can be used within the application.
@@ -59,8 +27,8 @@ class Visit(models.Model):
 
     Fields:
         student_syskey (CharField): The SysKey of the student.
-        program_area (ForeignKey): Reference to the ProgramArea.
-        tutoring_option (ForeignKey): Reference to the TutoringOption.
+        program_area (str): Compass VisitType slug.
+        tutoring_option (str): Compass VisitTutoringOption slug.
         writing_service (ForeignKey, optional): Reference to the
                                                 WritingService used, if any.
         course (CharField, optional): The course associated with the visit,
@@ -77,9 +45,8 @@ class Visit(models.Model):
     """
     student_syskey = models.CharField(max_length=10, db_index=True)
     student_netid = models.CharField(max_length=64)
-    program_area = models.ForeignKey(ProgramArea, on_delete=models.PROTECT)
-    tutoring_option = models.ForeignKey(TutoringOption,
-                                        on_delete=models.PROTECT)
+    program_area = models.CharField(max_length=50)
+    tutoring_option = models.CharField(max_length=50)
     writing_service = models.ForeignKey(WritingService,
                                         on_delete=models.PROTECT,
                                         null=True, blank=True)
@@ -96,8 +63,8 @@ class Visit(models.Model):
             "id": self.id,
             "student_syskey": self.student_syskey,
             "student_netid": self.student_netid,
-            "program_area": self.program_area.name,
-            "tutoring_option": self.tutoring_option.name,
+            "program_area": self.program_area,
+            "tutoring_option": self.tutoring_option,
             "writing_service": self.writing_service.name if
             self.writing_service else None,
             "course": self.course,

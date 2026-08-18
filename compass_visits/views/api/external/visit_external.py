@@ -70,7 +70,6 @@ class ManageVisitsView(RESTDispatchToken):
             visit_id (int): The ID of the Visit to update.
 
         Returns:
-            JsonResponse: A JSON response with the updated Visit data and a
                 200 status code if successful.
             JsonResponse: A JSON response with a 404 status code if the Visit
                 does not exist.
@@ -83,8 +82,7 @@ class ManageVisitsView(RESTDispatchToken):
             return self.error_response(status=400,
                                        message="Invalid JSON format")
         try:
-            visit = Visit.objects.select_related(
-                'program_area', 'tutoring_option', 'writing_service').get(
+            visit = Visit.objects.select_related('writing_service').get(
                     id=visit_id)
             manager_update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())

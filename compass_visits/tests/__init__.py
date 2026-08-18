@@ -9,9 +9,7 @@ from django.urls import reverse
 
 
 class CompassVisitsTestCase(TestCase):
-    fixtures: ClassVar = ['initial_data/program-area.json',
-                'initial_data/tutoring-option.json',
-                'initial_data/writing-service.json',
+    fixtures: ClassVar = ['initial_data/writing-service.json',
                 'initial_data/visit.json']
 
 

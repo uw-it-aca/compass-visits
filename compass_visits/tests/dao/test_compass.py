@@ -2,20 +2,43 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import datetime
+from unittest.mock import patch
 
 from restclients_core.exceptions import DataFailureException
 
-from compass_visits.dao.compass import Compass, CompassVisitModel
+from compass_visits.dao.compass import COMPASS_DAO, Compass, CompassVisitModel
 from compass_visits.tests import CompassVisitsTestCase
 
 
 class CompassTestCase(CompassVisitsTestCase):
+    def test_custom_headers_include_json_content_type(self):
+        headers = COMPASS_DAO()._custom_headers(
+            "POST", "/api/v1/visit/omad", {}, "{}"
+        )
+
+        self.assertEqual(headers["Content-Type"], "application/json")
+
     def test_get_ic_eligibility(self):
         compass = Compass()
         eligible = compass.get_ic_eligibility("532353230")
         self.assertTrue(eligible)
         not_eligible = compass.get_ic_eligibility("000000000")
         self.assertFalse(not_eligible)
+
+    @patch("compass_visits.dao.compass.COMPASS_DAO.getURL")
+    def test_get_visit_catalog(self, mock_get_url):
+        mock_get_url.return_value.status = 200
+        mock_get_url.return_value.data = (
+            '{"visit_types": [], "tutoring_options": []}'
+        )
+
+        catalog = Compass().get_visit_catalog()
+
+        self.assertEqual(catalog, {
+            "visit_types": [],
+            "tutoring_options": [],
+        })
+        mock_get_url.assert_called_once_with("/api/v1/visit/catalog")
 
     def test_store_visit(self):
         compass = Compass()
