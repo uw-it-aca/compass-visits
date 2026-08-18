@@ -48,7 +48,7 @@ class SAMLAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
 class VisitAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
     list_display = ('id', 'student_syskey', 'program_area',
                     'tutoring_option',
-                    'writing_service__name', 'course', 'check_in_date',
+                    'writing_service', 'course', 'check_in_date',
                     'check_out_date', 'is_verified')
 
 

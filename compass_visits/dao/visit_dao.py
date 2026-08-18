@@ -92,6 +92,10 @@ def validate_visit_data(request):
         raise ValidationError("program_area is required")
     if not tutoring_option:
         raise ValidationError("tutoring_option is required")
+    if (not isinstance(program_area, str) or len(program_area) > 50):
+        raise ValidationError("Invalid program_area")
+    if (not isinstance(tutoring_option, str) or len(tutoring_option) > 50):
+        raise ValidationError("Invalid tutoring_option")
     if not (writing_service or course):
         raise ValidationError("Either writing_service or course is required")
     if writing_service and course:

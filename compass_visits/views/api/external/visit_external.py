@@ -69,7 +69,7 @@ class ManageVisitsView(RESTDispatchToken):
                 PATCH data in JSON format.
             visit_id (int): The ID of the Visit to update.
 
-                visit = Visit.objects.select_related('writing_service').get(
+        Returns:
                 200 status code if successful.
             JsonResponse: A JSON response with a 404 status code if the Visit
                 does not exist.

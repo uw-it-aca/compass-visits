@@ -114,7 +114,8 @@ class VisitDetailView(RESTDispatchLogin):
 
         Args:
             request: The HTTP request object containing the PATCH data in
-                visit = Visit.objects.select_related('writing_service').get(
+                JSON format.
+            visit_id (int): The ID of the Visit to update.
 
         Returns:
             JsonResponse: A JSON response with the updated Visit data and HTTP

@@ -69,7 +69,7 @@
               :options="visitOptionsStore.visitOptions.courses"
               label="Courses"
               text-field="name"
-              value-field="slug"
+              value-field="id"
             />
             <BFormSelectOptionGroup
               v-if="isWritingProgramArea || noCourseOptions"

@@ -24,20 +24,20 @@ def get_compass_visit_catalog():
 
 def get_visit_options(student_regid):
     """
-    Retrieves available visit options for program areas, tutoring, and
-    writing services.
+    Retrieves Compass visit types and tutoring options, available writing
+    services, and the student's registered courses.
 
     Returns:
-        dict: A dictionary containing three keys:
-            - 'program_areas': List of dictionaries with 'id' and 'name' of
-                               program areas where allow_usage is True.
-            - 'tutoring_options': List of dictionaries with 'id' and 'name' of
-                                  tutoring options where allow_usage is True.
+        dict: A dictionary containing:
+            - 'program_areas': Compass visit types with 'id', 'name', and
+                               'slug' fields.
+            - 'tutoring_options': Compass tutoring options with 'id', 'name',
+                                  and 'slug' fields.
             - 'writing_services': List of dictionaries with 'id' and 'name' of
                                   writing services where allow_usage is True.
+            - 'courses': Courses returned by SWS for the student.
 
-    Note:
-        Only options with allow_usage set to True are included in the lists.
+    Writing services are limited to those with allow_usage set to True.
     """
     writing_services = list(WritingService.objects.filter(allow_usage=True)
                             .values('id', 'name'))
