@@ -23,6 +23,8 @@ class PWSDAOTest(CompassVisitsTestCase):
         self.assertEqual(
             profile["uwregid"], "9136CCB8F66711D5BE060004AC494FFE")
         self.assertEqual(profile["student_name"], "Jamesy McJamesy")
+        self.assertEqual(profile["official_name"], "JAMES AVERAGE STUDENT")
+        self.assertEqual(profile["preferred_name"], "Jamesy McJamesy")
         self.assertEqual(profile["student_number"], "1033334")
 
     def test_get_student_photo(self):

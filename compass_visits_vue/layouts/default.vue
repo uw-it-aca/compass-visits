@@ -98,7 +98,7 @@
         return this.visitStore.studentProfile?.data?.netid || "";
       },
       userOfficial() {
-        return this.visitStore.studentProfile?.data?.student_name || "";
+        return this.visitStore.studentProfile?.data?.official_name || "";
       },
       userPreferred() {
         return this.visitStore.studentProfile?.data?.preferred_name || "";
