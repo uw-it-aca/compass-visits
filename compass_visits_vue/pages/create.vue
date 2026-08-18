@@ -7,10 +7,19 @@
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Program Area<span style="color: red">*</span>
         </h2>
+        <div
+          v-if="visitOptionsStore.isLoading"
+          class="d-flex align-items-center mb-3"
+          role="status"
+        >
+          <BSpinner small class="me-2" />
+          Loading visit options...
+        </div>
         <div class="pb-4">
           <BFormSelect
             v-model="selectedProgramArea"
             :options="programAreaOptions"
+            :disabled="visitOptionsStore.isLoading"
             text-field="name"
             value-field="id"
             aria-label="Select Program Area"
@@ -29,6 +38,7 @@
           <BFormSelect
             v-model="selectedTutoringOption"
             :options="visitOptionsStore.visitOptions.tutoring_options"
+            :disabled="visitOptionsStore.isLoading"
             text-field="name"
             value-field="id"
             aria-label="Select Tutoring Option"
@@ -46,6 +56,7 @@
         <div class="pb-4">
           <BFormSelect
             v-model="selectedCourseOrWriting"
+            :disabled="visitOptionsStore.isLoading"
             aria-label="Select Course or Writing Service"
           >
             <template #first>
@@ -103,6 +114,7 @@
     BFormSelect,
     BFormSelectOption,
     BFormSelectOptionGroup,
+    BSpinner,
   } from "bootstrap-vue-next";
 
   export default {
@@ -113,6 +125,7 @@
       BFormSelect,
       BFormSelectOption,
       BFormSelectOptionGroup,
+      BSpinner,
     },
     setup() {
       const visitOptionsStore = useVisitOptionsStore();
