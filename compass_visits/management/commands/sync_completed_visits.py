@@ -29,9 +29,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         limit = options.get("limit")
 
-        visits_qs = (Visit.objects.select_related(
-            "program_area", "tutoring_option", "writing_service"
-        )
+        visits_qs = (Visit.objects.select_related("writing_service")
             .filter(is_verified=True, check_out_date__isnull=False)
             .order_by("id"))
 

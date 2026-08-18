@@ -7,8 +7,9 @@ from restclients_core.exceptions import DataFailureException
 
 from compass_visits.dao.compass import Compass, CompassVisitModel
 from compass_visits.dao.pws import get_netid_by_syskey
+from compass_visits.dao.visit_options import get_compass_visit_catalog
 from compass_visits.exceptions import ValidationError
-from compass_visits.models import ProgramArea, TutoringOption, Visit, WritingService
+from compass_visits.models import Visit, WritingService
 
 
 def get_active_visit_for_student(student_syskey):
@@ -71,8 +72,8 @@ def validate_visit_data(request):
     Validates the visit data provided in the request dictionary.
 
     This function checks for the presence and validity of required fields:
-    - 'program_area' must be provided and correspond to a ProgramArea
-    - 'tutoring_option' must be provided and correspond to a TutoringOption.
+    - 'program_area' must be a Compass VisitType slug
+    - 'tutoring_option' must be a Compass tutoring-option slug.
     - Either 'writing_service' or 'course' must be provided, but not both.
     - If 'writing_service' is provided it must correspond to a WritingService.
 
@@ -99,11 +100,18 @@ def validate_visit_data(request):
     if course and len(course) > 255:
         raise ValidationError("course exceeds max length of 255")
 
-    if not ProgramArea.objects.filter(id=program_area,
-                                      allow_usage=True).exists():
+    try:
+        catalog = get_compass_visit_catalog()
+    except DataFailureException as ex:
+        raise ValidationError("Unable to load Compass visit catalog") from ex
+
+    visit_types = catalog.get('visit_types', [])
+    tutoring_options = catalog.get('tutoring_options', [])
+    visit_type_slugs = {item['slug'] for item in visit_types}
+    tutoring_option_slugs = {item['slug'] for item in tutoring_options}
+    if program_area not in visit_type_slugs:
         raise ValidationError("Invalid program_area")
-    if not TutoringOption.objects.filter(id=tutoring_option,
-                                         allow_usage=True).exists():
+    if tutoring_option not in tutoring_option_slugs:
         raise ValidationError("Invalid tutoring_option")
     ws_exists = WritingService.objects.filter(id=writing_service,
                                               allow_usage=True).exists()
@@ -138,9 +146,6 @@ def create_visit_from_request(request_data, student_syskey, student_netid,
     Raises:
         ValidationError: If the student already has an active visit or if
             the request data is invalid.
-        ProgramArea.DoesNotExist: If the specified ProgramArea does not exist.
-        TutoringOption.DoesNotExist: If the specified TutoringOption does
-            not exist.
         WritingService.DoesNotExist: If the specified WritingService does
             not exist (when provided).
     """
@@ -151,10 +156,8 @@ def create_visit_from_request(request_data, student_syskey, student_netid,
     visit = Visit()
     visit.student_syskey = student_syskey
     visit.student_netid = student_netid
-    visit.program_area = ProgramArea.objects.get(
-        id=request_data['program_area'])
-    visit.tutoring_option = TutoringOption.objects.get(
-        id=request_data['tutoring_option'])
+    visit.program_area = request_data['program_area']
+    visit.tutoring_option = request_data['tutoring_option']
     if request_data.get('writing_service'):
         visit.writing_service = WritingService.objects.get(
             id=request_data['writing_service'])
@@ -247,8 +250,8 @@ def manager_create_visit_from_request(request_data):
     Args:
         request_data (dict): Dictionary containing visit data. Expected keys:
             - 'student_syskey' (str): SysKey of the student (required).
-            - 'program_area' (int): ID of the ProgramArea (required).
-            - 'tutoring_option' (int): ID of the TutoringOption (required).
+            - 'program_area' (str): Compass VisitType slug (required).
+            - 'tutoring_option' (str): Compass tutoring-option slug (required).
             - 'writing_service' (int, optional): ID of the WritingService.
             - 'verify' (bool, optional): If True, marks the visit as verified.
             - 'check_in_date' (datetime, optional): Check-in date for the
@@ -262,9 +265,6 @@ def manager_create_visit_from_request(request_data):
 
     Raises:
         ValidationError: If required fields are missing or invalid.
-        ProgramArea.DoesNotExist: If the specified ProgramArea does not exist.
-        TutoringOption.DoesNotExist: If the specified TutoringOption does not
-                                     exist.
         WritingService.DoesNotExist: If the specified WritingService does not
                                      exist.
     """
@@ -285,18 +285,12 @@ def manager_create_visit_from_request(request_data):
                 request_data['check_in_date'])
         except (ValueError, TypeError):
             raise ValidationError("Invalid check_in_date format")
+    visit.program_area = request_data['program_area']
+    visit.tutoring_option = request_data['tutoring_option']
     try:
-        visit.program_area = ProgramArea.objects.get(
-            id=request_data['program_area'])
-        visit.tutoring_option = TutoringOption.objects.get(
-            id=request_data['tutoring_option'])
         if request_data.get('writing_service'):
             visit.writing_service = WritingService.objects.get(
                 id=request_data['writing_service'])
-    except ProgramArea.DoesNotExist:
-        raise ValidationError("Invalid program_area")
-    except TutoringOption.DoesNotExist:
-        raise ValidationError("Invalid tutoring_option")
     except WritingService.DoesNotExist:
         raise ValidationError("Invalid writing_service")
     if request_data.get('verify', False):
@@ -348,9 +342,8 @@ def get_visits_pending_verification():
         QuerySet: A Django QuerySet containing Visit instances where
                   'is_verified' is False.
     """
-    return Visit.objects.select_related(
-        'program_area', 'tutoring_option', 'writing_service'
-    ).filter(is_verified=False)
+    return Visit.objects.select_related('writing_service').filter(
+        is_verified=False)
 
 
 def get_visits_pending_checkout():
@@ -361,9 +354,8 @@ def get_visits_pending_checkout():
         QuerySet: A Django QuerySet containing Visit instances where
                   'is_verified' is True and 'check_out_date' is null.
     """
-    return Visit.objects.select_related(
-        'program_area', 'tutoring_option', 'writing_service'
-    ).filter(is_verified=True, check_out_date__isnull=True)
+    return Visit.objects.select_related('writing_service').filter(
+        is_verified=True, check_out_date__isnull=True)
 
 
 def get_completed_visits_by_syskey(student_syskey):
@@ -379,9 +371,8 @@ def get_completed_visits_by_syskey(student_syskey):
                   'is_verified' is True and 'check_out_date' is not null,
                   ordered by 'check_in_date' in descending order.
     """
-    return (Visit.objects.select_related(
-        'program_area', 'tutoring_option', 'writing_service'
-    ).filter(student_syskey=student_syskey, is_verified=True,
+    return (Visit.objects.select_related('writing_service').filter(
+        student_syskey=student_syskey, is_verified=True,
              check_out_date__isnull=False)
         .order_by('-check_in_date'))
 
@@ -443,9 +434,9 @@ def map_visit_to_compass_model(visit, student_netid):
 
     return CompassVisitModel(
         student_netid=student_netid,
-        visit_type=visit.program_area.name,
+        visit_type=visit.program_area,
         course_code=course_code,
-        tutoring_option=visit.tutoring_option.name,
+        tutoring_option=visit.tutoring_option,
         checkin_date=visit.check_in_date,
         checkout_date=visit.check_out_date,
     )

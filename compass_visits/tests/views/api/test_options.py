@@ -17,11 +17,11 @@ class VisitOptionsAPITestCase(APILoginTestCase):
         self.assertIsInstance(data['tutoring_options'], list)
         self.assertIsInstance(data['writing_services'], list)
 
-        self.assertEqual(len(data['program_areas']), 8)
+        self.assertEqual(len(data['program_areas']), 3)
         self.assertEqual(data['program_areas'][0]['name'],
-                         'Biology/Natural Sci')
+                 'IC Drop-In Tutoring')
         self.assertEqual(data['program_areas'][0]['id'], 1)
-        self.assertEqual(len(data['tutoring_options']), 2)
+        self.assertEqual(len(data['tutoring_options']), 3)
         self.assertEqual(data['tutoring_options'][0]['name'], 'Drop In')
         self.assertEqual(data['tutoring_options'][0]['id'], 1)
         self.assertEqual(len(data['writing_services']), 6)

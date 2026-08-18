@@ -4,18 +4,14 @@
 from django.core.management import call_command
 from django.test import TestCase
 
-from compass_visits.models import ProgramArea, TutoringOption, Visit, WritingService
+from compass_visits.models import Visit, WritingService
 
 
 class TestInitDb(TestCase):
 
     def test_init_db(self):
-        self.assertEqual(ProgramArea.objects.count(), 0)
-        self.assertEqual(TutoringOption.objects.count(), 0)
         self.assertEqual(WritingService.objects.count(), 0)
         self.assertEqual(Visit.objects.count(), 0)
         call_command('initialize_db')
-        self.assertEqual(ProgramArea.objects.count(), 9)
-        self.assertEqual(TutoringOption.objects.count(), 3)
         self.assertEqual(WritingService.objects.count(), 7)
         self.assertEqual(Visit.objects.count(), 12)

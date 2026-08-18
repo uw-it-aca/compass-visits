@@ -19,12 +19,12 @@ class VisitOptionsTestCase(CompassVisitsTestCase):
         self.assertIsInstance(options['writing_services'], list)
         self.assertIsInstance(options['courses'], list)
 
-        self.assertEqual(len(options['program_areas']), 8)
+        self.assertEqual(len(options['program_areas']), 3)
         self.assertEqual(options['program_areas'][0]['name'],
-                         'Biology/Natural Sci')
+                 'IC Drop-In Tutoring')
         self.assertEqual(options['program_areas'][0]['id'], 1)
 
-        self.assertEqual(len(options['tutoring_options']), 2)
+        self.assertEqual(len(options['tutoring_options']), 3)
         self.assertEqual(options['tutoring_options'][0]['name'], 'Drop In')
         self.assertEqual(options['tutoring_options'][0]['id'], 1)
 

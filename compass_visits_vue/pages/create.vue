@@ -21,7 +21,7 @@
             :options="programAreaOptions"
             :disabled="visitOptionsStore.isLoading"
             text-field="name"
-            value-field="id"
+            value-field="slug"
             aria-label="Select Program Area"
           >
             <template #first>
@@ -40,7 +40,7 @@
             :options="visitOptionsStore.visitOptions.tutoring_options"
             :disabled="visitOptionsStore.isLoading"
             text-field="name"
-            value-field="id"
+            value-field="slug"
             aria-label="Select Tutoring Option"
           >
             <template #first>
@@ -69,7 +69,7 @@
               :options="visitOptionsStore.visitOptions.courses"
               label="Courses"
               text-field="name"
-              value-field="id"
+              value-field="slug"
             />
             <BFormSelectOptionGroup
               v-if="isWritingProgramArea || noCourseOptions"
@@ -168,12 +168,8 @@
       },
       writingProgramAreaOption() {
         const programAreas = this.visitOptionsStore.visitOptions.program_areas || [];
-        const writingById = programAreas.find((area) => String(area.id) === "7");
-        if (writingById) {
-          return writingById;
-        }
         return programAreas.find((area) =>
-          String(area.name || "").toLowerCase().includes("writing"),
+          String(area.slug || "").includes("writing"),
         );
       },
       programAreaOptions() {
@@ -190,8 +186,7 @@
           return false;
         }
         return (
-          String(this.selectedProgramArea) ===
-          String(this.writingProgramAreaOption.id)
+          this.selectedProgramArea === this.writingProgramAreaOption.slug
         );
       },
       courseOrWritingPlaceholder() {
@@ -265,7 +260,7 @@
           }
 
           if (this.writingProgramAreaOption) {
-            this.selectedProgramArea = this.writingProgramAreaOption.id;
+            this.selectedProgramArea = this.writingProgramAreaOption.slug;
           }
 
           if (
@@ -278,7 +273,7 @@
       },
       selectedProgramArea() {
         if (this.noCourseOptions && this.writingProgramAreaOption) {
-          this.selectedProgramArea = this.writingProgramAreaOption.id;
+            this.selectedProgramArea = this.writingProgramAreaOption.slug;
         }
       },
     },

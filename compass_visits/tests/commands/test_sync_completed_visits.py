@@ -26,8 +26,8 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043900",
             student_netid="j043900",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             course="CHEM 101",
             is_verified=True,
             check_out_date=timezone.now(),
@@ -54,8 +54,8 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043901",
             student_netid="j043901",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=timezone.now(),
@@ -80,8 +80,8 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey="000043902",
             student_netid="j043902",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             course="BIO 101",
             is_verified=True,
             check_out_date=timezone.now(),
@@ -89,8 +89,8 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey="000043903",
             student_netid="j043903",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             course="BIO 102",
             is_verified=True,
             check_out_date=timezone.now(),

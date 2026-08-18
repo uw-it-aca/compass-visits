@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from compass_visits.dao.auth import is_admin_user
-from compass_visits.models import ProgramArea, TutoringOption, Visit, WritingService
+from compass_visits.models import Visit, WritingService
 
 
 class SAMLAdminSite(admin.AdminSite):
@@ -46,14 +46,12 @@ class SAMLAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
 
 
 class VisitAdminModel(AbstractSAMLAdminModel, admin.ModelAdmin):
-    list_display = ('id', 'student_syskey', 'program_area__name',
-                    'tutoring_option__name',
+    list_display = ('id', 'student_syskey', 'program_area',
+                    'tutoring_option',
                     'writing_service__name', 'course', 'check_in_date',
                     'check_out_date', 'is_verified')
 
 
 admin_site = SAMLAdminSite(name='SAMLAdmin')
-admin_site.register(ProgramArea, SAMLAdminModel)
-admin_site.register(TutoringOption, SAMLAdminModel)
 admin_site.register(WritingService, SAMLAdminModel)
 admin_site.register(Visit, VisitAdminModel)

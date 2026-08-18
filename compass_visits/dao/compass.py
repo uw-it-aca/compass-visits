@@ -21,6 +21,7 @@ class COMPASS_DAO(DAO):
 
     def _custom_headers(self, method, url, headers, body):
         custom_headers = {}
+        custom_headers['Content-Type'] = 'application/json'
         token = self.get_service_setting('AUTH_TOKEN')
         if token:
             custom_headers['Authorization'] = f"Token {token}"
@@ -50,6 +51,17 @@ class Compass:
                                        f"{syskey}: {response.status}")
         data = json.loads(response.data)
         return data.get('eligible', False)
+
+    def get_visit_catalog(self):
+        """Return the Compass-owned OMAD visit catalog."""
+        url = f"{self.API}/visit/catalog"
+        response = self.dao.getURL(url)
+        if response.status != 200:
+            raise DataFailureException(url,
+                                       response.status,
+                                       "Error getting visit catalog: "
+                                       f"{response.status}")
+        return json.loads(response.data)
 
     def store_visit(self, visit):
         """

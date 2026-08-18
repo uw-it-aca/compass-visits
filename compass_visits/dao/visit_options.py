@@ -2,9 +2,25 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from restclients_core.exceptions import DataFailureException
+from django.core.cache import cache
 
+from compass_visits.dao.compass import Compass
 from compass_visits.dao.sws import get_class_list_from_registrations
-from compass_visits.models import ProgramArea, TutoringOption, WritingService
+from compass_visits.models import WritingService
+
+
+COMPASS_VISIT_CATALOG_CACHE_KEY = 'compass_visit_catalog'
+COMPASS_VISIT_CATALOG_CACHE_SECONDS = 60 * 60
+
+
+def get_compass_visit_catalog():
+    catalog = cache.get(COMPASS_VISIT_CATALOG_CACHE_KEY)
+    if catalog is None:
+        catalog = Compass().get_visit_catalog()
+        cache.set(COMPASS_VISIT_CATALOG_CACHE_KEY,
+                  catalog,
+                  COMPASS_VISIT_CATALOG_CACHE_SECONDS)
+    return catalog
 
 
 def get_visit_options(student_regid):
@@ -24,19 +40,21 @@ def get_visit_options(student_regid):
     Note:
         Only options with allow_usage set to True are included in the lists.
     """
-    program_areas = list(ProgramArea.objects.filter(allow_usage=True)
-                         .values('id', 'name'))
-    tutoring_options = list(TutoringOption.objects.filter(allow_usage=True)
-                            .values('id', 'name'))
     writing_services = list(WritingService.objects.filter(allow_usage=True)
                             .values('id', 'name'))
     try:
         courses = get_class_list_from_registrations(student_regid)
     except DataFailureException:
         courses = []
+
+    try:
+        catalog = get_compass_visit_catalog()
+    except DataFailureException:
+        catalog = {'visit_types': [], 'tutoring_options': []}
+
     return {
-        'program_areas': program_areas,
-        'tutoring_options': tutoring_options,
+        'program_areas': catalog.get('visit_types', []),
+        'tutoring_options': catalog.get('tutoring_options', []),
         'writing_services': writing_services,
-        'courses': courses
+        'courses': courses,
     }
