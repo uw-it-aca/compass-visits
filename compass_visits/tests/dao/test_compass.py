@@ -57,6 +57,39 @@ class CompassTestCase(CompassVisitsTestCase):
         self.assertEqual(response["course_code"], "STAT 101")
         self.assertEqual(response["tutoring_option"], "Individual")
 
+    @patch("compass_visits.dao.compass.COMPASS_DAO.postURL")
+    def test_store_visit_accepts_empty_created_response(self, mock_post_url):
+        mock_post_url.return_value.status = 201
+        mock_post_url.return_value.data = b""
+
+        response = Compass().store_visit(self._visit_payload())
+
+        self.assertEqual(response, {})
+
+    @patch("compass_visits.dao.compass.COMPASS_DAO.postURL")
+    def test_store_visit_error_includes_response_body(self, mock_post_url):
+        mock_post_url.return_value.status = 400
+        mock_post_url.return_value.data = b'"Unrecognized visit type: virtual"'
+
+        with self.assertRaises(DataFailureException) as context:
+            Compass().store_visit(self._visit_payload())
+
+        self.assertIn(
+            'Response: "Unrecognized visit type: virtual"',
+            str(context.exception),
+        )
+
+    @staticmethod
+    def _visit_payload():
+        return CompassVisitModel(
+            student_netid="javerage",
+            visit_type="virtual",
+            course_code="STAT 101",
+            tutoring_option="individual",
+            checkin_date=datetime.datetime.now(tz=datetime.timezone.utc),
+            checkout_date=datetime.datetime.now(tz=datetime.timezone.utc),
+        )
+
     def test_get_current_quarter_visits(self):
         compass = Compass()
         visits = compass.get_current_quarter_visits("000083856")
@@ -75,7 +108,9 @@ class CompassTestCase(CompassVisitsTestCase):
             compass.get_current_quarter_visits("000000000")
 
     def test_visit_json_data_with_none_checkout_date(self):
-        checkin = datetime.datetime(2026, 7, 6, 12, 30, 0, tzinfo=datetime.timezone.utc)
+        checkin = datetime.datetime(
+            2026, 7, 6, 12, 30, 0, tzinfo=datetime.timezone.utc
+        )
         visit = CompassVisitModel(
             student_netid="javerage",
             visit_type="Virtual",

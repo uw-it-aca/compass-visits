@@ -69,13 +69,18 @@ class Compass:
         """
         url = f"{self.API}/visit/omad"
         response = self.dao.postURL(url, body=json.dumps(visit.json_data()))
+        response_data = response.data.decode(
+            "utf-8", errors="replace"
+        ) if isinstance(response.data, bytes) else (response.data or "")
 
         if response.status not in (200, 201):
+            message = f"Error storing visit: {response.status}"
+            if response_data.strip():
+                message = f"{message}. Response: {response_data.strip()}"
             raise DataFailureException(url,
                                        response.status,
-                                       "Error storing visit:"
-                                       f"{response.status}")
-        return json.loads(response.data)
+                                       message)
+        return json.loads(response_data) if response_data.strip() else {}
 
     def get_current_quarter_visits(self, syskey):
         """
