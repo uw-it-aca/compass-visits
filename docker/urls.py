@@ -1,6 +1,7 @@
-from .base_urls import *
 from django.conf.urls import include
 from django.urls import re_path
+
+from .base_urls import *
 
 urlpatterns += [
     re_path(r'^', include('compass_visits.urls')),

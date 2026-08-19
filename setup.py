@@ -1,4 +1,5 @@
 import os
+
 from setuptools import setup
 
 README = """
@@ -9,7 +10,8 @@ See the README on `GitHub
 # The VERSION file is created by travis-ci, based on the tag name
 version_path = "compass_visits/VERSION"
 print(os.path.join(os.path.dirname(__file__), version_path))
-VERSION = open(os.path.join(os.path.dirname(__file__), version_path)).read()
+with open(os.path.join(os.path.dirname(__file__), version_path)) as version_file:
+    VERSION = version_file.read()
 VERSION = VERSION.replace("\n", "")
 
 # allow setup.py to be run from any path
