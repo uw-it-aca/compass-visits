@@ -30,10 +30,10 @@
     </template>
 
     <template v-if="showCheckout" #action>
-      <BButton variant="outline-primary" size="lg" @click="handleSwitchSession">
+      <BButton variant="primary" size="lg" @click="handleSwitchSession">
         Switch Session
       </BButton>
-      <BButton variant="danger" size="lg" @click="handleCheckout">
+      <BButton variant="outline-danger" size="lg" @click="handleCheckout">
         Check Out
       </BButton>
     </template>
@@ -69,6 +69,7 @@
           this.$router.push({ name: "home" });
         }
       });
+      this.visitStore.fetchStudentVisitList();
     },
     computed: {
       showCheckout() {
@@ -78,7 +79,12 @@
         return this.visitStore.visitDurationString;
       },
       totalMinutes() {
-        return this.visitStore.totalMinutes;
+        const course = this.profile.visit.course;
+        if (!course) return 0;
+        const visits = this.visitStore.studentVisitList.data ?? [];
+        return visits
+          .filter((v) => v.course === course && v.active_minutes > 0)
+          .reduce((sum, v) => sum + v.active_minutes, 0);
       },
     },
     methods: {

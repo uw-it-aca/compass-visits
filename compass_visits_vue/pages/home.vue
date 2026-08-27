@@ -22,9 +22,12 @@
     </template>
 
     <template v-if="profile && isElligible" #action>
-      <BButton variant="secondary" size="lg" @click="redirectToSummary">
+      <!-- no summary page
+      <!--
+      <BButton variant="outline-primary" size="lg" @click="redirectToSummary">
         Summary
       </BButton>
+      -->
       <BButton variant="primary" size="lg" @click="redirectToCreate">
         Check In
       </BButton>

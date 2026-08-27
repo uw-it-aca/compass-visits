@@ -16,7 +16,7 @@
   import VisitGroup from "@/components/visit-group.vue";
 
   export default {
-    name: "Visit  Summary",
+    name: "Visit Summary",
     components: { DefaultLayout, VisitGroup },
     setup() {
       const visitStore = useVisitStore();

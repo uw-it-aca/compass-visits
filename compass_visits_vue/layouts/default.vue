@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div class="p-3">
+    <div class="row p-3">
+      <BButton v-b-toggle.offcanvas-border class="col">
+        About IC
+      </BButton>
       <SProfile
         :variant="'flyout'"
         :user-netid="userNetid"
@@ -8,10 +11,11 @@
         :user-preferred-name="userPreferred"
         :profile-url="'https://identity.uw.edu'"
         :signout-url="signOutUrl"
-        class="text-dark"
+        class="text-dark text-end col"
       ></SProfile>
-      <SColorMode color-class="text-body" class="ms-3"></SColorMode>
-      <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
+      <!-- color selection? -->
+      <!-- <SColorMode color-class="text-body" class="ms-3"></SColorMode> 
+      -->
     </div>
 
     <h1

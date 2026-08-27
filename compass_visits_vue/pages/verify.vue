@@ -6,8 +6,7 @@
       <div class="d-flex flex-column">
         <BAlert :model-value="true" variant="warning" class="mb-4">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          Your check-in is not yet complete. Please verify with the IC front
-          desk, and refresh the page.
+          Your check-in isn't complete yet. Verify with the IC front desk, then refresh the page.
         </BAlert>
 
         <div class="mt-auto text-center">
