@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from django.test import TestCase
-from compass_visits.context_processors import google_analytics, django_debug
+
+from compass_visits.context_processors import django_debug, google_analytics, logout_url
 
 
 class ContextProcessorsTestCase(TestCase):
@@ -22,3 +23,8 @@ class ContextProcessorsTestCase(TestCase):
             context = django_debug(None)
             self.assertIn('django_debug', context)
             self.assertFalse(context['django_debug'])
+
+    def test_logout_url(self):
+        context = logout_url(None)
+        self.assertIn('logout_url', context)
+        self.assertIn('/logout', context['logout_url'])

@@ -1,14 +1,14 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from restclients_core.dao import DAO
-from os.path import abspath, dirname
-import os
 import json
-from restclients_core.exceptions import DataFailureException
-from restclients_core import models
-import datetime
+import os
+from os.path import abspath, dirname
+
 from django.utils.dateparse import parse_datetime
+from restclients_core import models
+from restclients_core.dao import DAO
+from restclients_core.exceptions import DataFailureException
 
 
 class COMPASS_DAO(DAO):
@@ -16,18 +16,19 @@ class COMPASS_DAO(DAO):
         return 'compass'
 
     def service_mock_paths(self):
-        path = [abspath(os.path.join(dirname(__file__), "resources"))]
+        path = [abspath(os.path.join(dirname(__file__), "..", "resources"))]
         return path
 
     def _custom_headers(self, method, url, headers, body):
         custom_headers = {}
+        custom_headers['Content-Type'] = 'application/json'
         token = self.get_service_setting('AUTH_TOKEN')
         if token:
-            custom_headers['Authorization'] = "Token {}".format(token)
+            custom_headers['Authorization'] = f"Token {token}"
         return custom_headers
 
 
-class Compass(object):
+class Compass:
     """
     This class provides an interface to the compass visits web service.
     """
@@ -41,50 +42,71 @@ class Compass(object):
         """
         Returns IC eligibility for the given syskey.
         """
-        url = "{}/visit/eligibility/{}".format(self.API, syskey)
+        url = f"{self.API}/visit/eligibility/{syskey}/"
         response = self.dao.getURL(url)
         if response.status != 200:
             raise DataFailureException(url,
                                        response.status,
                                        "Error getting IC eligibility "
-                                       "{}: {}".format(syskey,
-                                                       response.status))
+                                       f"{syskey}: {response.status}")
         data = json.loads(response.data)
         return data.get('eligible', False)
+
+    def get_visit_catalog(self):
+        """Return the Compass-owned OMAD visit catalog."""
+        url = f"{self.API}/visit/catalog"
+        response = self.dao.getURL(url)
+        if response.status != 200:
+            raise DataFailureException(url,
+                                       response.status,
+                                       "Error getting visit catalog: "
+                                       f"{response.status}")
+        return json.loads(response.data)
 
     def store_visit(self, visit):
         """
         Stores a visit in compass DB
         """
-        url = "{}/visit/omad".format(self.API)
-        response = self.dao.postURL(url, visit.json_data())
+        url = f"{self.API}/visit/omad"
+        response = self.dao.postURL(url, body=json.dumps(visit.json_data()))
+        response_data = response.data.decode(
+            "utf-8", errors="replace"
+        ) if isinstance(response.data, bytes) else (response.data or "")
 
-        if response.status != 200:
+        if response.status not in (200, 201):
+            message = f"Error storing visit: {response.status}"
+            if response_data.strip():
+                message = f"{message}. Response: {response_data.strip()}"
             raise DataFailureException(url,
                                        response.status,
-                                       "Error storing visit:"
-                                       "{}".format(response.status))
-        return json.loads(response.data)
+                                       message)
+        return json.loads(response_data) if response_data.strip() else {}
 
     def get_current_quarter_visits(self, syskey):
         """
         Returns a list of visits for the given syskey in the current quarter.
         """
-        url = "{}/visit/external_student/{}".format(self.API, syskey)
+        url = f"{self.API}/visit/external_student/{syskey}"
         response = self.dao.getURL(url)
         if response.status != 200:
             raise DataFailureException(url,
                                        response.status,
                                        "Error getting visits for syskey "
-                                       "{}: {}".format(syskey,
-                                                       response.status))
+                                       f"{syskey}: {response.status}")
         data = json.loads(response.data)
         visits = []
         for visit in data:
-            visit['checkin_date'] = parse_datetime(visit['checkin_date'])
-            if visit.get('checkout_date'):
-                visit['checkout_date'] = parse_datetime(visit['checkout_date'])
-            visits.append(CompassVisitModel(**visit))
+            checkout_raw = visit.get('checkout_date')
+            visits.append(CompassVisitModel(
+                student_netid=visit.get('student_netid') or '',
+                visit_type=visit.get('visit_type') or '',
+                course_code=visit.get('course_code') or '',
+                tutoring_option=visit.get('tutoring_option') or '',
+                checkin_date=parse_datetime(visit.get('checkin_date')),
+                checkout_date=(
+                    parse_datetime(checkout_raw) if checkout_raw else None
+                ),
+            ))
         return visits
 
 

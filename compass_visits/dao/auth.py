@@ -5,9 +5,10 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.utils.crypto import constant_time_compare
 from userservice.user import UserService
-from compass_visits.exceptions import OverrideNotPermitted
-from compass_visits.dao.pws import DataFailureException, get_syskey_by_netid
 from uw_saml.utils import is_member_of_group
+
+from compass_visits.dao.pws import DataFailureException, get_syskey_by_netid
+from compass_visits.exceptions import OverrideNotPermitted
 
 
 def valid_user_override():

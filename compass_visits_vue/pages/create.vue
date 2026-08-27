@@ -7,12 +7,21 @@
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Program Area<span style="color: red">*</span>
         </h2>
+        <div
+          v-if="visitOptionsStore.isLoading"
+          class="d-flex align-items-center mb-3"
+          role="status"
+        >
+          <BSpinner small class="me-2" />
+          Loading visit options...
+        </div>
         <div class="pb-4">
           <BFormSelect
             v-model="selectedProgramArea"
-            :options="visitOptionsStore.visitOptions.program_areas"
+            :options="programAreaOptions"
+            :disabled="visitOptionsStore.isLoading"
             text-field="name"
-            value-field="id"
+            value-field="slug"
             aria-label="Select Program Area"
           >
             <template #first>
@@ -29,8 +38,9 @@
           <BFormSelect
             v-model="selectedTutoringOption"
             :options="visitOptionsStore.visitOptions.tutoring_options"
+            :disabled="visitOptionsStore.isLoading"
             text-field="name"
-            value-field="id"
+            value-field="slug"
             aria-label="Select Tutoring Option"
           >
             <template #first>
@@ -46,27 +56,35 @@
         <div class="pb-4">
           <BFormSelect
             v-model="selectedCourseOrWriting"
+            :disabled="visitOptionsStore.isLoading"
             aria-label="Select Course or Writing Service"
           >
             <template #first>
               <BFormSelectOption value="" disabled>
-                Select a course or writing service
+                {{ courseOrWritingPlaceholder }}
               </BFormSelectOption>
             </template>
             <BFormSelectOptionGroup
+              v-if="!noCourseOptions"
               :options="visitOptionsStore.visitOptions.courses"
               label="Courses"
               text-field="name"
               value-field="id"
             />
             <BFormSelectOptionGroup
-              v-if="selectedProgramArea === 7"
+              v-if="isWritingProgramArea || noCourseOptions"
               :options="visitOptionsStore.visitOptions.writing_services"
               label="Writing Services"
               text-field="name"
               value-field="id"
             />
           </BFormSelect>
+          <p
+            v-if="noCourseOptions && noWritingServiceOptions"
+            class="text-danger mt-2 mb-0"
+          >
+            No writing services are available right now.
+          </p>
         </div>
       </div>
     </template>
@@ -96,6 +114,7 @@
     BFormSelect,
     BFormSelectOption,
     BFormSelectOptionGroup,
+    BSpinner,
   } from "bootstrap-vue-next";
 
   export default {
@@ -106,6 +125,7 @@
       BFormSelect,
       BFormSelectOption,
       BFormSelectOptionGroup,
+      BSpinner,
     },
     setup() {
       const visitOptionsStore = useVisitOptionsStore();
@@ -131,19 +151,65 @@
     computed: {
       allAreSelected() {
         return (
+          !this.noWritingServiceOptions &&
           this.selectedProgramArea &&
           this.selectedTutoringOption &&
           this.selectedCourseOrWriting
         );
       },
+      noCourseOptions() {
+        return (this.visitOptionsStore.visitOptions.courses || []).length === 0;
+      },
+      noWritingServiceOptions() {
+        return (
+          this.noCourseOptions &&
+          (this.visitOptionsStore.visitOptions.writing_services || []).length === 0
+        );
+      },
+      writingProgramAreaOption() {
+        const programAreas = this.visitOptionsStore.visitOptions.program_areas || [];
+        return programAreas.find((area) =>
+          String(area.slug || "").includes("writing"),
+        );
+      },
+      programAreaOptions() {
+        if (this.noCourseOptions) {
+          return this.writingProgramAreaOption ? [this.writingProgramAreaOption] : [];
+        }
+        return this.visitOptionsStore.visitOptions.program_areas;
+      },
+      isWritingProgramArea() {
+        if (this.noCourseOptions) {
+          return true;
+        }
+        if (!this.writingProgramAreaOption) {
+          return false;
+        }
+        return (
+          this.selectedProgramArea === this.writingProgramAreaOption.slug
+        );
+      },
+      courseOrWritingPlaceholder() {
+        if (this.noCourseOptions) {
+          return "Select a writing service";
+        }
+        return "Select a course or writing service";
+      },
       selectedCourse() {
-        return this.visitOptionsStore.visitOptions.courses.find(
-          (course) => course.id === this.selectedCourseOrWriting,
+        if (this.noCourseOptions || this.isWritingProgramArea) {
+          return undefined;
+        }
+        return (this.visitOptionsStore.visitOptions.courses || []).find(
+          (course) => String(course.id) === String(this.selectedCourseOrWriting),
         );
       },
       selectedWritingService() {
-        return this.visitOptionsStore.visitOptions.writing_services.find(
-          (service) => service.id === this.selectedCourseOrWriting,
+        if (!this.noCourseOptions && !this.isWritingProgramArea) {
+          return undefined;
+        }
+        return (this.visitOptionsStore.visitOptions.writing_services || []).find(
+          (service) =>
+            String(service.id) === String(this.selectedCourseOrWriting),
         );
       },
       pageTitle() {
@@ -185,6 +251,31 @@
         });
       },
     },
-    watch: {},
+    watch: {
+      noCourseOptions: {
+        immediate: true,
+        handler(isNoCourseOptions) {
+          if (!isNoCourseOptions) {
+            return;
+          }
+
+          if (this.writingProgramAreaOption) {
+            this.selectedProgramArea = this.writingProgramAreaOption.slug;
+          }
+
+          if (
+            this.selectedCourseOrWriting &&
+            !this.selectedWritingService
+          ) {
+            this.selectedCourseOrWriting = "";
+          }
+        },
+      },
+      selectedProgramArea() {
+        if (this.noCourseOptions && this.writingProgramAreaOption) {
+            this.selectedProgramArea = this.writingProgramAreaOption.slug;
+        }
+      },
+    },
   };
 </script>

@@ -4,18 +4,22 @@
 from django.conf import settings
 from django.urls import re_path
 from django.views.generic import TemplateView
-from compass_visits.views.pages import DefaultPageView
-from compass_visits.views.api.visit_student import (StudentVisitList,
-                                                    VisitView,
-                                                    VisitDetailView)
+
+from compass_visits.admin import admin_site
+from compass_visits.views.api.external.options_external import VisitOptionsExternal
+from compass_visits.views.api.external.visit_external import (
+    CompassStudentVisitsView,
+    ManageVisitsView,
+    VisitAdminListView,
+)
 from compass_visits.views.api.options import VisitOptions
 from compass_visits.views.api.student import StudentProfileView
-from compass_visits.views.api.external.visit_external import (
-    VisitAdminListView, CompassStudentVisitsView, ManageVisitsView)
-from compass_visits.views.api.external.options_external import \
-    VisitOptionsExternal
-from compass_visits.admin import admin_site
-
+from compass_visits.views.api.visit_student import (
+    StudentVisitList,
+    VisitDetailView,
+    VisitView,
+)
+from compass_visits.views.pages import DefaultPageView
 
 # start with an empty url array
 urlpatterns = []
@@ -64,7 +68,7 @@ urlpatterns += [
     re_path(r'^api/v1/managevisit/(?P<visit_id>\d+)$',
             ManageVisitsView.as_view(),
             name="manage_visit"),
-    re_path(r'^api/v1/managevisit$',
+    re_path(r'^api/v1/managevisit/?$',
             ManageVisitsView.as_view(),
             name="manage_visits"),
     re_path(

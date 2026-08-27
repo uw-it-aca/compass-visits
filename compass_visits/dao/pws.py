@@ -1,8 +1,8 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from uw_pws import PWS
 from restclients_core.exceptions import DataFailureException, InvalidRegID
+from uw_pws import PWS
 
 PHOTO_SIZE = "large"
 
@@ -16,6 +16,8 @@ def get_student_profile(uwnetid):
         "netid": uwnetid,
         "uwregid": person.uwregid,
         "student_name": person.display_name,
+        "official_name": person.full_name,
+        "preferred_name": person.display_name,
         "student_number": person.student_number,
         "student_syskey": person.student_system_key
     }

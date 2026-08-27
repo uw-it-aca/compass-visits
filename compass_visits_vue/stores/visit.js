@@ -21,7 +21,8 @@ export const useVisitStore = defineStore("visit", {
   getters: {
     totalMinutes: (state) => {
       if (state.studentProfile.data) {
-        return Math.round(state.studentProfile.data.total_minutes);
+        const totalMinutes = Number(state.studentProfile.data.total_minutes);
+        return Number.isFinite(totalMinutes) ? Math.round(totalMinutes) : 0;
       }
       return 0;
     },

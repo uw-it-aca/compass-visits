@@ -4,8 +4,8 @@
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from userservice.user import UserService
 from persistent_message.models import Message
+from userservice.user import UserService
 
 
 @method_decorator(login_required, name='dispatch')
@@ -37,12 +37,12 @@ class PageView(TemplateView):
         highest_level = None
 
         for message in Message.objects.active_messages():
-            if message.get_level_display().lower() in message_level_hierarchy:
-                if (highest_level is None
-                    or message_level_hierarchy.index(
-                        message.get_level_display().lower()) >
-                        message_level_hierarchy.index(highest_level)):
-                    highest_level = message.get_level_display().lower()
+            if (message.get_level_display().lower() in message_level_hierarchy
+                    and (highest_level is None
+                         or message_level_hierarchy.index(
+                             message.get_level_display().lower()) >
+                         message_level_hierarchy.index(highest_level))):
+                highest_level = message.get_level_display().lower()
             context['messages'].append(message.render())
 
         context['message_level'] = highest_level or "info"

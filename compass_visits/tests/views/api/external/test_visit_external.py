@@ -1,9 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APITokenTestCase
-from compass_visits.models import Visit
 from unittest.mock import patch
+
+from compass_visits.models import Visit
+from compass_visits.tests import APITokenTestCase
 
 
 class VisitExternalAPITestCase(APITokenTestCase):
@@ -112,8 +113,8 @@ class VisitExternalAPITestCase(APITokenTestCase):
         mock_get_netid.return_value = 'j043868'
         new_visit_data = {
             'student_syskey': '000043868',
-            'program_area': 1,
-            'tutoring_option': 1,
+            'program_area': 'ic-drop-in-tutoring',
+            'tutoring_option': 'drop-in',
             'writing_service': 1,
             'check_in_date': '2024-01-01T10:00:00Z',
             'verify': True
@@ -125,8 +126,8 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data['student_syskey'], '000043868')
-        self.assertEqual(data['program_area'], 'Biology/Natural Sci')
-        self.assertEqual(data['tutoring_option'], 'Drop In')
+        self.assertEqual(data['program_area'], 'ic-drop-in-tutoring')
+        self.assertEqual(data['tutoring_option'], 'drop-in')
         self.assertEqual(data['writing_service'], 'Application')
 
         self.assertIsNotNone(data['check_in_date'])
@@ -138,8 +139,8 @@ class VisitExternalAPITestCase(APITokenTestCase):
     def test_manage_visits_post_validation_error(self, mock_get_netid):
         mock_get_netid.return_value = 'j043868'
         new_visit_data = {
-            'program_area': 1,
-            'tutoring_option': 1,
+            'program_area': 'ic-drop-in-tutoring',
+            'tutoring_option': 'drop-in',
             'writing_service': 1,
             'check_in_date': '2024-01-01T10:00:00Z',
             'verify': True
@@ -211,8 +212,8 @@ class VisitExternalAPITestCase(APITokenTestCase):
                                       token='Token testtoken',
                                       data={
                                           'student_syskey': '000043868',
-                                          'program_area': 1,
-                                          'tutoring_option': 1,
+                                          'program_area': 'ic-drop-in-tutoring',
+                                          'tutoring_option': 'drop-in',
                                           'course': 'A' * 256,
                                       })
         self.assertEqual(response.status_code, 400)

@@ -29,9 +29,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         limit = options.get("limit")
 
-        visits_qs = (Visit.objects.select_related(
-            "program_area", "tutoring_option", "writing_service"
-        )
+        visits_qs = (Visit.objects.select_related("writing_service")
             .filter(is_verified=True, check_out_date__isnull=False)
             .order_by("id"))
 
@@ -55,7 +53,7 @@ class Command(BaseCommand):
                 compass.store_visit(compass_visit)
                 visit.delete()
                 synced += 1
-            except Exception as ex:
+            except Exception as ex:  # noqa: BLE001
                 failed += 1
                 self.stderr.write(
                     f"Failed visit id={visit.id} "

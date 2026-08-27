@@ -1,9 +1,11 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import APILoginTestCase
 from unittest.mock import patch
+
 from restclients_core.exceptions import DataFailureException
+
+from compass_visits.tests import APILoginTestCase
 
 
 class StudentAPITestCase(APILoginTestCase):
@@ -43,6 +45,10 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertEqual(data['netid'], 'javerage')
         self.assertIn('student_name', data)
         self.assertEqual(data['student_name'], "Jamesy McJamesy")
+        self.assertIn('official_name', data)
+        self.assertEqual(data['official_name'], "JAMES AVERAGE STUDENT")
+        self.assertIn('preferred_name', data)
+        self.assertEqual(data['preferred_name'], "Jamesy McJamesy")
         self.assertIn('photo', data)
         self.assertTrue(data['photo'].startswith("/9j/4AAQSkZJRgABAQAAAQ"))
         self.assertIn('total_minutes', data)

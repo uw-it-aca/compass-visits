@@ -1,19 +1,23 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.views.api import RESTDispatchLogin
-from compass_visits.dao.visit_dao import (create_visit_from_request,
-                                          student_update_visit,
-                                          get_current_quarter_visits_by_syskey,
-                                          checkout_active_verified_visit)
-from compass_visits.exceptions import ValidationError, OverrideNotPermitted
-from compass_visits.models import Visit
-from compass_visits.dao.auth import valid_user_override, can_write_visit
-from django.core.exceptions import PermissionDenied
-from compass_visits.dao.pws import get_syskey_by_netid
-from userservice.user import UserService
 import json
+
+from django.core.exceptions import PermissionDenied
 from restclients_core.exceptions import DataFailureException
+from userservice.user import UserService
+
+from compass_visits.dao.auth import can_write_visit, valid_user_override
+from compass_visits.dao.pws import get_syskey_by_netid
+from compass_visits.dao.visit_dao import (
+    checkout_active_verified_visit,
+    create_visit_from_request,
+    get_current_quarter_visits_by_syskey,
+    student_update_visit,
+)
+from compass_visits.exceptions import OverrideNotPermitted, ValidationError
+from compass_visits.models import Visit
+from compass_visits.views.api import RESTDispatchLogin
 
 
 class StudentVisitList(RESTDispatchLogin):
@@ -48,6 +52,8 @@ class StudentVisitList(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Unable to retrieve student "
                                                "information")
+        for visit in visits:
+            visit.student_netid = student_netid
         visit_list = [visit.student_json_data() for visit in visits]
         return self.json_response(status=200, content=visit_list)
 
@@ -108,7 +114,7 @@ class VisitDetailView(RESTDispatchLogin):
 
         Args:
             request: The HTTP request object containing the PATCH data in
-                     JSON format.
+                JSON format.
             visit_id (int): The ID of the Visit to update.
 
         Returns:
@@ -127,8 +133,7 @@ class VisitDetailView(RESTDispatchLogin):
             return self.error_response(status=400,
                                        message="Invalid JSON format")
         try:
-            visit = Visit.objects.select_related(
-                'program_area', 'tutoring_option', 'writing_service').get(
+            visit = Visit.objects.select_related('writing_service').get(
                     id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_syskey)

@@ -106,6 +106,8 @@ externalSecrets:
           property: external-api-token
         - name: compass-auth-token
           property: compass-auth-token
+        - name: restclients-compass-host
+          property: restclients-compass-host
     - name: test-checkin.compass.uw.edu-sql-secrets
       externalKey: compass-checkin/shared/sql-secrets
       data:
@@ -161,19 +163,23 @@ environmentVariablesSecrets:
     secretName: test-checkin.compass.uw.edu-secrets
     secretKey: external-api-token
   compassAPIToken:
-    name: COMPASS_AUTH_TOKEN
+    name: RESTCLIENTS_COMPASS_AUTH_TOKEN
     secretName: test-checkin.compass.uw.edu-secrets
     secretKey: compass-auth-token
+  restclientsCompassHost:
+    name: RESTCLIENTS_COMPASS_HOST
+    secretName: test-checkin.compass.uw.edu-secrets
+    secretKey: restclients-compass-host
 
 
 daemon:
-  # Disable until we deploy the visits branch to compass
-  enabled: false
+  # Poll frequently while keeping idle API and CPU usage low.
+  enabled: true
   daemons:
     - name: sync-completed-visits
       replicaCount: 1
       command: ["/scripts/management_daemon.sh"]
-      args: ["--delay", "5", "sync_completed_visits"]
+      args: ["--delay", "15", "sync_completed_visits"]
       resources:
         limits:
           cpu: 500m

@@ -1,4 +1,5 @@
 import os
+
 from .base_settings import *
 
 INSTALLED_APPS += [
@@ -34,6 +35,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 "supporttools.context_processors.supportools_globals",
                 "supporttools.context_processors.has_less_compiled",
+                'compass_visits.context_processors.logout_url',
                 'compass_visits.context_processors.google_analytics',
                 'compass_visits.context_processors.django_debug',
             ],
@@ -85,7 +87,11 @@ if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
     EXTERNAL_API_TOKEN = os.getenv('EXTERNAL_API_TOKEN')
     SUPPORT_GROUP = os.getenv('SUPPORT_GROUP')
     ADMIN_GROUP = os.getenv('ADMIN_GROUP')
-    COMPASS_AUTH_TOKEN = os.getenv('COMPASS_AUTH_TOKEN')
+    RESTCLIENTS_COMPASS_DAO_CLASS = 'Live'
+    RESTCLIENTS_COMPASS_HOST = os.getenv(
+        'RESTCLIENTS_COMPASS_HOST', "")
+    RESTCLIENTS_COMPASS_AUTH_TOKEN = os.getenv(
+        'RESTCLIENTS_COMPASS_AUTH_TOKEN', "")
 
 if os.getenv('ENV') == 'prod':
     ALLOW_USER_OVERRIDE_FOR_WRITE = False

@@ -2,25 +2,29 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import datetime
+from unittest.mock import patch
+
 from django.utils import timezone
+
+from compass_visits.dao.compass import CompassVisitModel
+from compass_visits.dao.visit_dao import (
+    checkout_active_verified_visit,
+    create_visit_from_request,
+    get_active_visit_for_student,
+    get_completed_visits_by_syskey,
+    get_current_quarter_visits_by_syskey,
+    get_student_state,
+    get_total_minutes_by_syskey,
+    get_visits_pending_checkout,
+    get_visits_pending_verification,
+    manager_create_visit_from_request,
+    manager_update_visit,
+    student_update_visit,
+    validate_visit_data,
+)
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
-from compass_visits.dao.compass import CompassVisitModel
 from compass_visits.tests import CompassVisitsTestCase
-from unittest.mock import patch
-from compass_visits.dao.visit_dao import (get_active_visit_for_student,
-                                          get_completed_visits_by_syskey,
-                                          get_visits_pending_checkout,
-                                          get_visits_pending_verification,
-                                          validate_visit_data,
-                                          student_update_visit,
-                                          create_visit_from_request,
-                                          get_total_minutes_by_syskey,
-                                          get_student_state,
-                                          get_current_quarter_visits_by_syskey,
-                                          manager_create_visit_from_request,
-                                          manager_update_visit,
-                                          checkout_active_verified_visit)
 
 
 class VisitDAOTest(CompassVisitsTestCase):
@@ -35,19 +39,19 @@ class VisitDAOTest(CompassVisitsTestCase):
 
     def test_get_active_multiple_visits_for_student(self):
         student_syskey = "000083851"
-        v1 = Visit.objects.create(
+        Visit.objects.create(
             student_syskey=student_syskey,
             student_netid="j043851",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=False
         )
         v2 = Visit.objects.create(
             student_syskey=student_syskey,
             student_netid="j043851",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=False,
             check_in_date=timezone.now() + timezone.timedelta(minutes=5)
@@ -58,18 +62,18 @@ class VisitDAOTest(CompassVisitsTestCase):
 
     def test_validate_visit_data(self):
         valid_request = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         try:
             validate_visit_data(valid_request)
-        except Exception as e:
-            self.fail(f"validate_visit_data raised an "
+        except Exception:  # noqa: BLE001
+            self.fail("validate_visit_data raised an "
                       "exception unexpectedly: {e}")
 
         missing_program_area = {
-            "tutoring_option": 1,
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         with self.assertRaises(Exception) as context:
@@ -77,7 +81,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertIn("program_area is required", str(context.exception))
 
         missing_tutoring_option = {
-            "program_area": 1,
+            "program_area": "ic-drop-in-tutoring",
             "writing_service": 1,
         }
         with self.assertRaises(Exception) as context:
@@ -85,8 +89,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertIn("tutoring_option is required", str(context.exception))
 
         missing_writing_service_and_course = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
         }
         with self.assertRaises(Exception) as context:
             validate_visit_data(missing_writing_service_and_course)
@@ -94,8 +98,8 @@ class VisitDAOTest(CompassVisitsTestCase):
                       str(context.exception))
 
         both_writing_service_and_course = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
             "course": "ENGL101"
         }
@@ -106,7 +110,7 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         invalid_program_area = {
             "program_area": 999,
-            "tutoring_option": 1,
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         with self.assertRaises(Exception) as context:
@@ -114,7 +118,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertIn("Invalid program_area", str(context.exception))
 
         invalid_tutoring_option = {
-            "program_area": 1,
+            "program_area": "ic-drop-in-tutoring",
             "tutoring_option": 999,
             "writing_service": 1,
         }
@@ -123,8 +127,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertIn("Invalid tutoring_option", str(context.exception))
 
         invalid_writing_service = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 999,
         }
         with self.assertRaises(Exception) as context:
@@ -132,8 +136,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertIn("Invalid writing_service", str(context.exception))
 
         long_course = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "course": "A" * 256,
         }
         with self.assertRaises(Exception) as context:
@@ -145,8 +149,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043856",
             student_netid="j043856",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True
         )
@@ -155,7 +159,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             student_update_visit(visit, request_data)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"update_visit raised an exception unexpectedly: {e}")
         self.assertIsNotNone(visit.check_out_date)
 
@@ -163,8 +167,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         unverified_visit = Visit.objects.create(
             student_syskey="000043856",
             student_netid="j043856",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
         )
         request_data = {
@@ -179,8 +183,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043856",
             student_netid="j043856",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=timezone.now()
@@ -197,8 +201,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         unverified_visit = Visit.objects.create(
             student_syskey="000043856",
             student_netid="j043856",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
         )
         request_data = {
@@ -212,8 +216,8 @@ class VisitDAOTest(CompassVisitsTestCase):
 
     def test_create_from_request(self):
         request_data = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         student_syskey = "000043856"
@@ -223,16 +227,15 @@ class VisitDAOTest(CompassVisitsTestCase):
                                           student_netid)
         self.assertEqual(visit.student_syskey, student_syskey)
         self.assertEqual(visit.student_netid, student_netid)
-        self.assertEqual(visit.program_area.id, request_data['program_area'])
-        self.assertEqual(visit.tutoring_option.id,
-                         request_data['tutoring_option'])
+        self.assertEqual(visit.program_area, "ic-drop-in-tutoring")
+        self.assertEqual(visit.tutoring_option, "drop-in")
         self.assertEqual(visit.writing_service.id,
                          request_data['writing_service'])
         self.assertIsNone(visit.course)
 
         request_data = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "course": "TRAIN 101",
         }
         student_syskey = "000043857"
@@ -251,8 +254,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertTrue(visit.is_verified)
 
         request_data = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "course": "A" * 256,
         }
         with self.assertRaises(ValidationError) as context:
@@ -269,14 +272,14 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey=student_syskey,
             student_netid="j043858",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
         )
 
         request_data = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         with self.assertRaises(ValidationError) as context:
@@ -307,8 +310,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         active_visit = Visit.objects.create(
             student_syskey="000043859",
             student_netid="j043859",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True
         )
@@ -317,8 +320,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         pending_visit = Visit.objects.create(
             student_syskey="000043860",
             student_netid="j043860",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=False
         )
@@ -328,8 +331,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         checked_out_visit = Visit.objects.create(
             student_syskey="000043861",
             student_netid="j043861",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=timezone.now()
@@ -343,16 +346,16 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey="000043862",
             student_netid="j043862",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=False
         )
         Visit.objects.create(
             student_syskey="000043863",
             student_netid="j043863",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True
         )
@@ -365,8 +368,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey="000043864",
             student_netid="j043864",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=None
@@ -374,8 +377,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey="000043865",
             student_netid="j043865",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=timezone.now()
@@ -390,8 +393,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey="000043866",
             student_netid="j043866",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=timezone.now()
@@ -399,8 +402,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         Visit.objects.create(
             student_syskey="000043867",
             student_netid="j043867",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=None
@@ -413,8 +416,8 @@ class VisitDAOTest(CompassVisitsTestCase):
     def test_manager_create_visit_from_request(self):
         request_data = {
             "student_syskey": "000043868",
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
             "course": None,
             "verify": True,
@@ -427,9 +430,8 @@ class VisitDAOTest(CompassVisitsTestCase):
             visit = manager_create_visit_from_request(request_data)
         self.assertEqual(visit.student_syskey, request_data['student_syskey'])
         self.assertEqual(visit.student_netid, "j043868")
-        self.assertEqual(visit.program_area.id, request_data['program_area'])
-        self.assertEqual(visit.tutoring_option.id,
-                         request_data['tutoring_option'])
+        self.assertEqual(visit.program_area, "ic-drop-in-tutoring")
+        self.assertEqual(visit.tutoring_option, "drop-in")
         self.assertEqual(visit.writing_service.id,
                          request_data['writing_service'])
         self.assertIsNone(visit.course)
@@ -437,8 +439,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertIsNotNone(visit.check_out_date)
 
         request_data = {
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         with self.assertRaises(ValidationError) as context:
@@ -448,8 +450,8 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         request_data = {
             "student_syskey": "000043869",
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 1,
             "checkout": True
         }
@@ -463,7 +465,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         request_data = {
             "student_syskey": "000043870",
             "program_area": 99,
-            "tutoring_option": 1,
+            "tutoring_option": "drop-in",
             "writing_service": 1,
         }
         with patch(
@@ -476,7 +478,7 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         request_data = {
             "student_syskey": "000043870",
-            "program_area": 1,
+            "program_area": "ic-drop-in-tutoring",
             "tutoring_option": 99,
             "writing_service": 1,
         }
@@ -490,8 +492,8 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         request_data = {
             "student_syskey": "000043870",
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "writing_service": 99,
         }
         with patch(
@@ -504,8 +506,8 @@ class VisitDAOTest(CompassVisitsTestCase):
 
         request_data = {
             "student_syskey": "000043871",
-            "program_area": 1,
-            "tutoring_option": 1,
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
             "course": "A" * 256,
         }
         with patch(
@@ -521,8 +523,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043870",
             student_netid="j043870",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
         )
         request_data = {
@@ -531,7 +533,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         }
         try:
             manager_update_visit(visit, request_data)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"manager_update_visit raised an exception "
                       f"unexpectedly: {e}")
         self.assertTrue(visit.is_verified)
@@ -541,8 +543,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043871",
             student_netid="j043871",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
         )
         request_data = {
@@ -559,8 +561,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043872",
             student_netid="j043872",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True,
             check_out_date=timezone.now()
@@ -577,8 +579,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         visit = Visit.objects.create(
             student_syskey="000043873",
             student_netid="j043873",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True
         )
@@ -595,8 +597,8 @@ class VisitDAOTest(CompassVisitsTestCase):
         active_visit = Visit.objects.create(
             student_syskey=student_syskey,
             student_netid="j043874",
-            program_area_id=1,
-            tutoring_option_id=1,
+            program_area="ic-drop-in-tutoring",
+            tutoring_option="drop-in",
             writing_service_id=1,
             is_verified=True
         )
@@ -608,7 +610,7 @@ class VisitDAOTest(CompassVisitsTestCase):
         student_syskey_no_active = "000043875"
         try:
             checkout_active_verified_visit(student_syskey_no_active)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.fail(f"checkout_active_verified_visit raised an exception "
                       f"unexpectedly: {e}")
 

@@ -1,9 +1,9 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.visit_options import get_visit_options
 from compass_visits.dao.pws import get_regid_by_netid
+from compass_visits.dao.visit_options import get_visit_options
+from compass_visits.tests import CompassVisitsTestCase
 
 
 class VisitOptionsTestCase(CompassVisitsTestCase):
@@ -19,12 +19,12 @@ class VisitOptionsTestCase(CompassVisitsTestCase):
         self.assertIsInstance(options['writing_services'], list)
         self.assertIsInstance(options['courses'], list)
 
-        self.assertEqual(len(options['program_areas']), 8)
+        self.assertEqual(len(options['program_areas']), 3)
         self.assertEqual(options['program_areas'][0]['name'],
-                         'Biology/Natural Sci')
+                 'IC Drop-In Tutoring')
         self.assertEqual(options['program_areas'][0]['id'], 1)
 
-        self.assertEqual(len(options['tutoring_options']), 2)
+        self.assertEqual(len(options['tutoring_options']), 3)
         self.assertEqual(options['tutoring_options'][0]['name'], 'Drop In')
         self.assertEqual(options['tutoring_options'][0]['id'], 1)
 

@@ -1,9 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from compass_visits.views.api import RESTDispatchToken
-from compass_visits.dao.visit_options import get_visit_options
 from restclients_core.exceptions import DataFailureException
+
+from compass_visits.dao.visit_options import get_visit_options
+from compass_visits.views.api import RESTDispatchToken
 
 
 class VisitOptionsExternal(RESTDispatchToken):
