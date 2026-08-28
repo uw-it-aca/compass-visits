@@ -19,10 +19,10 @@
     <div class="pb-2">
       <BCard class="bg-body-tertiary rounded-3" border-variant="0">
         <h3 class="fs-6 fw-normal">Total:</h3>
-        <p class="fs-3 fw-bold m-0 text-end">
+        <p class="fs-1 fw-bold m-0 text-end">
           {{ totalHour.toFixed(2) }}
-          <span class="fs-6 fw-normal text-body-secondary"> hrs</span>
-          <span class="fs-6 fw-bold"> {{ totalVisits }}
+          <span class="fs-6 fw-normal text-body-secondary"> hrs </span>
+          <span class="fs-4 fw-normal"> {{ totalVisits }} </span>
           <span class="fs-6 fw-normal text-body-secondary"> visits</span>
         </p>
       </BCard>
@@ -31,7 +31,7 @@
     <div class="row row-cols-2 g-2">
       <div v-for="(hour, course) in courseHour" :key="course" class="col">
         <BCard class="bg-body-tertiary rounded-3" border-variant="0">
-          <h3 class="fs-6 fw-normal">{{ course }}</h3>
+          <h3 class="fs-6 fw-normal"> {{ course }}: </h3>
           <p class="fs-5 fw-semibold m-0 text-end">
             {{ hour.toFixed(2) }}
             <span class="fs-6 fw-normal text-body-secondary"> hrs</span>
@@ -48,7 +48,7 @@ import { BCard } from "bootstrap-vue-next";
 
 export default {
   name: "StudentProfile",
-  components: { BCard},
+  components: { BCard },
   data() {
     return {
       visitStore: useVisitStore(),

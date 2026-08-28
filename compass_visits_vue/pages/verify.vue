@@ -9,11 +9,13 @@
           Your check-in isn't complete yet. Verify with the IC front desk, then refresh the page.
         </BAlert>
 
-        <div class="mt-auto text-center">
-          <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
-            {{ profile.student_name }}
-          </h2>
-          <visit-details :visit-data="visitDetails" />
+        <div v-if="profile">
+          <BCard class="bg-body-tertiary rounded-3" border-variant="0">
+            <h2 class="h2 fw-semibold ff-encode-sans text-center">
+              {{ profile.student_name }}
+            </h2>
+            <visit-details :visit-data="visitDetails" />
+          </BCard>
         </div>
       </div>
     </template>
@@ -32,11 +34,11 @@
   import DefaultLayout from "@/layouts/default.vue";
   import VisitDetails from "@/components/visit-details.vue";
   import { useVisitStore } from "@/stores/visit";
-  import { BAlert, BButton } from "bootstrap-vue-next";
+  import { BAlert, BButton, BCard } from "bootstrap-vue-next";
 
   export default {
     name: "Verify",
-    components: { DefaultLayout, BAlert, BButton, VisitDetails },
+    components: { DefaultLayout, BAlert, BButton, BCard, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };

@@ -9,18 +9,25 @@
           Check-in successful
         </BAlert>
 
-        <div class="mt-auto text-center">
-          <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
+        <BCard class="bg-body-tertiary rounded-3" border-variant="0">
+          <h2 class="h2 fw-semibold ff-encode-sans text-center">
             {{ profile.student_name }}
           </h2>
           <visit-details :visit-data="profile.visit" />
-          <div class="mb-2 pb-2">
-            <h3 class="fs-6 fw-semibold ff-open-sans mb-1">Time</h3>
-            {{ visitDuration }} <br />
-            (Total: {{ totalMinutes }} min)
+
+          <div class="d-flex align-items-center pt-4">
+            <i class="bi bi-hourglass-bottom fs-2 px-4"></i>
+            <div>
+              <h3 class="h6 fw-bold ff-open-sans m-0">Time</h3>
+              <p class="lead m-0">
+                {{ visitDuration }} (Total: {{ totalMinutes }} min)
+              </p>
+            </div>
           </div>
-        </div>
+
+        </BCard>
       </div>
+
       <div v-else>
         <div class="alert alert-danger" role="alert">
           <i class="bi bi-exclamation-octagon-fill"></i> You are not currently
@@ -44,18 +51,18 @@
   import DefaultLayout from "@/layouts/default.vue";
   import { useVisitStore } from "@/stores/visit";
   import VisitDetails from "@/components/visit-details.vue";
-  import { BAlert, BButton } from "bootstrap-vue-next";
+  import { BAlert, BButton, BCard } from "bootstrap-vue-next";
 
   export default {
     name: "Checkout",
-    components: { DefaultLayout, BAlert, BButton, VisitDetails },
+    components: { DefaultLayout, BAlert, BButton, BCard, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };
     },
     data() {
       return {
-        pageTitle: "Visit Verfied",
+        pageTitle: "Visit Verified",
         profile: null,
       };
     },
