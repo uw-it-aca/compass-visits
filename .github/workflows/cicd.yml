@@ -207,27 +207,16 @@ jobs:
           image_tag: ${{ needs.context.outputs.image_tag }}
           severity: 'HIGH,CRITICAL'
 
-      # Push the candidate under its content tag so a later merge can
-      # promote it instead of rebuilding. Restricted to same-repo PRs -
-      # pull_request runs from a fork don't get repo secrets, so without
-      # this guard a fork PR's build would fail verifying GCP credentials
-      # instead of just skipping the push as it always has.
-      - name: Push Candidate Image
-        if: >-
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.head.repo.full_name == github.repository
-        uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
-        with:
-          image_tag: ${{ needs.context.outputs.content_image_tag }}
-          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
-
-      # This job only runs when promote didn't already ship the image, so
-      # a plain event-name check is enough here.
+      # gcr-push decides what to push from the triggering event: a
+      # same-repo pull_request pushes the content-tagged candidate (so a
+      # later merge can promote it instead of rebuilding); a push pushes
+      # image_tag plus the content tag as an additional_tag, since this job
+      # only runs at all when promote didn't already ship the image.
       - name: Push Image to Repository
-        if: github.event_name == 'push'
         uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
+          content_image_tag: ${{ needs.context.outputs.content_image_tag }}
           additional_tags: ${{ needs.context.outputs.content_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
