@@ -53,11 +53,13 @@ jobs:
       commit_hash: ${{ steps.context.outputs.commit_hash }}
       git_repo_branch: ${{ steps.context.outputs.git_repo_branch }}
       image_tag: ${{ steps.context.outputs.image_tag }}
+      content_tag: ${{ steps.context.outputs.content_tag }}
+      content_image_tag: ${{ steps.context.outputs.content_image_tag }}
 
     steps:
       - name: Set up Context
         id: context
-        uses: uw-it-aca/actions/cicd-context@main
+        uses: uw-it-aca/actions/cicd-context@build-once-promote-on-merge
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
@@ -67,35 +69,59 @@ jobs:
     needs: context
 
     steps:
+      # Merge promotes an already-tested candidate image instead of
+      # rebuilding it; see build-once-promote-on-merge proposal. Only
+      # meaningful on push - on pull_request this step doesn't run, so
+      # steps.promote.outputs.promoted stays empty and every step below
+      # runs exactly as it did before this was added.
+      - name: Promote candidate image if one exists
+        id: promote
+        if: github.event_name == 'push'
+        uses: uw-it-aca/actions/gcr-promote@build-once-promote-on-merge
+        with:
+          image_tag: ${{ needs.context.outputs.image_tag }}
+          content_image_tag: ${{ needs.context.outputs.content_image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+
       - name: Checkout Repo
+        if: steps.promote.outputs.promoted != 'true'
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Python
+        if: steps.promote.outputs.promoted != 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
       - name: Set up Node.js
+        if: steps.promote.outputs.promoted != 'true'
         uses: actions/setup-node@v5
         with:
           node-version: '22'
 
       - name: Install JavaScript Dependencies
+        if: steps.promote.outputs.promoted != 'true'
         run: npm install
 
       - name: Run JavaScript Tests
+        if: steps.promote.outputs.promoted != 'true'
         run: npm test -- --run
 
       - name: Run Python Linters
+        if: steps.promote.outputs.promoted != 'true'
         uses: uw-it-aca/actions/python-linters@main
         with:
           app_name: ${{ env.DJANGO_APP }}
           exclude_paths: 'migrations'
 
       - name: Set up Docker Buildx
+        if: steps.promote.outputs.promoted != 'true'
         uses: docker/setup-buildx-action@v4
 
       - name: Cache Docker layers
+        if: steps.promote.outputs.promoted != 'true'
         uses: actions/cache@v5
         with:
           path: /tmp/.buildx-cache
@@ -103,18 +129,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      # Tagged both by commit and by content, so either a PR candidate
+      # push or a merge fallback push can use the same local image
+      # without rebuilding.
       - name: Build App Image
+        if: steps.promote.outputs.promoted != 'true'
         uses: docker/build-push-action@v7
         with:
           context: .
           target: app-container
-          tags: ${{ needs.context.outputs.image_tag }}
+          tags: |
+            ${{ needs.context.outputs.image_tag }}
+            ${{ needs.context.outputs.content_image_tag }}
           push: false
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Test Image
+        if: steps.promote.outputs.promoted != 'true'
         uses: docker/build-push-action@v7
         with:
           target: app-test-container
@@ -124,6 +157,7 @@ jobs:
 
       - name: Run Tests in Image
         id: tests
+        if: steps.promote.outputs.promoted != 'true'
         shell: bash
         run: >-
           docker run -u root -t
@@ -135,6 +169,7 @@ jobs:
           bash -c ". ./docker/test.sh"
 
       - name: Record Test Results
+        if: steps.promote.outputs.promoted != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -146,16 +181,35 @@ jobs:
 
       - name: Run vulnerability scan
         id: vuln-scan
+        if: steps.promote.outputs.promoted != 'true'
         uses: uw-it-aca/actions/container-vuln-scan@main
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           severity: 'HIGH,CRITICAL'
 
+      # Push the candidate under its content tag so a later merge can
+      # promote it instead of rebuilding. Restricted to same-repo PRs -
+      # pull_request runs from a fork don't get repo secrets, so without
+      # this guard a fork PR's build would fail verifying GCP credentials
+      # instead of just skipping the push as it always has.
+      - name: Push Candidate Image
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
+        with:
+          image_tag: ${{ needs.context.outputs.content_image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+
+      # Fallback full-build push: only runs when no candidate was found to
+      # promote. Also pushes the content tag so this tree becomes
+      # promotable for any future commit that lands with identical content.
       - name: Push Image to Repository
-        if: github.event_name == 'push'
-        uses: uw-it-aca/actions/gcr-push@main
+        if: github.event_name == 'push' && steps.promote.outputs.promoted != 'true'
+        uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
+          additional_tags: ${{ needs.context.outputs.content_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   deploy:
