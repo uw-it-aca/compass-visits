@@ -53,22 +53,57 @@ jobs:
       commit_hash: ${{ steps.context.outputs.commit_hash }}
       git_repo_branch: ${{ steps.context.outputs.git_repo_branch }}
       image_tag: ${{ steps.context.outputs.image_tag }}
+      content_tag: ${{ steps.context.outputs.content_tag }}
+      content_image_tag: ${{ steps.context.outputs.content_image_tag }}
 
     steps:
       - name: Set up Context
         id: context
-        uses: uw-it-aca/actions/cicd-context@main
+        uses: uw-it-aca/actions/cicd-context@build-once-promote-on-merge
         with:
           release_name: ${{ env.RELEASE_NAME }}
+
+  # Merge promotes an already-tested candidate image instead of rebuilding
+  # it; see build-once-promote-on-merge proposal. Only meaningful on push -
+  # on pull_request this job doesn't run, so needs.promote.outputs.promoted
+  # is empty and the build job below runs exactly as it did before this
+  # was added.
+  promote:
+    runs-on: ubuntu-24.04
+
+    if: github.event_name == 'push'
+
+    needs: context
+
+    outputs:
+      promoted: ${{ steps.promote.outputs.promoted }}
+
+    steps:
+      - name: Promote candidate image if one exists
+        id: promote
+        uses: uw-it-aca/actions/gcr-promote@build-once-promote-on-merge
+        with:
+          image_tag: ${{ needs.context.outputs.image_tag }}
+          content_image_tag: ${{ needs.context.outputs.content_image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   build:
     runs-on: ubuntu-24.04
 
-    needs: context
+    # Runs whenever promote didn't already ship this exact content -
+    # skipped entirely on a successful promotion. !failure() && !cancelled()
+    # (rather than the implicit default) is needed because promote is
+    # itself skipped on pull_request events, and a skipped dependency
+    # would otherwise skip this job too.
+    if: ${{ !failure() && !cancelled() && needs.promote.outputs.promoted != 'true' }}
+
+    needs: [context, promote]
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -119,12 +154,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      # Tagged both by commit and by content, so either a PR candidate
+      # push or a merge fallback push can use the same local image
+      # without rebuilding.
       - name: Build App Image
         uses: docker/build-push-action@v7
         with:
           context: .
           target: app-container
-          tags: ${{ needs.context.outputs.image_tag }}
+          tags: |
+            ${{ needs.context.outputs.image_tag }}
+            ${{ needs.context.outputs.content_image_tag }}
           push: false
           load: true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -167,17 +207,36 @@ jobs:
           image_tag: ${{ needs.context.outputs.image_tag }}
           severity: 'HIGH,CRITICAL'
 
+      # Push the candidate under its content tag so a later merge can
+      # promote it instead of rebuilding. Restricted to same-repo PRs -
+      # pull_request runs from a fork don't get repo secrets, so without
+      # this guard a fork PR's build would fail verifying GCP credentials
+      # instead of just skipping the push as it always has.
+      - name: Push Candidate Image
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
+        with:
+          image_tag: ${{ needs.context.outputs.content_image_tag }}
+          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+
+      # This job only runs when promote didn't already ship the image, so
+      # a plain event-name check is enough here.
       - name: Push Image to Repository
         if: github.event_name == 'push'
-        uses: uw-it-aca/actions/gcr-push@main
+        uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
+          additional_tags: ${{ needs.context.outputs.content_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   deploy:
-    if: github.event_name == 'push'
+    # !failure() && !cancelled(): build is legitimately skipped whenever
+    # promote shipped the image already, and that must not skip deploy too.
+    if: ${{ !failure() && !cancelled() && github.event_name == 'push' }}
 
-    needs: [context, build]
+    needs: [context, promote, build]
 
     outputs:
       context: ${{ steps.context.outputs.context }}
@@ -215,9 +274,11 @@ jobs:
         run: echo "context=$(< ${CONTEXT_FILENAME})" >> $GITHUB_OUTPUT
 
   housekeeping:
-    if: github.event_name == 'push'
+    # !failure() && !cancelled(): same reasoning as deploy - build may be
+    # legitimately skipped, that alone must not skip housekeeping too.
+    if: ${{ !failure() && !cancelled() && github.event_name == 'push' }}
 
-    needs: [context, build, deploy]
+    needs: [context, promote, build, deploy]
 
     runs-on: ubuntu-24.04
 
