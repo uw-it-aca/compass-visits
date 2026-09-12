@@ -63,65 +63,74 @@ jobs:
         with:
           release_name: ${{ env.RELEASE_NAME }}
 
-  build:
+  # Merge promotes an already-tested candidate image instead of rebuilding
+  # it; see build-once-promote-on-merge proposal. Only meaningful on push -
+  # on pull_request this job doesn't run, so needs.promote.outputs.promoted
+  # is empty and the build job below runs exactly as it did before this
+  # was added.
+  promote:
     runs-on: ubuntu-24.04
+
+    if: github.event_name == 'push'
 
     needs: context
 
+    outputs:
+      promoted: ${{ steps.promote.outputs.promoted }}
+
     steps:
-      # Merge promotes an already-tested candidate image instead of
-      # rebuilding it; see build-once-promote-on-merge proposal. Only
-      # meaningful on push - on pull_request this step doesn't run, so
-      # steps.promote.outputs.promoted stays empty and every step below
-      # runs exactly as it did before this was added.
       - name: Promote candidate image if one exists
         id: promote
-        if: github.event_name == 'push'
         uses: uw-it-aca/actions/gcr-promote@build-once-promote-on-merge
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           content_image_tag: ${{ needs.context.outputs.content_image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
+  build:
+    runs-on: ubuntu-24.04
+
+    # Runs whenever promote didn't already ship this exact content -
+    # skipped entirely on a successful promotion. !failure() && !cancelled()
+    # (rather than the implicit default) is needed because promote is
+    # itself skipped on pull_request events, and a skipped dependency
+    # would otherwise skip this job too.
+    if: ${{ !failure() && !cancelled() && needs.promote.outputs.promoted != 'true' }}
+
+    needs: [context, promote]
+
+    steps:
       - name: Checkout Repo
-        if: steps.promote.outputs.promoted != 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Python
-        if: steps.promote.outputs.promoted != 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
       - name: Set up Node.js
-        if: steps.promote.outputs.promoted != 'true'
         uses: actions/setup-node@v5
         with:
           node-version: '22'
 
       - name: Install JavaScript Dependencies
-        if: steps.promote.outputs.promoted != 'true'
         run: npm install
 
       - name: Run JavaScript Tests
-        if: steps.promote.outputs.promoted != 'true'
         run: npm test -- --run
 
       - name: Run Python Linters
-        if: steps.promote.outputs.promoted != 'true'
         uses: uw-it-aca/actions/python-linters@main
         with:
           app_name: ${{ env.DJANGO_APP }}
           exclude_paths: 'migrations'
 
       - name: Set up Docker Buildx
-        if: steps.promote.outputs.promoted != 'true'
         uses: docker/setup-buildx-action@v4
 
       - name: Cache Docker layers
-        if: steps.promote.outputs.promoted != 'true'
         uses: actions/cache@v5
         with:
           path: /tmp/.buildx-cache
@@ -133,7 +142,6 @@ jobs:
       # push or a merge fallback push can use the same local image
       # without rebuilding.
       - name: Build App Image
-        if: steps.promote.outputs.promoted != 'true'
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -147,7 +155,6 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Test Image
-        if: steps.promote.outputs.promoted != 'true'
         uses: docker/build-push-action@v7
         with:
           target: app-test-container
@@ -157,7 +164,6 @@ jobs:
 
       - name: Run Tests in Image
         id: tests
-        if: steps.promote.outputs.promoted != 'true'
         shell: bash
         run: >-
           docker run -u root -t
@@ -169,7 +175,6 @@ jobs:
           bash -c ". ./docker/test.sh"
 
       - name: Record Test Results
-        if: steps.promote.outputs.promoted != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -181,7 +186,6 @@ jobs:
 
       - name: Run vulnerability scan
         id: vuln-scan
-        if: steps.promote.outputs.promoted != 'true'
         uses: uw-it-aca/actions/container-vuln-scan@main
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
@@ -201,11 +205,10 @@ jobs:
           image_tag: ${{ needs.context.outputs.content_image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
-      # Fallback full-build push: only runs when no candidate was found to
-      # promote. Also pushes the content tag so this tree becomes
-      # promotable for any future commit that lands with identical content.
+      # This job only runs when promote didn't already ship the image, so
+      # a plain event-name check is enough here.
       - name: Push Image to Repository
-        if: github.event_name == 'push' && steps.promote.outputs.promoted != 'true'
+        if: github.event_name == 'push'
         uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
@@ -213,9 +216,11 @@ jobs:
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
   deploy:
-    if: github.event_name == 'push'
+    # !failure() && !cancelled(): build is legitimately skipped whenever
+    # promote shipped the image already, and that must not skip deploy too.
+    if: ${{ !failure() && !cancelled() && github.event_name == 'push' }}
 
-    needs: [context, build]
+    needs: [context, promote, build]
 
     outputs:
       context: ${{ steps.context.outputs.context }}
@@ -253,9 +258,11 @@ jobs:
         run: echo "context=$(< ${CONTEXT_FILENAME})" >> $GITHUB_OUTPUT
 
   housekeeping:
-    if: github.event_name == 'push'
+    # !failure() && !cancelled(): same reasoning as deploy - build may be
+    # legitimately skipped, that alone must not skip housekeeping too.
+    if: ${{ !failure() && !cancelled() && github.event_name == 'push' }}
 
-    needs: [context, build, deploy]
+    needs: [context, promote, build, deploy]
 
     runs-on: ubuntu-24.04
 
