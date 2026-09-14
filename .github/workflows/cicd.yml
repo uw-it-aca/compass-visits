@@ -220,7 +220,7 @@ jobs:
 
       - name: Run vulnerability scan
         id: vuln-scan
-        uses: uw-it-aca/actions/container-vuln-scan@main
+        uses: uw-it-aca/actions/container-vuln-scan@build-once-promote-on-merge
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           severity: 'HIGH,CRITICAL'
