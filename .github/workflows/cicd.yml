@@ -75,6 +75,11 @@ jobs:
 
     needs: context
 
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+
     outputs:
       promoted: ${{ steps.promote.outputs.promoted }}
 
@@ -86,6 +91,16 @@ jobs:
           image_tag: ${{ needs.context.outputs.image_tag }}
           content_image_tag: ${{ needs.context.outputs.content_image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+
+      # Reuses the PR build's already-computed coverage/vuln-scan reports,
+      # attributed to this merge commit, instead of leaving Coveralls and
+      # the Security tab with no result for a promoted commit.
+      - name: Reuse PR coverage/scan reports
+        if: steps.promote.outputs.promoted == 'true'
+        uses: uw-it-aca/actions/promote-reports@build-once-promote-on-merge
+        with:
+          content_tag: ${{ needs.context.outputs.content_tag }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     runs-on: ubuntu-24.04
@@ -206,6 +221,19 @@ jobs:
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           severity: 'HIGH,CRITICAL'
+
+      # Lets a promoted merge reuse this run's coverage/vuln-scan reports
+      # instead of having none at all for the merge commit - see
+      # promote-reports.
+      - name: Preserve reports for reuse on promotion
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ needs.context.outputs.content_tag }}
+          path: |
+            .coverage
+            trivy-results.sarif
+          if-no-files-found: warn
+          retention-days: 14
 
       # gcr-push decides what to push from the triggering event: a
       # same-repo pull_request pushes the content-tagged candidate (so a
