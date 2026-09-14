@@ -75,6 +75,11 @@ jobs:
 
     needs: context
 
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+
     outputs:
       promoted: ${{ steps.promote.outputs.promoted }}
 
@@ -86,6 +91,16 @@ jobs:
           image_tag: ${{ needs.context.outputs.image_tag }}
           content_image_tag: ${{ needs.context.outputs.content_image_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+
+      # Reuses the PR build's already-computed coverage/vuln-scan reports,
+      # attributed to this merge commit, instead of leaving Coveralls and
+      # the Security tab with no result for a promoted commit.
+      - name: Reuse PR coverage/scan reports
+        if: steps.promote.outputs.promoted == 'true'
+        uses: uw-it-aca/actions/promote-reports@build-once-promote-on-merge
+        with:
+          content_tag: ${{ needs.context.outputs.content_tag }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     runs-on: ubuntu-24.04
@@ -207,27 +222,32 @@ jobs:
           image_tag: ${{ needs.context.outputs.image_tag }}
           severity: 'HIGH,CRITICAL'
 
-      # Push the candidate under its content tag so a later merge can
-      # promote it instead of rebuilding. Restricted to same-repo PRs -
-      # pull_request runs from a fork don't get repo secrets, so without
-      # this guard a fork PR's build would fail verifying GCP credentials
-      # instead of just skipping the push as it always has.
-      - name: Push Candidate Image
-        if: >-
-          github.event_name == 'pull_request' &&
-          github.event.pull_request.head.repo.full_name == github.repository
-        uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
+      # Lets a promoted merge reuse this run's coverage/vuln-scan reports
+      # instead of having none at all for the merge commit - see
+      # promote-reports.
+      - name: Preserve reports for reuse on promotion
+        uses: actions/upload-artifact@v4
         with:
-          image_tag: ${{ needs.context.outputs.content_image_tag }}
-          gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
+          name: reports-${{ needs.context.outputs.content_tag }}
+          path: |
+            .coverage
+            trivy-results.sarif
+          if-no-files-found: warn
+          retention-days: 14
+          # .coverage is a dotfile - upload-artifact excludes hidden files
+          # by default and silently drops it without this.
+          include-hidden-files: true
 
-      # This job only runs when promote didn't already ship the image, so
-      # a plain event-name check is enough here.
+      # gcr-push decides what to push from the triggering event: a
+      # same-repo pull_request pushes the content-tagged candidate (so a
+      # later merge can promote it instead of rebuilding); a push pushes
+      # image_tag plus the content tag as an additional_tag, since this job
+      # only runs at all when promote didn't already ship the image.
       - name: Push Image to Repository
-        if: github.event_name == 'push'
         uses: uw-it-aca/actions/gcr-push@build-once-promote-on-merge
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
+          content_image_tag: ${{ needs.context.outputs.content_image_tag }}
           additional_tags: ${{ needs.context.outputs.content_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
