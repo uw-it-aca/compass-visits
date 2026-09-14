@@ -234,6 +234,9 @@ jobs:
             trivy-results.sarif
           if-no-files-found: warn
           retention-days: 14
+          # .coverage is a dotfile - upload-artifact excludes hidden files
+          # by default and silently drops it without this.
+          include-hidden-files: true
 
       # gcr-push decides what to push from the triggering event: a
       # same-repo pull_request pushes the content-tagged candidate (so a
