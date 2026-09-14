@@ -104,6 +104,8 @@ jobs:
         with:
           content_tag: ${{ needs.context.outputs.content_tag }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Must match container-vuln-scan's category below exactly.
+          category: 'trivy'
 
   build:
     runs-on: ubuntu-24.04
@@ -224,6 +226,8 @@ jobs:
         with:
           image_tag: ${{ needs.context.outputs.image_tag }}
           severity: 'HIGH,CRITICAL'
+          # Must match promote-reports' category above exactly.
+          category: 'trivy'
 
       # Lets a promoted merge reuse this run's coverage/vuln-scan reports
       # instead of having none at all for the merge commit - see
