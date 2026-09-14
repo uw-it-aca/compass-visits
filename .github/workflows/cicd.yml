@@ -97,6 +97,9 @@ jobs:
       # the Security tab with no result for a promoted commit.
       - name: Reuse PR coverage/scan reports
         if: steps.promote.outputs.promoted == 'true'
+        # Best-effort like Record Test Results: a bug or hiccup in report
+        # reuse must never block the actual deploy that promote enables.
+        continue-on-error: true
         uses: uw-it-aca/actions/promote-reports@build-once-promote-on-merge
         with:
           content_tag: ${{ needs.context.outputs.content_tag }}
