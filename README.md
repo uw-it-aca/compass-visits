@@ -43,4 +43,6 @@ PR builds push a content-addressed candidate image; merging promotes it
 (registry-side, no rebuild) instead of building again when the merge
 commit's tree matches. See
 [uw-it-aca/actions](https://github.com/uw-it-aca/actions) (`gcr-promote`,
-`cicd-context`) for the mechanism.
+`cicd-context`) for the mechanism. Coverage and vulnerability-scan
+reports from the PR build are reused (not rebuilt) on a promoted merge,
+attributed to the merge commit via `promote-reports`.
