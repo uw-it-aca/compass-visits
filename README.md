@@ -36,3 +36,11 @@ An application for managing advising center checkins for Compass.
 - Pycodestyle (2.8.x)
 - ESLint (8.13.x)
 - Stylelint (14.7.x)
+
+## CI/CD
+
+PR builds push a content-addressed candidate image; merging promotes it
+(registry-side, no rebuild) instead of building again when the merge
+commit's tree matches. See
+[uw-it-aca/actions](https://github.com/uw-it-aca/actions) (`gcr-promote`,
+`cicd-context`) for the mechanism.
