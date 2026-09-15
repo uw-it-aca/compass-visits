@@ -4,22 +4,33 @@
   <DefaultLayout :page-title="pageTitle">
     <template #content>
       <div v-if="showCheckout" class="d-flex flex-column">
+        <!--- alert or no alert
         <BAlert :model-value="true" variant="success" dismissible class="mb-4">
           <i class="bi-check-circle-fill me-1"></i>
           Check-in successful
         </BAlert>
-
-        <BCard class="bg-body-tertiary rounded-3" border-variant="0">
-          <h2 class="h2 fw-semibold ff-encode-sans text-center">
+        -->
+        <BCard class="bg-husky-gold-subtle bg-opacity-50 rounded-3" border-variant="0">
+          <div class="d-flex justify-content-end pb-1">
+            <span class="badge bg-success rounded-pill fw-semibold">
+              Verified
+            </span>
+          </div>
+          <h2 class="fw-semibold ff-open-sans h4 text-center">
             {{ profile.student_name }}
           </h2>
+          <h3 class="fs-6 fw-normal text-center"> {{ profile.student_number }} </h3>
+          <hr class="border-secondary py-1">
           <visit-details :visit-data="profile.visit" />
 
           <div class="d-flex align-items-center pt-4">
             <i class="bi bi-hourglass-bottom fs-2 px-4"></i>
             <div>
-              <h3 class="h6 fw-bold ff-open-sans m-0">Time</h3>
-              <p class="lead m-0">
+              <h3 class="h6 fw-bold ff-open-sans m-0">
+                Time 
+                <i class="bi bi-check-circle-fill text-success ps-1"></i>
+              </h3>
+              <p class="m-0">
                 {{ visitDuration }} (Total: {{ totalMinutes }} min)
               </p>
             </div>
@@ -62,7 +73,7 @@
     },
     data() {
       return {
-        pageTitle: "Visit Verified",
+        pageTitle: "Current Visit",
         profile: null,
       };
     },

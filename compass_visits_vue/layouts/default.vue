@@ -20,7 +20,7 @@
 
     <h1
       :class="[
-        'fs-5 ff-open-sans m-2 py-1 text-center',
+        'fw-semibold ff-open-sans h3',
         { 'visually-hidden': hideTitle },
       ]"
     >

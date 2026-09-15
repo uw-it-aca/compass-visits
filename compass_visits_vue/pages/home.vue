@@ -1,7 +1,7 @@
 // home.vue
 
 <template>
-  <DefaultLayout :page-title="pageTitle" hide-title>
+  <DefaultLayout :page-title="pageTitle">
     <template #content>
       <div class="d-flex flex-column" style="">
         <div class="mt-auto pb-2">
@@ -57,7 +57,7 @@
     },
     computed: {
       pageTitle() {
-        return this.profile?.student_name || "Home";
+        return "My Visits";
       },
     },
     created() {
