@@ -55,7 +55,7 @@
     },
     data() {
       return {
-        pageTitle: "Visit Verfied",
+        pageTitle: "Visit Verified",
         profile: null,
       };
     },
