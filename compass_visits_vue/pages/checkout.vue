@@ -73,7 +73,7 @@
     },
     data() {
       return {
-        pageTitle: "Current Visit",
+        pageTitle: "Visit Verfied",
         profile: null,
       };
     },
