@@ -4,8 +4,8 @@
   <DefaultLayout :page-title="pageTitle">
     <template #content>
       <div class="d-flex flex-column" style="">
-        <div class="mt-auto pb-2">
-          <StudentProfile :profile="profile" />
+        <div>
+          <StudentProfile :profile="profile"/>
         </div>
 
         <div v-if="profile && !isElligible" class="text-center">

@@ -8,25 +8,33 @@
       >
         <p>{{ userOfficial }}, {{ userPreferred }}, {{ userNetid }}</p>
         <template #action>
-          <a :href="signOutUrl" class="link-quiet-danger"
-            ><i class="bi bi-x-circle me-1"></i>Sign out now</a
-          >
+          <a :href="signOutUrl" class="link-quiet-danger">
+            <i class="bi bi-x-circle me-1"></i>Sign out now</a>
         </template>
       </SUser>
-      <SColorMode color-class="text-body" class="ms-3"></SColorMode>
+
+      <SColorMode color-class="text-body"></SColorMode>
+
+      <BButton 
+        v-b-toggle.offcanvas-border 
+        variant="outline-secondary"
+        >About
+      </BButton>
     </template>
 
     <template #main>
       <h1
         :class="[
-          'fw-bold ff-encode-sans my-4',
+          'fw-bold ff-encode-sans mb-3',
           { 'visually-hidden': hideTitle },
         ]"
       >
         {{ pageTitle }}
       </h1>
 
+      <!---
       <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
+      -->
 
       <div class="">
         <slot name="content" />
@@ -73,12 +81,19 @@
 <script>
   import { STopbarBlanco, SUser, SColorMode } from "solstice-vue";
   import { useVisitStore } from "@/stores/visit";
-  import { BButton, BOffcanvas, vBToggle } from "bootstrap-vue-next";
+  import { BButton, BDropdown, BOffcanvas, vBToggle } from "bootstrap-vue-next";
   import { ref, onMounted, onUnmounted } from "vue";
 
   export default {
     name: "DefaultLayout",
-    components: { STopbarBlanco, SUser, SColorMode, BButton, BOffcanvas },
+    components: {
+      STopbarBlanco,
+      SUser,
+      SColorMode,
+      BButton,
+      BDropdown,
+      BOffcanvas,
+    },
     directives: { "b-toggle": vBToggle },
     props: {
       pageTitle: {

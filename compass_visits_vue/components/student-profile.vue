@@ -2,18 +2,22 @@
 
 <template>
   <div v-if="showProfile">
-    <div class="text-center pb-3">
-      <img
-        v-if="profileData.photo"
-        :src="`data:image/png;base64,${profileData.photo}`"
-        alt="Profile Image"
-        class="img-profile rounded-circle"
-      />
-      <div v-else class="profile-photo-placeholder" aria-hidden="true"></div>
-      <h2 class="fw-normal ff-open-sans mt-3">
-        {{ profileData.student_name }}
-      </h2>
-      <h3 class="fs-6 fw-normal text-center"> {{ profileData.student_number }} </h3>
+    <div class="d-flex justify-content-start mt-2 mb-4">
+      <div class="mx-3">
+        <img
+          v-if="profileData.photo"
+          :src="`data:image/png;base64,${profileData.photo}`"
+          alt="Profile Image"
+          class="img-profile rounded-circle"
+        />
+        <div v-else class="profile-photo-placeholder" aria-hidden="true"></div>
+      </div>
+      <div class="ms-2 my-auto">
+        <h2 class="fw-normal ff-open-sans">
+          {{ profileData.student_name }}
+        </h2>
+        <h3 class="fs-6 fw-normal"> {{ profileData.student_number }} </h3>
+      </div>
     </div>
 
     <div class="pb-2">
