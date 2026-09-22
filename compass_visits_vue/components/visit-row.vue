@@ -9,9 +9,11 @@
     </div>
 
     <div class="col pb-4">
-      {{ visitTitle }} ({{ visit.active_minutes }} min)
+      {{ visitTitle }} 
       <br />
-      <small class="text-body-secondary">{{ dateString }}</small>
+      <small class="text-body-secondary">
+        {{ dateString }} ({{ visit.active_minutes }} min)
+      </small>
     </div>
   </div>
 </template>

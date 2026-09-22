@@ -1,46 +1,65 @@
 <template>
-  <div class="container">
-    <div class="p-3">
-      <SProfile
-        :variant="'flyout'"
+  <STopbarBlanco :app-name="appName" :app-root-url="appRootUrl">
+    <template #settings>
+      <SUser
         :user-netid="userNetid"
-        :user-official-name="userOfficial"
-        :user-preferred-name="userPreferred"
-        :profile-url="'https://identity.uw.edu'"
-        :signout-url="signOutUrl"
-        class="text-dark"
-      ></SProfile>
-      <SColorMode color-class="text-body" class="ms-3"></SColorMode>
+        :photo-url="'https://randomuser.me/api/portraits/men/66.jpg'"
+        :mode="'dynamic'"
+      >
+        <p>{{ userOfficial }}, {{ userPreferred }}, {{ userNetid }}</p>
+        <template #action>
+          <a :href="signOutUrl" class="link-quiet-danger">
+            <i class="bi bi-x-circle me-1"></i>Sign out now</a>
+        </template>
+      </SUser>
+
+      <SColorMode color-class="text-body"></SColorMode>
+
+      <BButton 
+        v-b-toggle.offcanvas-border 
+        variant="outline-secondary"
+        >About
+      </BButton>
+    </template>
+
+    <template #main>
+      <h1
+        :class="[
+          'fw-bold ff-encode-sans mb-3',
+          { 'visually-hidden': hideTitle },
+        ]"
+      >
+        {{ pageTitle }}
+      </h1>
+
+      <!---
       <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
-    </div>
+      -->
 
-    <h1
-      :class="[
-        'fs-5 ff-open-sans m-2 py-1 text-center',
-        { 'visually-hidden': hideTitle },
-      ]"
-    >
-      {{ pageTitle }}
-    </h1>
-    <div class="p-3">
-      <slot name="content" />
-    </div>
-
-    <div
-      v-if="$slots.action"
-      class="fixed-bottom bg-body"
-      style="box-shadow: 0 -0.25rem 0.4rem rgba(0, 0, 0, 0.15)"
-    >
-      <div class="d-flex flex-column row-gap-2 container mb-0 p-3">
-        <slot name="action" />
+      <div class="">
+        <slot name="content" />
       </div>
-    </div>
-  </div>
+
+      <div
+        v-if="$slots.action"
+        :class="['fixed-bottom', bgClass]"
+        style="box-shadow: 0 -0.25rem 0.4rem rgba(0, 0, 0, 0.15)"
+      >
+        <div class="d-flex flex-column row-gap-2 container mb-0 p-3">
+          <slot name="action" />
+        </div>
+      </div>
+    </template>
+  </STopbarBlanco>
+
   <BOffcanvas
     id="offcanvas-border"
-    class="bg-body rounded-top w-100"
+    class="w-100"
+    :header-class="bgClass"
+    :body-class="bgClass"
     placement="bottom-start"
-    shadow="lg"
+    style="box-shadow: 0 -0.25rem 0.4rem rgba(0, 0, 0, 0.15)"
+    no-backdrop
   >
     <div class="container">
       <h2>{{ appName }}</h2>
@@ -60,13 +79,21 @@
 </template>
 
 <script>
-  import { SProfile, SColorMode } from "solstice-vue";
+  import { STopbarBlanco, SUser, SColorMode } from "solstice-vue";
   import { useVisitStore } from "@/stores/visit";
-  import { BButton, BOffcanvas, vBToggle } from "bootstrap-vue-next";
+  import { BButton, BDropdown, BOffcanvas, vBToggle } from "bootstrap-vue-next";
+  import { ref, onMounted, onUnmounted } from "vue";
 
   export default {
     name: "DefaultLayout",
-    components: { SProfile, SColorMode, BButton, BOffcanvas },
+    components: {
+      STopbarBlanco,
+      SUser,
+      SColorMode,
+      BButton,
+      BDropdown,
+      BOffcanvas,
+    },
     directives: { "b-toggle": vBToggle },
     props: {
       pageTitle: {
@@ -80,12 +107,38 @@
     },
     setup() {
       const visitStore = useVisitStore();
-      return { visitStore };
+
+      // Track Bootstrap's color mode (data-bs-theme on <html>) reactively so
+      // backgrounds can switch: bg-body-tertiary (dark) / bg-body (light).
+      const colorMode = ref(
+        document.documentElement.getAttribute("data-bs-theme") || "light"
+      );
+      let observer = null;
+
+      onMounted(() => {
+        observer = new MutationObserver(() => {
+          colorMode.value =
+            document.documentElement.getAttribute("data-bs-theme") || "light";
+        });
+        observer.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["data-bs-theme"],
+        });
+      });
+
+      onUnmounted(() => {
+        if (observer) {
+          observer.disconnect();
+          observer = null;
+        }
+      });
+
+      return { visitStore, colorMode };
     },
     data() {
       return {
         // minimum application setup overrides
-        appName: "IC Visits",
+        appName: "Kiosk",
         appRootUrl: "/",
         // automatically set year
         currentYear: new Date().getFullYear(),
@@ -94,6 +147,9 @@
       };
     },
     computed: {
+      bgClass() {
+        return this.colorMode === "dark" ? "bg-body-tertiary" : "bg-body";
+      },
       userNetid() {
         return this.visitStore.studentProfile?.data?.netid || "";
       },
@@ -129,22 +185,37 @@
 </style>
 
 <style>
-  .offcanvas.offcanvas-bottom-start {
-    height: 50vh;
-    transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /*
+   * The responsive-offcanvas base rule (.offcanvas { position: static;
+   * z-index: auto; transform: none !important; }) strips positioning from
+   * our About offcanvas. Without a stacking context it renders in normal
+   * flow and gets covered by the .fixed-bottom #action bar (z-index 1030)
+   * on pages that use the action slot (e.g. verify.vue). Force it back to a
+   * fixed overlay above that bar and restore the slide transition.
+   */
+  #offcanvas-border.offcanvas {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1046 !important; /* above .fixed-bottom (1030) and bs backdrop (1040) */
+    height: 50vh !important;
+    width: 100% !important;
+    background-color: var(--bs-body-bg) !important;
+    transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
     will-change: transform;
+  }
+
+  #offcanvas-border.offcanvas:not(.show) {
+    transform: translateY(100%) translateZ(0) !important;
+  }
+
+  #offcanvas-border.offcanvas.showing,
+  #offcanvas-border.offcanvas.show:not(.hiding) {
+    transform: translateY(0) translateZ(0) !important;
   }
 
   .offcanvas-backdrop {
     transition: opacity 0.4s ease;
-  }
-
-  .offcanvas.showing,
-  .offcanvas.show:not(.hiding) {
-    transform: translateY(0) translateZ(0);
-  }
-
-  .offcanvas.offcanvas-bottom-start:not(.show) {
-    transform: translateY(100%) translateZ(0);
   }
 </style>
