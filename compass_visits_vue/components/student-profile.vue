@@ -22,7 +22,7 @@
 
     <div class="pb-2">
       <BCard class="bg-body-tertiary rounded-3" border-variant="0">
-        <h3 class="fs-6 fw-normal">Total:</h3>
+        <h3 class="fs-6 fw-normal">Total hour:</h3>
         <p class="fs-1 fw-bold m-0 text-end">
           {{ totalHour.toFixed(2) }}
           <span class="fs-6 fw-normal text-body-secondary"> hrs </span>
@@ -70,10 +70,7 @@ export default {
       return Boolean(this.visitStore.studentProfile.data);
     },
     totalHour() {
-      if (this.visitStore.studentProfile.data) {
-        return this.visitStore.totalMinutes / 60;
-      }
-      return 0;
+      return this.visitStore.totalMinutes / 60;
     },
     totalVisits() {
       const visits = this.visitStore.studentVisitList.data;
