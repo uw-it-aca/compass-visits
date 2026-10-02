@@ -1,7 +1,7 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from compass_visits.dao.compass import Compass
 from compass_visits.dao.visit_dao import map_visit_to_compass_model
@@ -65,6 +65,3 @@ class Command(BaseCommand):
             f"Processed={total} Synced={synced} "
             f"Deleted={synced} Failed={failed}"
         )
-
-        if failed:
-            raise CommandError(f"Failed to sync {failed} visit(s)")

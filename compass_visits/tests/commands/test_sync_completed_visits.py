@@ -1,10 +1,10 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
+from io import StringIO
 from unittest.mock import patch
 
 from django.core.management import call_command
-from django.core.management.base import CommandError
 from django.utils import timezone
 
 from compass_visits.models import Visit
@@ -65,10 +65,13 @@ class TestSyncCompletedVisits(CompassVisitsTestCase):
         mock_compass = mock_compass_cls.return_value
         mock_compass.store_visit.side_effect = Exception("boom")
 
-        with self.assertRaises(CommandError):
-            call_command("sync_completed_visits")
+        out, err = StringIO(), StringIO()
+        call_command("sync_completed_visits", stdout=out, stderr=err)
 
         self.assertTrue(Visit.objects.filter(id=visit.id).exists())
+        self.assertIn(f"Failed visit id={visit.id}", err.getvalue())
+        self.assertIn("boom", err.getvalue())
+        self.assertIn("Failed=1", out.getvalue())
 
     @patch("compass_visits.management.commands.sync_completed_visits.Compass")
     @patch(
