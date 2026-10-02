@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+import logging
 
 from compass_visits.dao.visit_dao import (
     get_completed_visits_by_syskey,
@@ -13,6 +14,8 @@ from compass_visits.dao.visit_dao import (
 from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
 from compass_visits.views.api import RESTDispatchToken
+
+logger = logging.getLogger(__name__)
 
 
 class VisitAdminListView(RESTDispatchToken):
@@ -89,6 +92,7 @@ class ManageVisitsView(RESTDispatchToken):
         except Visit.DoesNotExist:
             return self.error_response(status=404, message="Visit not found")
         except ValidationError as e:
+            logger.warning("Update visit %s rejected: %s", visit_id, e)
             return self.error_response(status=400, message=e)
 
     def post(self, request, *args, **kwargs):
@@ -116,6 +120,7 @@ class ManageVisitsView(RESTDispatchToken):
             visit = manager_create_visit_from_request(request_body)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:
+            logger.warning("Create visit rejected: %s", e)
             return self.error_response(status=400, message=e)
 
     def delete(self, request, visit_id, *args, **kwargs):

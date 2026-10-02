@@ -154,6 +154,25 @@ class VisitExternalAPITestCase(APITokenTestCase):
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'student_syskey is required')
 
+    def test_manage_visits_post_integer_program_area(self):
+        new_visit_data = {
+            'student_syskey': '000043868',
+            'program_area': 27,
+            'tutoring_option': 2,
+            'course': 'G H 401',
+            'writing_service': None,
+        }
+        logger_name = 'compass_visits.views.api.external.visit_external'
+        with self.assertLogs(logger_name, level='WARNING') as logs:
+            response = self.post_response('manage_visits',
+                                          token='Token testtoken',
+                                          data=new_visit_data
+                                          )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'Invalid program_area')
+        self.assertIn('Create visit rejected: Invalid program_area',
+                      logs.output[0])
+
     def test_manage_visits_delete(self):
         response = self.delete_response('manage_visit',
                                         url_args={'visit_id': 3},
