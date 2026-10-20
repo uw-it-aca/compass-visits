@@ -4,23 +4,41 @@
   <DefaultLayout :page-title="pageTitle">
     <template #content>
       <div v-if="showCheckout" class="d-flex flex-column">
+        <!--- alert or no alert
         <BAlert :model-value="true" variant="success" dismissible class="mb-4">
           <i class="bi-check-circle-fill me-1"></i>
           Check-in successful
         </BAlert>
-
-        <div class="mt-auto text-center">
-          <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
+        -->
+        <BCard class="bg-husky-gold-subtle bg-opacity-50 rounded-3" border-variant="0">
+          <div class="d-flex justify-content-end pb-1">
+            <span class="badge bg-success rounded-pill fw-semibold">
+              Verified
+            </span>
+          </div>
+          <h2 class="fw-semibold ff-open-sans h4 text-center">
             {{ profile.student_name }}
           </h2>
+          <h3 class="fs-6 fw-normal text-center"> {{ profile.student_number }} </h3>
+          <hr class="border-secondary py-1">
           <visit-details :visit-data="profile.visit" />
-          <div class="mb-2 pb-2">
-            <h3 class="fs-6 fw-semibold ff-open-sans mb-1">Time</h3>
-            {{ visitDuration }} <br />
-            (Total: {{ totalMinutes }} min)
+
+          <div class="d-flex align-items-center pt-4">
+            <i class="bi bi-hourglass-bottom fs-2 px-4"></i>
+            <div>
+              <h3 class="h6 fw-bold ff-open-sans m-0">
+                Time 
+                <i class="bi bi-check-circle-fill text-success ps-1"></i>
+              </h3>
+              <p class="m-0">
+                {{ visitDuration }} (Total: {{ totalMinutes }} min)
+              </p>
+            </div>
           </div>
-        </div>
+
+        </BCard>
       </div>
+
       <div v-else>
         <div class="alert alert-danger" role="alert">
           <i class="bi bi-exclamation-octagon-fill"></i> You are not currently
@@ -30,10 +48,10 @@
     </template>
 
     <template v-if="showCheckout" #action>
-      <BButton variant="outline-primary" size="lg" @click="handleSwitchSession">
+      <BButton variant="primary" size="lg" @click="handleSwitchSession">
         Switch Session
       </BButton>
-      <BButton variant="danger" size="lg" @click="handleCheckout">
+      <BButton variant="outline-danger" size="lg" @click="handleCheckout">
         Check Out
       </BButton>
     </template>
@@ -44,18 +62,18 @@
   import DefaultLayout from "@/layouts/default.vue";
   import { useVisitStore } from "@/stores/visit";
   import VisitDetails from "@/components/visit-details.vue";
-  import { BAlert, BButton } from "bootstrap-vue-next";
+  import { BAlert, BButton, BCard } from "bootstrap-vue-next";
 
   export default {
     name: "Checkout",
-    components: { DefaultLayout, BAlert, BButton, VisitDetails },
+    components: { DefaultLayout, BAlert, BButton, BCard, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };
     },
     data() {
       return {
-        pageTitle: "Visit Verfied",
+        pageTitle: "Current Visit",
         profile: null,
       };
     },
@@ -69,6 +87,7 @@
           this.$router.push({ name: "home" });
         }
       });
+      this.visitStore.fetchStudentVisitList();
     },
     computed: {
       showCheckout() {
@@ -78,7 +97,12 @@
         return this.visitStore.visitDurationString;
       },
       totalMinutes() {
-        return this.visitStore.totalMinutes;
+        const course = this.profile.visit.course;
+        if (!course) return 0;
+        const visits = this.visitStore.studentVisitList.data ?? [];
+        return visits
+          .filter((v) => v.course === course && v.active_minutes > 0)
+          .reduce((sum, v) => sum + v.active_minutes, 0);
       },
     },
     methods: {
