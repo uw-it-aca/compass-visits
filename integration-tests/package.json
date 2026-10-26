@@ -1,0 +1,14 @@
+{
+  "name": "compass-visits-deployed-integration-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "auth": "node auth.mjs",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "check": "node --test checks/*.check.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0"
+  }
+}
