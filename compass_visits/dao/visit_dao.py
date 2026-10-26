@@ -1,7 +1,7 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.db.models import DurationField, ExpressionWrapper, F, Q, Sum
+from django.db.models import Q
 from django.utils import dateparse, timezone
 from restclients_core.exceptions import DataFailureException
 
@@ -309,7 +309,7 @@ def manager_create_visit_from_request(request_data):
 
 def get_total_minutes_by_syskey(student_syskey):
     """
-    Calculates the total completed visit minutes for a student by SysKey.
+    Calculate completed current-quarter minutes from Compass history.
 
     Args:
         student_syskey (str): The SysKey of the student to calculate total
@@ -319,23 +319,14 @@ def get_total_minutes_by_syskey(student_syskey):
         float: The total number of minutes as a float
     Notes:
         - Only visits with both check-in and check-out dates are considered.
-        - Only visits marked as verified (is_verified=True) are included.
+        - Uses the same per-visit minutes as the student history response.
     """
-    visits = Visit.objects.filter(
-        student_syskey=student_syskey,
-        is_verified=True,
-        check_in_date__isnull=False,
-        check_out_date__isnull=False
-    ).annotate(
-        duration=ExpressionWrapper(
-            F('check_out_date') - F('check_in_date'),
-            output_field=DurationField()
-        )
-    )
-    total_duration = visits.aggregate(total=Sum('duration'))['total']
-    if total_duration is None:
-        return 0.0
-    return total_duration.total_seconds() / 60
+    visits = get_current_quarter_visits_by_syskey(student_syskey)
+    return float(sum(
+        visit.student_json_data()['active_minutes']
+        for visit in visits
+        if visit.checkin_date and visit.checkout_date
+    ))
 
 
 def get_visits_pending_verification():

@@ -289,22 +289,29 @@ class VisitDAOTest(CompassVisitsTestCase):
         self.assertEqual(str(context.exception),
                          "Student already has an active visit")
 
-    def test_get_total_minutes_by_syskey(self):
-        # multi with in progress
+    @patch('compass_visits.dao.visit_dao'
+           '.get_current_quarter_visits_by_syskey')
+    def test_get_total_minutes_by_syskey(self, mock_get_visits):
+        checkin = timezone.now()
+        mock_get_visits.return_value = [
+            CompassVisitModel(
+                checkin_date=checkin,
+                checkout_date=checkin + datetime.timedelta(minutes=90)),
+            CompassVisitModel(
+                checkin_date=checkin,
+                checkout_date=checkin + datetime.timedelta(minutes=45)),
+            CompassVisitModel(checkin_date=checkin, checkout_date=None),
+        ]
+
         total_minutes = get_total_minutes_by_syskey("000083856")
-        self.assertEqual(total_minutes, 225)
 
-        # single visit
-        total_minutes = get_total_minutes_by_syskey("000083859")
-        self.assertEqual(total_minutes, 60)
+        self.assertEqual(total_minutes, 135.0)
+        mock_get_visits.assert_called_once_with("000083856")
 
-        # Only in progress
-        total_minutes = get_total_minutes_by_syskey("000083857")
-        self.assertEqual(total_minutes, 0)
-
-        # No visits
-        total_minutes = get_total_minutes_by_syskey("000000000")
-        self.assertEqual(total_minutes, 0)
+    @patch('compass_visits.dao.visit_dao'
+           '.get_current_quarter_visits_by_syskey', return_value=[])
+    def test_get_total_minutes_without_compass_visits(self, mock_get_visits):
+        self.assertEqual(get_total_minutes_by_syskey("000083856"), 0.0)
 
     def test_get_student_state(self):
         active_visit = Visit.objects.create(
