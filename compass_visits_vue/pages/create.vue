@@ -245,6 +245,12 @@
         }
       },
       cancelVisit() {
+        if (this.switch) {
+          this.visitStore.studentProfile = {};
+          this.$router.push({ name: "home" });
+          return;
+        }
+
         this.visitStore.deleteVisit().then(() => {
           this.profile = null;
           this.$router.push("/");

@@ -89,6 +89,15 @@ class VisitAPITestCase(APILoginTestCase):
         with self.assertRaises(Visit.DoesNotExist):
             Visit.objects.get(id=6)
 
+    def test_delete_verified_visit_rejected(self):
+        response = self.delete_response('visit_detail',
+                                        url_args={'visit_id': 5},
+                                        netid='jbothell')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'],
+                         "Verified visits cannot be deleted")
+        self.assertTrue(Visit.objects.get(id=5).is_verified)
+
     def test_delete_visit_not_found(self):
         response = self.delete_response('visit_detail',
                                         url_args={'visit_id': 999},

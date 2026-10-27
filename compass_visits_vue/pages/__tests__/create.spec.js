@@ -156,4 +156,38 @@ describe("Create page option handling", () => {
     });
     expect(push).toHaveBeenCalledWith({ name: "verify" });
   });
+
+  it("returns home without deleting the current visit when canceling a switch", () => {
+    const push = vi.fn();
+    const wrapper = shallowMount(CreatePage, {
+      props: { switch: true },
+      global: {
+        mocks: {
+          $router: { push },
+        },
+      },
+    });
+
+    wrapper.vm.cancelVisit();
+
+    expect(visitStoreMock.deleteVisit).not.toHaveBeenCalled();
+    expect(visitStoreMock.studentProfile).toEqual({});
+    expect(push).toHaveBeenCalledWith({ name: "home" });
+  });
+
+  it("uses regular visit cleanup when canceling a check-in", async () => {
+    const push = vi.fn();
+    const wrapper = shallowMount(CreatePage, {
+      global: {
+        mocks: {
+          $router: { push },
+        },
+      },
+    });
+
+    await wrapper.vm.cancelVisit();
+
+    expect(visitStoreMock.deleteVisit).toHaveBeenCalledOnce();
+    expect(push).toHaveBeenCalledWith("/");
+  });
 });

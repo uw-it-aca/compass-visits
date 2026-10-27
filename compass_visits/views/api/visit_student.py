@@ -164,6 +164,10 @@ class VisitDetailView(RESTDispatchLogin):
             visit = Visit.objects.get(id=visit_id)
             valid_user_override()
             can_write_visit(visit.student_syskey)
+            if visit.is_verified:
+                return self.error_response(
+                    status=400,
+                    message="Verified visits cannot be deleted")
             visit.delete()
             return self.json_response(status=200, content={})
         except Visit.DoesNotExist:
