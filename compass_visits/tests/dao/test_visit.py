@@ -629,9 +629,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             course_code="MATH 101",
             tutoring_option="Individual",
             checkin_date=datetime.datetime(2024, 8, 1, 10, 0,
-                                           tzinfo=datetime.timezone.utc),
+                                           tzinfo=datetime.UTC),
             checkout_date=datetime.datetime(2024, 8, 1, 10, 30,
-                                            tzinfo=datetime.timezone.utc),
+                                            tzinfo=datetime.UTC),
         )
         visit_late = CompassVisitModel(
             student_netid="javerage",
@@ -639,9 +639,9 @@ class VisitDAOTest(CompassVisitsTestCase):
             course_code="CHEM 101",
             tutoring_option="Group",
             checkin_date=datetime.datetime(2024, 8, 1, 12, 0,
-                                           tzinfo=datetime.timezone.utc),
+                                           tzinfo=datetime.UTC),
             checkout_date=datetime.datetime(2024, 8, 1, 12, 45,
-                                            tzinfo=datetime.timezone.utc),
+                                            tzinfo=datetime.UTC),
         )
         mock_get_visits.return_value = [visit_early, visit_late]
 
