@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from restclients_core.exceptions import DataFailureException
 
+from compass_visits.models import Visit
 from compass_visits.tests import APILoginTestCase
 
 
@@ -23,7 +24,9 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertNotIn('current_state', data)
         self.assertNotIn('visit', data)
 
-    def test_not_verified_visit(self):
+    @patch('compass_visits.dao.visit_dao'
+           '.get_current_quarter_visits_by_syskey', return_value=[])
+    def test_not_verified_visit(self, mock_get_visits):
         response = self.get_response('student_profile', netid='jnewstudent')
         self.assertEqual(response.status_code, 200)
         data = response.json()
@@ -52,7 +55,31 @@ class StudentAPITestCase(APILoginTestCase):
         self.assertIn('photo', data)
         self.assertTrue(data['photo'].startswith("/9j/4AAQSkZJRgABAQAAAQ"))
         self.assertIn('total_minutes', data)
-        self.assertEqual(data['total_minutes'], 225.0)
+        self.assertEqual(data['total_minutes'], 135.0)
+
+    def test_profile_total_matches_compass_history_after_sync(self):
+        Visit.objects.all().delete()
+
+        history = self.get_response('student_visits', netid='javerage')
+        self.assertEqual(history.status_code, 200)
+        expected_minutes = sum(
+            visit['active_minutes'] for visit in history.json())
+        self.assertGreater(expected_minutes, 0)
+
+        response = self.get_response('student_profile', netid='javerage')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['total_minutes'], expected_minutes)
+
+    @patch('compass_visits.views.api.student.get_total_minutes_by_syskey')
+    def test_profile_history_failure(self, mock_get_total):
+        mock_get_total.side_effect = DataFailureException(
+            '/api/v1/visit/external_student/000083856', 500, 'Compass error')
+
+        response = self.get_response('student_profile', netid='javerage')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'],
+                         "Unable to retrieve student information")
 
     @patch('compass_visits.views.api.student.get_student_profile')
     def test_profile_photo_none_without_uwregid(self, mock_get_profile):
