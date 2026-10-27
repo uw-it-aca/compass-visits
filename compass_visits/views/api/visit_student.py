@@ -4,6 +4,7 @@
 import json
 
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from restclients_core.exceptions import DataFailureException
 from userservice.user import UserService
 
@@ -65,11 +66,10 @@ class VisitView(RESTDispatchLogin):
 
         Attempts to:
         - Validate user override permissions.
-        - Retrieve the current student's NetID.
         - Parse the request body as JSON.
-        - If a verified visit is in progress it will check out that visit and
-            create a new, verified visit with the new request data. Handles
-            the "switch" use case
+        - Retrieve the current student's NetID.
+        - For an explicit switch request, check out the active verified visit
+            and create the replacement in one transaction.
         - Create a visit record using the request data and student NetID.
         - Return a JSON response with the created visit data on success.
 
@@ -85,14 +85,22 @@ class VisitView(RESTDispatchLogin):
         """
         try:
             valid_user_override()
+            request_body = json.loads(request.body)
             student_netid = UserService().get_user()
             student_syskey = get_syskey_by_netid(student_netid)
-            switch_visit = checkout_active_verified_visit(student_syskey)
-            request_body = json.loads(request.body)
-            visit = create_visit_from_request(request_body,
-                                              student_syskey,
-                                              student_netid,
-                                              verified=switch_visit)
+            if request_body.get('switch') is True:
+                with transaction.atomic():
+                    switch_visit = checkout_active_verified_visit(
+                        student_syskey)
+                    visit = create_visit_from_request(
+                        request_body,
+                        student_syskey,
+                        student_netid,
+                        verified=switch_visit)
+            else:
+                visit = create_visit_from_request(request_body,
+                                                  student_syskey,
+                                                  student_netid)
             return self.json_response(status=200, content=visit.json_data())
         except ValidationError as e:
             return self.error_response(status=400, message=e)

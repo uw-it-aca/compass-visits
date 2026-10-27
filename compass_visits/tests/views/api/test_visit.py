@@ -131,11 +131,29 @@ class VisitAPITestCase(APILoginTestCase):
                                           data=new_visit_data)
             self.assertEqual(response.status_code, 403)
 
-    def test_already_active_visit(self):
+    def test_create_visit_does_not_switch_active_visit_without_flag(self):
         new_visit_data = {
             "program_area": "ic-drop-in-tutoring",
             "tutoring_option": "drop-in",
             "writing_service": 1,
+        }
+        old_visit = Visit.objects.get(id=12)
+        self.assertEqual(old_visit.check_out_date, None)
+        response = self.post_response('visit',
+                                      netid='javerage',
+                                      data=new_visit_data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'],
+                         "Student already has an active visit")
+        old_visit.refresh_from_db()
+        self.assertIsNone(old_visit.check_out_date)
+
+    def test_switch_visit_checks_out_old_visit_after_confirm(self):
+        new_visit_data = {
+            "program_area": "ic-drop-in-tutoring",
+            "tutoring_option": "drop-in",
+            "writing_service": 1,
+            "switch": True,
         }
         old_visit = Visit.objects.get(id=12)
         self.assertEqual(old_visit.check_out_date, None)
@@ -152,6 +170,21 @@ class VisitAPITestCase(APILoginTestCase):
         new_visit = Visit.objects.get(id=data['id'])
         self.assertEqual(new_visit.is_verified, True)
         self.assertEqual(new_visit.check_out_date, None)
+
+    def test_invalid_switch_keeps_old_visit_active(self):
+        old_visit = Visit.objects.get(id=12)
+        response = self.post_response(
+            'visit',
+            netid='javerage',
+            data={
+                "program_area": "ic-drop-in-tutoring",
+                "tutoring_option": "drop-in",
+                "switch": True,
+            })
+
+        self.assertEqual(response.status_code, 400)
+        old_visit.refresh_from_db()
+        self.assertIsNone(old_visit.check_out_date)
 
     def test_post_visit_course_too_long(self):
         response = self.post_response('visit',

@@ -229,6 +229,7 @@
               writing_service: this.selectedWritingService
                 ? this.selectedWritingService.id
                 : null,
+              ...(this.switch ? { switch: true } : {}),
             });
             if (this.switch) {
               this.$router.push({ name: "checkout" });

@@ -157,6 +157,35 @@ describe("Create page option handling", () => {
     expect(push).toHaveBeenCalledWith({ name: "verify" });
   });
 
+  it("includes switch intent when confirming a session switch", async () => {
+    visitOptionsStoreMock.visitOptions = {
+      ...visitOptionsStoreMock.visitOptions,
+      courses: [{ id: 22, name: "MATH 101" }],
+    };
+    const wrapper = shallowMount(CreatePage, {
+      props: { switch: true },
+      global: {
+        mocks: {
+          $router: { push: vi.fn() },
+        },
+      },
+    });
+
+    wrapper.vm.selectedProgramArea = "ic-drop-in-tutoring";
+    wrapper.vm.selectedTutoringOption = "drop-in";
+    wrapper.vm.selectedCourseOrWriting = 22;
+
+    await wrapper.vm.createVisit();
+
+    expect(visitStoreMock.handleCreateVisit).toHaveBeenCalledWith({
+      program_area: "ic-drop-in-tutoring",
+      tutoring_option: "drop-in",
+      course: 22,
+      writing_service: null,
+      switch: true,
+    });
+  });
+
   it("returns home without deleting the current visit when canceling a switch", () => {
     const push = vi.fn();
     const wrapper = shallowMount(CreatePage, {
