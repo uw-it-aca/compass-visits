@@ -64,9 +64,9 @@ memcached:
 
 certs:
   mounted: true
-  certPath: /certs/compass.uw.edu-ic.cert
-  keyPath: /certs/compass.uw.edu-ic.key
-  secretName: compass.uw.edu-ic-certs
+  certPath: /certs/compass.uw.edu-uwca.cert
+  keyPath: /certs/compass.uw.edu-uwca.key
+  secretName: compass.uw.edu-uwca-certs
 
 environmentVariables:
   - name: ENV
@@ -115,13 +115,13 @@ externalSecrets:
           property: username
         - name: password
           property: password
-    - name: compass.uw.edu-ic-certs
-      externalKey: compass/prod/ic-certs
+    - name: compass.uw.edu-uwca-certs
+      externalKey: compass/prod/uwca-certs
       data:
-        - name: compass.uw.edu-ic.cert
-          property: compass.uw.edu-ic.cert
-        - name: compass.uw.edu-ic.key
-          property: compass.uw.edu-ic.key
+        - name: compass.uw.edu-uwca.cert
+          property: compass.uw.edu-uwca.cert
+        - name: compass.uw.edu-uwca.key
+          property: compass.uw.edu-uwca.key
     - name: test-checkin.compass.uw.edu-sp-cert
       externalKey: compass-checkin/test/ic-certs
       data:

@@ -17,7 +17,8 @@ COPY --from=node-base / /
 
 COPY ./package.json /app/
 WORKDIR /app/
-RUN npm install --legacy-peer-deps
+RUN npm install --global npm@11.19.1
+RUN npm install .
 
 COPY . /app/
 

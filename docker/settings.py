@@ -1,5 +1,7 @@
 import os
 
+from urllib3.util.ssl_ import create_urllib3_context
+
 from .base_settings import *
 
 INSTALLED_APPS += [
@@ -92,6 +94,11 @@ if os.getenv('ENV') == 'test' or os.getenv('ENV') == 'prod':
         'RESTCLIENTS_COMPASS_HOST', "")
     RESTCLIENTS_COMPASS_AUTH_TOKEN = os.getenv(
         'RESTCLIENTS_COMPASS_AUTH_TOKEN', "")
+    # SWS/PWS client cert chain fails default SECLEVEL with CA_KEY_TOO_SMALL
+    RESTCLIENTS_SWS_SSL_CONTEXT = create_urllib3_context(
+        ciphers='DEFAULT:@SECLEVEL=1')
+    RESTCLIENTS_PWS_SSL_CONTEXT = create_urllib3_context(
+        ciphers='DEFAULT:@SECLEVEL=1')
 
 if os.getenv('ENV') == 'prod':
     ALLOW_USER_OVERRIDE_FOR_WRITE = False
