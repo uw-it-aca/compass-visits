@@ -68,9 +68,15 @@ class StudentProfileView(RESTDispatchLogin):
         student_profile['ic_elligible'] = ic_elligible
 
         if ic_elligible:
+            try:
+                total_minutes = get_total_minutes_by_syskey(student_syskey)
+            except DataFailureException:
+                return self.error_response(
+                    status=400,
+                    message="Unable to retrieve student information")
             active_visit = get_active_visit_for_student(student_syskey)
             student_profile.update({
-                "total_minutes": get_total_minutes_by_syskey(student_syskey),
+                "total_minutes": total_minutes,
                 "current_state": get_student_state(active_visit),
                 "visit": active_visit.json_data() if active_visit else None
             })
