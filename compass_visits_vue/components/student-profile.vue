@@ -2,8 +2,8 @@
 
 <template>
   <div v-if="showProfile">
-    <div class="d-flex justify-content-start mt-2 mb-4">
-      <div class="mx-3">
+    <div class="d-flex justify-content-start mb-4">
+      <div class="me-4">
         <img
           v-if="profileData.photo"
           :src="`data:image/png;base64,${profileData.photo}`"
@@ -12,7 +12,7 @@
         />
         <div v-else class="profile-photo-placeholder" aria-hidden="true"></div>
       </div>
-      <div class="ms-2 my-auto">
+      <div class="my-auto">
         <h2 class="fw-normal ff-open-sans">
           {{ profileData.student_name }}
         </h2>
