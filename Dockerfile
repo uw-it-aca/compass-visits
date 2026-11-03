@@ -17,7 +17,7 @@ COPY --from=node-base / /
 
 COPY ./package.json /app/
 WORKDIR /app/
-RUN npm install --legacy-peer-deps
+RUN npm install .
 
 COPY . /app/
 
