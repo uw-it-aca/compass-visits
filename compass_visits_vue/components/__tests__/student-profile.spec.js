@@ -20,6 +20,7 @@ describe("StudentProfile", () => {
       },
       request: Promise.resolve(),
     };
+    visitStore.studentVisitList = { data: [], request: Promise.resolve() };
 
     const wrapper = mount(StudentProfile, {
       global: {
@@ -47,6 +48,7 @@ describe("StudentProfile", () => {
       },
       request: Promise.resolve(),
     };
+    visitStore.studentVisitList = { data: [], request: Promise.resolve() };
 
     const wrapper = mount(StudentProfile, {
       global: {
@@ -56,7 +58,7 @@ describe("StudentProfile", () => {
 
     await Promise.resolve();
 
-    expect(wrapper.text()).toContain("Total Hours:");
+    expect(wrapper.text()).toContain("Total:");
     expect(wrapper.text()).toContain("0.00");
   });
 });

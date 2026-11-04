@@ -18,13 +18,17 @@ function parseError(str) {
 }
 
 export async function useCustomFetch(url, options = {}) {
-  let csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+  // The CSRF input may be missing (e.g. template didn't render it), so
+  // avoid a TypeError and only send the header when a token exists.
+  const csrfToken = document.getElementsByName("csrfmiddlewaretoken")[0]?.value;
   // set default headers
   const defaultHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "X-CSRFToken": csrfToken,
     "X-Requested-With": "XMLHttpRequest",
   };
+  if (csrfToken) {
+    defaultHeaders["X-CSRFToken"] = csrfToken;
+  }
 
   // Merge default headers with any provided in options
   options.headers = {
