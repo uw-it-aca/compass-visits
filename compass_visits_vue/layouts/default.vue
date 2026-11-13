@@ -1,10 +1,7 @@
 <template>
   <STopbarBlanco :app-name="appName" :app-root-url="appRootUrl">
     <template #settings>
-      <SUser
-        :user-netid="userNetid"
-        :mode="'dynamic'"
-      >
+      <SUser :user-netid="userNetid" :mode="'dynamic'">
         <p>{{ userOfficial }}, {{ userPreferred }}, {{ userNetid }}</p>
 
         <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
@@ -55,16 +52,44 @@
     <div class="container">
       <h2>{{ appName }}</h2>
       <p>
-        Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-        dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-        consectetur ac, vestibulum at eros.
+        Kiosk lets students check in for visits to campus services, such as
+        tutoring and writing support. Sign in with your UW NetID, confirm your
+        details, and choose the type of visit you need. Your visit is recorded
+        in Compass so staff can see who has arrived and follow up afterward.
       </p>
-      <p>&copy; Copyright {{ currentYear }} Univeristy of Washington</p>
-      <ul>
-        <li>Accessiblity</li>
-        <li>Privacy Policy</li>
-        <li>Terms</li>
+
+      <ul class="list-inline sol-middot-list m-0">
+        <li class="list-inline-item">
+          <a
+            href="https://www.washington.edu/accessibility/"
+            target="_blank"
+            rel="noopener"
+            class="link-body-emphasis"
+            >Accessibility</a
+          >
+        </li>
+        <li class="list-inline-item">
+          <a
+            href="https://www.washington.edu/online/privacy/"
+            target="_blank"
+            rel="noopener"
+            class="link-body-emphasis"
+            >Privacy</a
+          >
+        </li>
+        <li class="list-inline-item">
+          <a
+            href="https://www.washington.edu/online/terms/"
+            target="_blank"
+            rel="noopener"
+            class="link-body-emphasis"
+            >Terms</a
+          >
+        </li>
       </ul>
+      <div class="">
+        Copyright &copy; {{ currentYear }} University of Washington
+      </div>
     </div>
   </BOffcanvas>
 </template>
