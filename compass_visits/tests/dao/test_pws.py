@@ -2,13 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from unittest.mock import patch
-from compass_visits.tests import CompassVisitsTestCase
-from compass_visits.dao.pws import (get_student_photo,
-                                    get_student_profile,
-                                    get_regid_by_netid,
-                                    get_syskey_by_netid,
-                                    get_netid_by_syskey)
+
 from restclients_core.exceptions import DataFailureException
+
+from compass_visits.dao.pws import (
+    get_netid_by_syskey,
+    get_regid_by_netid,
+    get_student_photo,
+    get_student_profile,
+    get_syskey_by_netid,
+)
+from compass_visits.tests import CompassVisitsTestCase
 
 
 class PWSDAOTest(CompassVisitsTestCase):
@@ -19,6 +23,8 @@ class PWSDAOTest(CompassVisitsTestCase):
         self.assertEqual(
             profile["uwregid"], "9136CCB8F66711D5BE060004AC494FFE")
         self.assertEqual(profile["student_name"], "Jamesy McJamesy")
+        self.assertEqual(profile["official_name"], "JAMES AVERAGE STUDENT")
+        self.assertEqual(profile["preferred_name"], "Jamesy McJamesy")
         self.assertEqual(profile["student_number"], "1033334")
 
     def test_get_student_photo(self):

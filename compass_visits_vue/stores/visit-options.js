@@ -5,6 +5,7 @@ export const useVisitOptionsStore = defineStore("visitOptions", {
   state: () => {
     return {
       visitOptions: {},
+      isLoading: false,
     };
   },
   getters: {
@@ -13,9 +14,14 @@ export const useVisitOptionsStore = defineStore("visitOptions", {
   actions: {
     fetchVisitOptions() {
       if (!Object.keys(this.visitOptions).length) {
-        return getVisitOptions().then((response) => {
-          this.visitOptions = response;
-        });
+        this.isLoading = true;
+        return getVisitOptions()
+          .then((response) => {
+            this.visitOptions = response;
+          })
+          .finally(() => {
+            this.isLoading = false;
+          });
       }
       return Promise.resolve(this.visitOptions);
     },

@@ -1,15 +1,19 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from userservice.user import UserService
-from compass_visits.dao.compass import Compass
-from compass_visits.dao.visit_dao import (get_active_visit_for_student,
-                                          get_total_minutes_by_syskey,
-                                          get_student_state)
-from compass_visits.dao.pws import get_student_profile, get_student_photo
-from compass_visits.views.api import RESTDispatchLogin
-from restclients_core.exceptions import DataFailureException
 import base64
+
+from restclients_core.exceptions import DataFailureException
+from userservice.user import UserService
+
+from compass_visits.dao.compass import Compass
+from compass_visits.dao.pws import get_student_photo, get_student_profile
+from compass_visits.dao.visit_dao import (
+    get_active_visit_for_student,
+    get_student_state,
+    get_total_minutes_by_syskey,
+)
+from compass_visits.views.api import RESTDispatchLogin
 
 
 class StudentProfileView(RESTDispatchLogin):
@@ -64,9 +68,15 @@ class StudentProfileView(RESTDispatchLogin):
         student_profile['ic_elligible'] = ic_elligible
 
         if ic_elligible:
+            try:
+                total_minutes = get_total_minutes_by_syskey(student_syskey)
+            except DataFailureException:
+                return self.error_response(
+                    status=400,
+                    message="Unable to retrieve student information")
             active_visit = get_active_visit_for_student(student_syskey)
             student_profile.update({
-                "total_minutes": get_total_minutes_by_syskey(student_syskey),
+                "total_minutes": total_minutes,
                 "current_state": get_student_state(active_visit),
                 "visit": active_visit.json_data() if active_visit else None
             })

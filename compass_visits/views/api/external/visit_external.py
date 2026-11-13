@@ -2,14 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+
+from compass_visits.dao.visit_dao import (
+    get_completed_visits_by_syskey,
+    get_visits_pending_checkout,
+    get_visits_pending_verification,
+    manager_create_visit_from_request,
+    manager_update_visit,
+)
+from compass_visits.exceptions import ValidationError
 from compass_visits.models import Visit
 from compass_visits.views.api import RESTDispatchToken
-from compass_visits.exceptions import ValidationError
-from compass_visits.dao.visit_dao import (get_visits_pending_verification,
-                                          get_visits_pending_checkout,
-                                          get_completed_visits_by_syskey,
-                                          manager_update_visit,
-                                          manager_create_visit_from_request)
 
 
 class VisitAdminListView(RESTDispatchToken):
@@ -67,7 +70,6 @@ class ManageVisitsView(RESTDispatchToken):
             visit_id (int): The ID of the Visit to update.
 
         Returns:
-            JsonResponse: A JSON response with the updated Visit data and a
                 200 status code if successful.
             JsonResponse: A JSON response with a 404 status code if the Visit
                 does not exist.
@@ -80,8 +82,7 @@ class ManageVisitsView(RESTDispatchToken):
             return self.error_response(status=400,
                                        message="Invalid JSON format")
         try:
-            visit = Visit.objects.select_related(
-                'program_area', 'tutoring_option', 'writing_service').get(
+            visit = Visit.objects.select_related('writing_service').get(
                     id=visit_id)
             manager_update_visit(visit, request_body)
             return self.json_response(status=200, content=visit.json_data())

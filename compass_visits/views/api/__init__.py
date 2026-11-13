@@ -1,13 +1,15 @@
 # Copyright 2026 UW-IT, University of Washington
 # SPDX-License-Identifier: Apache-2.0
 
-from django.views import View
-from django.http import HttpResponse
-from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 import json
+
+from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
 from compass_visits.decorator import token_required
 
 
@@ -28,7 +30,9 @@ class RESTDispatch(View):
         containing an error message.
     """
     @staticmethod
-    def json_response(content={}, status=200):
+    def json_response(content=None, status=200):
+        if content is None:
+            content = {}
         try:
             data = json.dumps(content,
                               sort_keys=True,

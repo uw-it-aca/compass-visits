@@ -1,0 +1,12 @@
+{
+  "visit_types": [
+    {"id": 1, "name": "IC Drop-In Tutoring", "slug": "ic-drop-in-tutoring"},
+    {"id": 3, "name": "IC Writing Assistance", "slug": "ic-writing-assistance"},
+    {"id": 5, "name": "IC Workshop", "slug": "ic-workshop"}
+  ],
+  "tutoring_options": [
+    {"id": 1, "name": "Drop In", "slug": "drop-in"},
+    {"id": 2, "name": "Workshop", "slug": "workshop"},
+    {"id": 3, "name": "Other", "slug": "other"}
+  ]
+}
