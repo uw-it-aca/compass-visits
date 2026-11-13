@@ -1,25 +1,5 @@
-// student-profile.vue
-
 <template>
   <div v-if="showProfile">
-    <div class="d-flex justify-content-start mb-4">
-      <div class="me-4">
-        <img
-          v-if="profileData.photo"
-          :src="`data:image/png;base64,${profileData.photo}`"
-          alt="Profile Image"
-          class="img-profile rounded-circle"
-        />
-        <div v-else class="profile-photo-placeholder" aria-hidden="true"></div>
-      </div>
-      <div class="my-auto">
-        <h2 class="fw-normal ff-open-sans">
-          {{ profileData.student_name }}
-        </h2>
-        <h3 class="fs-6 fw-normal"> {{ profileData.student_number }} </h3>
-      </div>
-    </div>
-
     <div class="pb-2">
       <BCard class="bg-body-tertiary rounded-3" border-variant="0">
         <h3 class="fs-6 fw-normal">Total:</h3>
@@ -63,9 +43,6 @@ export default {
     this.visitStore.fetchStudentVisitList();
   },
   computed: {
-    profileData() {
-      return this.visitStore.studentProfile.data || {};
-    },
     showProfile() {
       return Boolean(this.visitStore.studentProfile.data);
     },
@@ -86,15 +63,5 @@ export default {
       return list;
     },
   },
-  methods: {},
 };
 </script>
-
-<style scoped>
-.profile-photo-placeholder {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: #d8dee6;
-}
-</style>

@@ -1,8 +1,16 @@
 <template>
   <STopbarBlanco :app-name="appName" :app-root-url="appRootUrl">
     <template #settings>
-      <SUser :user-netid="userNetid" :mode="'dynamic'">
-        <p>{{ userOfficial }}, {{ userPreferred }}, {{ userNetid }}</p>
+      <SUser
+        :user-netid="userNetid"
+        :photo-url="userPhotoUrl"
+        :mode="'dynamic'"
+      >
+        <ul class="list-unstyled">
+          <li>{{ userPreferred }}</li>
+          <li>{{ userNetid }}</li>
+          <li v-if="userStudentNumber">{{ userStudentNumber }}</li>
+        </ul>
 
         <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
         <template #action>
@@ -161,6 +169,14 @@
       },
       userNetid() {
         return this.visitStore.studentProfile?.data?.netid || "";
+      },
+      userPhotoUrl() {
+        const photo = this.visitStore.studentProfile?.data?.photo;
+        // undefined makes Vue fall back to SUser's default photoUrl
+        return photo ? `data:image/png;base64,${photo}` : undefined;
+      },
+      userStudentNumber() {
+        return this.visitStore.studentProfile?.data?.student_number || "";
       },
       userOfficial() {
         return this.visitStore.studentProfile?.data?.official_name || "";
