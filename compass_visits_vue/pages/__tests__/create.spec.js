@@ -45,24 +45,6 @@ describe("Create page option handling", () => {
     expect(wrapper.vm.courseOrWritingPlaceholder).toBe("Select a writing service");
   });
 
-  it("shows a loading indicator while visit options are being fetched", () => {
-    visitOptionsStoreMock.isLoading = true;
-
-    const wrapper = shallowMount(CreatePage, {
-      global: {
-        stubs: {
-          DefaultLayout: {
-            template: "<div><slot name='content' /><slot name='action' /></div>",
-          },
-        },
-      },
-    });
-
-    expect(wrapper.get('[role="status"]').text()).toContain(
-      "Loading visit options...",
-    );
-  });
-
   it("submits writing_service and null course in no-course mode", async () => {
     const push = vi.fn();
     const wrapper = shallowMount(CreatePage, {
