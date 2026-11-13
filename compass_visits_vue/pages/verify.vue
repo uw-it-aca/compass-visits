@@ -4,17 +4,20 @@
   <DefaultLayout :page-title="pageTitle">
     <template #content>
       <div class="d-flex flex-column">
-        <BAlert :model-value="true" variant="warning" class="mb-4">
+        <BAlert :model-value="true" variant="warning" class="mb-3">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          Your check-in is not yet complete. Please verify with the IC front
-          desk, and refresh the page.
+          Your check-in isn't complete yet. Verify with the IC front desk, then refresh.
         </BAlert>
 
-        <div class="mt-auto text-center">
-          <h2 class="fs-2 fw-semibold ff-encode-sans pb-4">
-            {{ profile.student_name }}
-          </h2>
-          <visit-details :visit-data="visitDetails" />
+        <div v-if="profile">
+          <BCard class="bg-husky-gold-subtle bg-opacity-50 rounded-3" border-variant="0">
+            <h2 class="fw-semibold ff-open-sans h4 text-center py-1">
+              {{ profile.student_name }}
+            </h2>
+            <h3 class="fs-6 fw-normal text-center"> {{ profile.student_number }} </h3>
+            <hr class="border-secondary py-1">
+            <visit-details :visit-data="visitDetails" />
+          </BCard>
         </div>
       </div>
     </template>
@@ -33,18 +36,18 @@
   import DefaultLayout from "@/layouts/default.vue";
   import VisitDetails from "@/components/visit-details.vue";
   import { useVisitStore } from "@/stores/visit";
-  import { BAlert, BButton } from "bootstrap-vue-next";
+  import { BAlert, BButton, BCard } from "bootstrap-vue-next";
 
   export default {
     name: "Verify",
-    components: { DefaultLayout, BAlert, BButton, VisitDetails },
+    components: { DefaultLayout, BAlert, BButton, BCard, VisitDetails },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };
     },
     data() {
       return {
-        pageTitle: "Verification Required",
+        pageTitle: "Verify Visit",
         profile: null,
       };
     },

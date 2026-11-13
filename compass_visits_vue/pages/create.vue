@@ -7,14 +7,6 @@
         <h2 class="fs-6 fw-bold ff-open-sans mb-2">
           Program Area<span style="color: red">*</span>
         </h2>
-        <div
-          v-if="visitOptionsStore.isLoading"
-          class="d-flex align-items-center mb-3"
-          role="status"
-        >
-          <BSpinner small class="me-2" />
-          Loading visit options...
-        </div>
         <div class="pb-4">
           <BFormSelect
             v-model="selectedProgramArea"
@@ -114,7 +106,6 @@
     BFormSelect,
     BFormSelectOption,
     BFormSelectOptionGroup,
-    BSpinner,
   } from "bootstrap-vue-next";
 
   export default {
@@ -125,8 +116,7 @@
       BFormSelect,
       BFormSelectOption,
       BFormSelectOptionGroup,
-      BSpinner,
-    },
+        },
     setup() {
       const visitOptionsStore = useVisitOptionsStore();
       const visitStore = useVisitStore();

@@ -1,11 +1,11 @@
 // home.vue
 
 <template>
-  <DefaultLayout :page-title="pageTitle" hide-title>
+  <DefaultLayout :page-title="pageTitle">
     <template #content>
       <div class="d-flex flex-column" style="">
-        <div class="mt-auto pb-2">
-          <StudentProfile :profile="profile" />
+        <div>
+          <StudentProfile :profile="profile"/>
         </div>
 
         <div v-if="profile && !isElligible" class="text-center">
@@ -22,9 +22,12 @@
     </template>
 
     <template v-if="profile && isElligible" #action>
-      <BButton variant="secondary" size="lg" @click="redirectToSummary">
+      <!-- no summary page
+      <!--
+      <BButton variant="outline-primary" size="lg" @click="redirectToSummary">
         Summary
       </BButton>
+      -->
       <BButton variant="primary" size="lg" @click="redirectToCreate">
         Check In
       </BButton>
@@ -54,7 +57,7 @@
     },
     computed: {
       pageTitle() {
-        return this.profile?.student_name || "Home";
+        return "My Visits";
       },
     },
     created() {

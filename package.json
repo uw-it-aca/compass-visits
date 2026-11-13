@@ -35,7 +35,7 @@
     "pluralize": "^8.0.0",
     "regenerator-runtime": "^0.14.1",
     "solstice-theme": "github:uw-it-aca/solstice-theme#1.0.7",
-    "solstice-vue": "github:uw-it-aca/solstice-vue#1.1.9",
+    "solstice-vue": "github:uw-it-aca/solstice-vue#1.2.0",
     "vue": "^3.5.39",
     "vue-gtag-next": "^1.14.0",
     "vue-router": "^5.2.0",

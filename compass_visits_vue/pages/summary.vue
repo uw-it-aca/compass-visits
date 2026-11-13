@@ -23,7 +23,7 @@
 
   export default {
     name: "Visit  Summary",
-    components: { DefaultLayout, VisitGroup, BButton },
+    components: { DefaultLayout, VisitGroup },
     setup() {
       const visitStore = useVisitStore();
       return { visitStore };
