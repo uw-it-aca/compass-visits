@@ -7,6 +7,8 @@
         :mode="'dynamic'"
       >
         <p>{{ userOfficial }}, {{ userPreferred }}, {{ userNetid }}</p>
+
+        <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
         <template #action>
           <a :href="signOutUrl" class="link-quiet-danger"
             ><i class="bi bi-x-circle me-1"></i>Sign out now</a
@@ -25,8 +27,6 @@
       >
         {{ pageTitle }}
       </h1>
-
-      <BButton v-b-toggle.offcanvas-border>About {{ appName }}</BButton>
 
       <div class="">
         <slot name="content" />
@@ -96,7 +96,7 @@
       // Track Bootstrap's color mode (data-bs-theme on <html>) reactively so
       // backgrounds can switch: bg-body-tertiary (dark) / bg-body (light).
       const colorMode = ref(
-        document.documentElement.getAttribute("data-bs-theme") || "light"
+        document.documentElement.getAttribute("data-bs-theme") || "light",
       );
       let observer = null;
 
